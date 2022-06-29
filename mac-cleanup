@@ -1,12 +1,12 @@
-#!usr/bin/env python3
+#!/usr/bin/env python3
 
-from os import remove, getenv
+from os import getenv
 from os.path import expanduser, exists
 from glob import glob
 
 from math import floor, log, pow
 
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, DEVNULL
 
 from argparse import ArgumentParser, RawTextHelpFormatter
 
@@ -26,17 +26,20 @@ parser.add_argument('-u', '--update', help="Script will update brew while cleani
 
 args = parser.parse_args()
 
-args.dry_run = True
+
+home = expanduser('~')
 
 path_list = list()
+remove_list = list()
 
-home = expanduser("~")
+cmd_list = list()
+exec_list = list()
 
 
 def cmd(
         command: str,
 ) -> str:
-    return Popen(command, shell=True, stdout=PIPE).communicate()[0].strip().decode('utf-8')
+    return Popen(command, shell=True, stdout=PIPE, stderr=DEVNULL).communicate()[0].strip().decode('utf-8')
 
 
 def check_exists(
@@ -51,12 +54,12 @@ def check_exists(
 
 def bytes_to_human(size_bytes):
     if size_bytes == 0:
-        return "0B"
-    size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+        return '0B'
+    size_name = ('B', 'KB', 'MB', 'GB', 'TB')
     i = int(floor(log(size_bytes, 1024)))
     p = pow(1024, i)
     s = round(size_bytes / p, 2)
-    return "%s %s" % (s, size_name[i])
+    return '%s %s' % (s, size_name[i])
 
 
 def collect_paths(
@@ -71,10 +74,26 @@ def collect_paths(
 
 
 def remove_paths(
+        message: str,
 ) -> None:
-    if not args.dry_run:
-        [remove(path) for path in path_list]
-        path_list.clear()
+    global path_list
+    if path_list:
+        remove_list.append({'message': message, 'paths': path_list})
+        path_list = list()
+
+
+def collect_cmd(
+        command: str,
+) -> None:
+    cmd_list.append(command)
+
+
+def exec_cmd(
+        message: str,
+) -> None:
+    global cmd_list
+    exec_list.append({'message': message, 'cmd': cmd_list})
+    cmd_list = list()
 
 
 def get_dir_size(
@@ -94,19 +113,15 @@ def count_dry():
     return sum([get_dir_size(path) for path in path_list])
 
 
-oldAvailable = int(cmd('df / | tail -1 | awk \'{print $4}\''))
-
 collect_paths('/Volumes/*/.Trashes/*')
 collect_paths('~/.Trash/*')
-print('Emptying the Trash 🗑 on all mounted volumes and the main HDD...')
-remove_paths()
+remove_paths('Emptying the Trash 🗑 on all mounted volumes and the main HDD...')
 
 collect_paths('/Library/Caches/*')
 collect_paths('/System/Library/Caches/*')
 collect_paths('~/Library/Caches/*')
 collect_paths('/private/var/folders/bh/*/*/*/*')
-print('Clearing System Cache Files...')
-remove_paths()
+remove_paths('Clearing System Cache Files...')
 
 collect_paths('/private/var/log/asl/*.asl')
 collect_paths('/Library/Logs/DiagnosticReports/*')
@@ -115,46 +130,39 @@ collect_paths('/Library/Logs/Adobe/*')
 collect_paths('/Library/Logs/adobegc.log')
 collect_paths('~/Library/Containers/com.apple.mail/Data/Library/Logs/Mail/*')
 collect_paths('~/Library/Logs/CoreSimulator/*')
-print('Clearing System Log Files...')
-remove_paths()
+remove_paths('Clearing System Log Files...')
 
 if check_exists('~/Library/Logs/JetBrains/'):
     collect_paths('~/Library/Logs/JetBrains/*/')
-    print('Clearing all application log files from JetBrains...')
-    remove_paths()
+    remove_paths('Clearing all application log files from JetBrains...')
 
 if check_exists('~/Library/Application\ Support/Adobe/'):
     collect_paths('~/Library/Application\ Support/Adobe/Common/Media\ Cache\ Files/*')
-    print('Clearing Adobe Cache Files...')
-    remove_paths()
+    remove_paths('Clearing Adobe Cache Files...')
 
 if check_exists('~/Library/Application\ Support/Google/Chrome/'):
     collect_paths('~/Library/Application\ Support/Google/Chrome/Default/Application\ Cache/*')
-    print('Clearing Google Chrome Cache Files...')
-    remove_paths()
+    remove_paths('Clearing Google Chrome Cache Files...')
 
 collect_paths('~/Music/iTunes/iTunes\ Media/Mobile\ Applications/*')
-print('Cleaning up iOS Applications...')
-remove_paths()
+remove_paths('Cleaning up iOS Applications...')
 
 collect_paths('~/Library/Application\ Support/MobileSync/Backup/*')
-print('Removing iOS Device Backups...')
-remove_paths()
+remove_paths('Removing iOS Device Backups...')
 
 collect_paths('~/Library/Developer/Xcode/DerivedData/*')
 collect_paths('~/Library/Developer/Xcode/Archives/*')
 collect_paths('~/Library/Developer/Xcode/iOS Device Logs/*')
-print('Cleaning up XCode Derived Data and Archives...')
-remove_paths()
+remove_paths('Cleaning up XCode Derived Data and Archives...')
 
 if cmd('type "xcrun"'):
     if not args.dry_run:
-        print('Cleaning up iOS Simulators...')
-        cmd('osascript -e \'tell application "com.apple.CoreSimulator.CoreSimulatorService" to quit\'')
-        cmd('osascript -e \'tell application "iOS Simulator" to quit\'')
-        cmd('osascript -e \'tell application "Simulator" to quit\'')
-        cmd('xcrun simctl shutdown all')
-        cmd('xcrun simctl erase all')
+        collect_cmd('osascript -e \'tell application "com.apple.CoreSimulator.CoreSimulatorService" to quit\'')
+        collect_cmd('osascript -e \'tell application "iOS Simulator" to quit\'')
+        collect_cmd('osascript -e \'tell application "Simulator" to quit\'')
+        collect_cmd('xcrun simctl shutdown all')
+        collect_cmd('xcrun simctl erase all')
+        exec_cmd('Cleaning up iOS Simulators...')
     else:
         collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/[!Library|var|tmp|Media]*')
         collect_paths(
@@ -162,24 +170,21 @@ if cmd('type "xcrun"'):
         )
         collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/Library/Caches/*')
         collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/Library/AddressBook/AddressBook*')
-        print(path_list)
 
 # Support deleting Dropbox Cache if they exist
 if check_exists('"/Users/${HOST}/Dropbox"'):
     collect_paths('~/Dropbox/.dropbox.cache/*')
-    print('Clearing Dropbox 📦 Cache Files...')
-    remove_paths()
+    remove_paths('Clearing Dropbox 📦 Cache Files...')
 
 if check_exists('~/Library/Application\ Support/Google/DriveFS/'):
-    collect_paths('~/Library/Application\ Support/Google/DriveFS/[0-9a-zA-Z]*/content_cache')
-    print('Clearing Google Drive File Stream Cache Files...')
     cmd('killall "Google Drive File Stream"')
-    remove_paths()
+    collect_paths('~/Library/Application\ Support/Google/DriveFS/[0-9a-zA-Z]*/content_cache')
+    remove_paths('Clearing Google Drive File Stream Cache Files...')
 
 if cmd('type "composer"'):
     if not args.dry_run:
-        print('Cleaning up composer...')
-        cmd('composer clearcache --no-interaction')
+        collect_cmd('composer clearcache --no-interaction')
+        exec_cmd('Cleaning up composer...')
     else:
         collect_paths('~/Library/Caches/composer')
 
@@ -192,8 +197,7 @@ if check_exists('~/Library/Application\ Support/Steam/'):
     collect_paths('~/Library/Application\ Support/Steam/steamapps/shadercache')
     collect_paths('~/Library/Application\ Support/Steam/steamapps/temp')
     collect_paths('~/Library/Application\ Support/Steam/steamapps/download')
-    print('Clearing Steam Cache, Log, and Temp Files...')
-    remove_paths()
+    remove_paths('Clearing Steam Cache, Log, and Temp Files...')
 
 # Deletes Minecraft logs
 # -Astro
@@ -207,8 +211,7 @@ if check_exists('~/Library/Application\ Support/minecraft'):
     collect_paths('~/Library/Application\ Support/minecraft/launcher_cef_log.txt')
     if check_exists('~/Library/Application\ Support/minecraft/.mixin.out'):
         collect_paths('~/Library/Application\ Support/minecraft/.mixin.out')
-    print('Clearing Minecraft Cache and Log Files...')
-    remove_paths()
+    remove_paths('Clearing Minecraft Cache and Log Files...')
 
 # Deletes Lunar Client logs (Minecraft alternate client)
 # -Astro
@@ -218,103 +221,88 @@ if check_exists('~/.lunarclient'):
     collect_paths('~/.lunarclient/logs')
     collect_paths('~/.lunarclient/offline/*/logs')
     collect_paths('~/.lunarclient/offline/files/*/logs')
-    print('Deleting Lunar Client logs and caches...')
-    remove_paths()
+    remove_paths('Deleting Lunar Client logs and caches...')
 
 # Deletes Wget logs
 # -Astro
 if check_exists('~/wget-log'):
     collect_paths('~/wget-log')
     collect_paths('~/.wget-hsts')
-    print('Deleting Wget log and hosts file...')
-    remove_paths()
+    remove_paths('Deleting Wget log and hosts file...')
 
 # Deletes Cacher logs
 # I dunno either
 # -Astro
 if check_exists('~/.cacher'):
     collect_paths('~/.cacher/logs')
-    print('Deleting Cacher logs...')
-    remove_paths()
+    remove_paths('Deleting Cacher logs...')
 
 # Deletes Android (studio?) cache
 # -Astro
 if check_exists('~/.android'):
     collect_paths('~/.android/cache')
-    print('Deleting Android cache...')
-    remove_paths()
+    remove_paths('Deleting Android cache...')
 
 # Clears Gradle caches
 # -Astro
 if check_exists('~/.gradle'):
     collect_paths('~/.gradle/caches')
-    print('Clearing Gradle caches...')
-    remove_paths()
+    remove_paths('Clearing Gradle caches...')
 
 # Deletes Kite Autocomplete logs
 # -Astro
 if check_exists('~/.kite'):
     collect_paths('~/.kite/logs')
-    print('Deleting Kite logs...')
-    remove_paths()
+    remove_paths('Deleting Kite logs...')
 
 if cmd('type "brew"'):
     if args.update:
-        print('Updating Homebrew Recipes...')
-        cmd('brew update')
-        print('Upgrading and removing outdated formulae...')
-        cmd('brew upgrade')
-    collect_paths(cmd('brew --cache)"'))
-    print('Cleaning up Homebrew Cache...')
-    if not args.dry_run:
-        cmd('brew cleanup -s')
-        remove_paths()
-        cmd('brew tap --repair')
-    else:
-        remove_paths()
+        print('Updating Homebrew Recipes and upgrading...')
+        cmd('brew update && brew upgrade')
+    collect_paths(cmd('brew --cache'))
+    remove_paths('Cleaning up Homebrew Cache...')
 
 if cmd('type "gem"'):  # TODO add count_dry
     if not args.dry_run:
-        print('Cleaning up any old versions of gems')
-        cmd('gem cleanup')
+        collect_cmd('gem cleanup')
+        exec_cmd('Cleaning up any old versions of gems')
 
 if cmd('type "docker"'):  # TODO add count_dry
     if not args.dry_run:
         if not cmd('docker ps >/dev/null 2>&1'):
             cmd('open --background -a Docker')
-        print('Cleaning up Docker')
-        cmd('docker system prune -af')
+        collect_cmd('docker system prune -af')
+        exec_cmd('Cleaning up Docker')
 
 if getenv('PYENV_VIRTUALENV_CACHE_PATH'):
     collect_paths('"$PYENV_VIRTUALENV_CACHE_PATH"')
-    print('Removing Pyenv-VirtualEnv Cache...')
-    remove_paths()
+    remove_paths('Removing Pyenv-VirtualEnv Cache...')
 
 if cmd('type "npm"'):
     if not args.dry_run:
-        print('Cleaning up npm cache...')
-        cmd('npm cache clean --force')
+        collect_cmd('npm cache clean --force')
+        exec_cmd('Cleaning up npm cache...')
     else:
         collect_paths('~/.npm/*')
 
 if cmd('type "yarn"'):
     if not args.dry_run:
-        print('Cleaning up Yarn Cache...')
-        cmd('yarn cache clean --force')
+        collect_cmd('yarn cache clean --force')
+        exec_cmd('Cleaning up Yarn Cache...')
     else:
         collect_paths('~/Library/Caches/yarn')
 
 if cmd('type "pod"'):
     if not args.dry_run:
-        print('Cleaning up Pod Cache...')
-        cmd('pod cache clean --all')
+        collect_cmd('pod cache clean --all')
+        exec_cmd('Cleaning up Pod Cache...')
     else:
         collect_paths('~/Library/Caches/CocoaPods')
 
 if cmd('type "go"'):
     if not args.dry_run:
-        print('Clearing Go module cache...')
-        cmd('go clean -modcache')
+        collect_cmd('go clean -modcache')
+        exec_cmd('Clearing Go module cache...')
     else:
         if getenv('GOPATH'):
             collect_paths(f'{getenv("GOPATH")}/pkg/mod')
@@ -336,35 +324,56 @@ if check_exists('~/Library/Application\ Support/Microsoft/Teams'):
     collect_paths('~/Library/Application\ Support/Microsoft/Teams/*logs*.txt')
     collect_paths('~/Library/Application\ Support/Microsoft/Teams/watchdog')
     collect_paths('~/Library/Application\ Support/Microsoft/Teams/*watchdog*.json')
-    print('Deleting Microsoft Teams logs and caches...')
-    remove_paths()
+    remove_paths('Deleting Microsoft Teams logs and caches...')
 
 # Deletes Poetry cache
 if cmd('type "poetry"') or check_exists('~/Library/Caches/pypoetry'):
     collect_paths('~/Library/Caches/pypoetry')
-    print('Deleting Poetry cache...')
-    remove_paths()
+    remove_paths('Deleting Poetry cache...')
 
 # Removes Java heap dumps
 collect_paths('~/*.hprof')
-print('Deleting Java heap dumps...')
-remove_paths()
+remove_paths('Deleting Java heap dumps...')
 
 if not args.dry_run:
-    print('Cleaning up DNS cache...')
-    cmd('sudo dscacheutil -flushcache')
-    cmd('sudo killall -HUP mDNSResponder')
+    collect_cmd('sudo dscacheutil -flushcache')
+    collect_cmd('sudo killall -HUP mDNSResponder')
+    exec_cmd('Cleaning up DNS cache...')
 
 if not args.dry_run:
-    print('Purging inactive memory...')
-    cmd('sudo purge')
+    collect_cmd('sudo purge')
+    exec_cmd('Purging inactive memory...')
 
-if not args.dry_run:
-    print('Success')
-    newAvailable = int(cmd('df / | tail -1 | awk \'{print $4}\''))
-    print(bytes_to_human(newAvailable - oldAvailable))
-else:
-    print(bytes_to_human(count_dry()))
+
+def main():
+    oldAvailable = int(cmd('df / | tail -1 | awk \'{print $4}\''))
+
+    def cleanup():
+        for item in remove_list:
+            print(item['message'])
+            for path in item['paths']:
+                cmd(f'rm -rf {path}')
+
+        for item in exec_list:
+            print(item['message'])
+            [cmd(command) for command in item['cmd']]
+
+        print('Success')
+        newAvailable = int(cmd('df / | tail -1 | awk \'{print $4}\''))
+        print('Removed -', bytes_to_human((newAvailable - oldAvailable) * 1024))
+    if not args.dry_run:
+        cmd('brew cleanup -s')
+        cmd('brew tap --repair')
+        cleanup()
+    else:
+        [path_list.extend(item['paths']) for item in remove_list]
+        print(f'Approx {bytes_to_human(count_dry())} will be cleaned')
+        while True:
+            clean_results = input('Continue? [enter]')
+            if clean_results == '':
+                cleanup()
+            break
+
 
 if __name__ == '__main__':
-    pass
+    main()
