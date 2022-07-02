@@ -1,0 +1,489 @@
+#!/usr/bin/env python3
+
+from dataclasses import dataclass
+from glob import glob
+from os import getenv, walk, system
+from os.path import expanduser, exists, join, getsize
+from math import floor, log, pow
+from subprocess import Popen, PIPE, DEVNULL
+from argparse import ArgumentParser, RawTextHelpFormatter
+
+
+@dataclass
+class ProgressBar:
+    """
+    Class that adds progress bar for iterable objects
+
+        Args:
+            object: Iterable object
+            prefix: String that will be displayed before progress bar
+            decimal: Amount of characters after decimal point in progress bar
+            fill: Progress bar fill character
+            end: Progress bar end parameter
+    """
+
+    object: list
+    prefix: str = ''
+    decimal: int = 1
+    fill: str = '■'
+    end: str = '\r'
+
+    def __post_init__(self):
+        # terminal width - decimals after dot - ' || %%%.'
+        self.length = 80 - self.decimal - 8
+        self.index = -1
+        self.total = self.object.__len__()
+        if isinstance(self.prefix, str):
+            if self.prefix.__len__() >= self.length // 3:
+                self.prefix = self.prefix[:self.length // 3 - 3] + '...'
+            else:
+                self.prefix = self.prefix + (self.length // 3 - self.prefix.__len__()) * ' '
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.index += 1
+
+        percent = f'{{:.{self.decimal}f}}'.format(self.index / self.total * 100)
+        filledLength = int(self.index / self.total * self.length // 3 * 2)
+
+        bar = filledLength * self.fill + (self.length // 3 * 2 - filledLength) * '-'
+
+        print(f'{self.prefix} |{bar}| {percent}%', end=self.end)
+
+        if self.index >= self.total:
+            raise StopIteration
+        return self.object[self.index]
+
+
+parser = ArgumentParser(
+    description=
+    """
+    A Mac Cleanup Utility in Python
+    https://github.com/Drugsosos/mac-cleanup-py
+    """,
+    formatter_class=RawTextHelpFormatter,
+)
+
+parser.add_argument('-d', '--dry-run', help='Shows approx space to be cleaned',
+                    action='store_true')
+parser.add_argument('-u', '--update', help='Script will update brew while cleaning',
+                    action='store_true')
+
+args = parser.parse_args()
+
+home = expanduser('~')
+
+path_list = list()
+remove_list = list()
+
+cmd_list = list()
+exec_list = list()
+
+
+def cmd(
+        command: str,
+) -> str:
+    """
+    Executes command in Popen
+    DO NOT USE, USE COLLECT_CMD
+    Args:
+        command: Bash command
+    Returns: Stdout
+    """
+    return Popen(command, shell=True, stdout=PIPE, stderr=DEVNULL).communicate()[0].strip().decode('utf-8')
+
+
+def check_exists(
+        path: str,
+) -> bool:
+    """
+    Checks if dir/file exists
+    Args:
+        path: dir/file full path
+    Returns: True/False
+    """
+    if path[0] == '~':
+        result = exists(home + path)
+    else:
+        result = exists(path)
+    return result
+
+
+def bytes_to_human(
+        size_bytes: int,
+) -> str:
+    """
+    Converts bytes to human-readable format
+    Args:
+        size_bytes: Bytes
+    Returns: Human readable size
+    """
+    if size_bytes <= 0:
+        return '0B'
+    size_name = ('B', 'KB', 'MB', 'GB', 'TB')
+    i = int(floor(log(size_bytes, 1024)))
+    p = pow(1024, i)
+    s = round(size_bytes / p, 2)
+    return '%s %s' % (s, size_name[i])
+
+
+def collect_paths(
+        path: str,
+) -> None:
+    """
+    Collects paths to be deleted in the iteration
+    Args:
+        path: Path to be deleted
+    """
+    if not path:
+        return
+    if path[0] == '~':
+        path_list.extend([path for path in glob(home + path[1:]) if check_deletable(path)])
+    else:
+        path_list.extend([path for path in glob(path) if check_deletable(path)])
+
+
+def remove_paths(
+        message: str,
+) -> None:
+    """
+    Removes paths for the iteration and resets path_list
+    Args:
+        message: Message to be printed while deleting
+    """
+    global path_list
+    if path_list:
+        remove_list.append({'msg': message, 'paths': path_list})
+        path_list = list()
+
+
+def collect_cmd(
+        command: str,
+) -> None:
+    """
+    Collects command to be executed in the iteration
+    Args:
+        command: Command to be executed
+    """
+    cmd_list.append(command)
+
+
+def exec_cmd(
+        message: str,
+) -> None:
+    """
+    Executes commands for the iteration and resets cmd_list
+    Args:
+        message: Message to be printed while executing
+    """
+    global cmd_list
+    exec_list.append({'msg': message, 'cmd': cmd_list})
+    cmd_list = list()
+
+
+def check_deletable(
+        path: str,
+) -> bool:
+    """
+    Checks if path is deletable
+    Args:
+        path: Path to be deleted
+    Returns: True/False
+    """
+    SIP_list = ['/System', '/usr', '/sbin', '/Applications', '/Library', '/usr/local']
+    if any([path.startswith(i) for i in SIP_list]) or not check_exists(path):
+        return False
+    restricted = cmd(f'ls -lo {path}')
+    return all(
+        [not bool(cmd(f'xattr -l {path}')), all([i not in restricted for i in ['restricted', 'admin'] if restricted])])
+
+
+def get_dir_size(
+        path: str,
+) -> int:
+    """
+    Counts size of dir/file
+    Args:
+        path: Full path to the dir/file
+    Returns: Size of dir/file
+    """
+    total_size = 0
+    for dir_path, dir_names, filenames in walk(path):
+        for filename in filenames:
+            tmp_size = getsize(join(dir_path, filename))
+            total_size += tmp_size
+    return total_size
+
+
+def count_dry(
+) -> int:
+    """
+    Counts dry dun
+    Returns: Approx amount of bytes to be removed
+    """
+    return sum([get_dir_size(path) for path in ProgressBar(path_list, prefix='Collecting dry run')])
+
+
+collect_paths('/Volumes/*/.Trashes/*')
+collect_paths('~/.Trash/*')
+remove_paths('Emptying the Trash 🗑 on all mounted volumes and the main HDD...')
+
+collect_paths('/Library/Caches/*')
+collect_paths('/System/Library/Caches/*')
+collect_paths('~/Library/Caches/*')
+collect_paths('/private/var/folders/bh/*/*/*/*')
+remove_paths('Clearing System Cache Files...')
+
+collect_paths('/private/var/log/asl/*.asl')
+collect_paths('/Library/Logs/DiagnosticReports/*')
+collect_paths('/Library/Logs/CreativeCloud/*')
+collect_paths('/Library/Logs/Adobe/*')
+collect_paths('/Library/Logs/adobegc.log')
+collect_paths('~/Library/Containers/com.apple.mail/Data/Library/Logs/Mail/*')
+collect_paths('~/Library/Logs/CoreSimulator/*')
+remove_paths('Clearing System Log Files...')
+
+if check_exists('~/Library/Logs/JetBrains/'):
+    collect_paths('~/Library/Logs/JetBrains/*/')
+    remove_paths('Clearing all application log files from JetBrains...')
+
+if check_exists('~/Library/Application\ Support/Adobe/'):
+    collect_paths('~/Library/Application\ Support/Adobe/Common/Media\ Cache\ Files/*')
+    remove_paths('Clearing Adobe Cache Files...')
+
+if check_exists('~/Library/Application\ Support/Google/Chrome/'):
+    collect_paths('~/Library/Application\ Support/Google/Chrome/Default/Application\ Cache/*')
+    remove_paths('Clearing Google Chrome Cache Files...')
+
+collect_paths('~/Music/iTunes/iTunes\ Media/Mobile\ Applications/*')
+remove_paths('Cleaning up iOS Applications...')
+
+collect_paths('~/Library/Application\ Support/MobileSync/Backup/*')
+remove_paths('Removing iOS Device Backups...')
+
+collect_paths('~/Library/Developer/Xcode/DerivedData/*')
+collect_paths('~/Library/Developer/Xcode/Archives/*')
+collect_paths('~/Library/Developer/Xcode/iOS Device Logs/*')
+remove_paths('Cleaning up XCode Derived Data and Archives...')
+
+if cmd('type "xcrun"'):
+    if not args.dry_run:
+        collect_cmd('osascript -e \'tell application "com.apple.CoreSimulator.CoreSimulatorService" to quit\'')
+        collect_cmd('osascript -e \'tell application "iOS Simulator" to quit\'')
+        collect_cmd('osascript -e \'tell application "Simulator" to quit\'')
+        collect_cmd('xcrun simctl shutdown all')
+        collect_cmd('xcrun simctl erase all')
+        exec_cmd('Cleaning up iOS Simulators...')
+    else:
+        collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/[!Library|var|tmp|Media]*')
+        collect_paths(
+            '/Users/wah/Library/Developer/CoreSimulator/Devices/*/data/Library/'
+            '[!PreferencesCaches|Caches|AddressBook|Trial]*'
+        )
+        collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/Library/Caches/*')
+        collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/Library/AddressBook/AddressBook*')
+
+# Support deleting Dropbox Cache if they exist
+if check_exists('"/Users/${HOST}/Dropbox"'):
+    collect_paths('~/Dropbox/.dropbox.cache/*')
+    remove_paths('Clearing Dropbox 📦 Cache Files...')
+
+if check_exists('~/Library/Application\ Support/Google/DriveFS/'):
+    cmd('killall "Google Drive File Stream"')
+    collect_paths('~/Library/Application\ Support/Google/DriveFS/[0-9a-zA-Z]*/content_cache')
+    remove_paths('Clearing Google Drive File Stream Cache Files...')
+
+if cmd('type "composer"'):
+    if not args.dry_run:
+        collect_cmd('composer clearcache --no-interaction')
+        exec_cmd('Cleaning up composer...')
+    else:
+        collect_paths('~/Library/Caches/composer')
+
+# Deletes Steam caches, logs, and temp files
+if check_exists('~/Library/Application\ Support/Steam/'):
+    collect_paths('~/Library/Application\ Support/Steam/appcache')
+    collect_paths('~/Library/Application\ Support/Steam/depotcache')
+    collect_paths('~/Library/Application\ Support/Steam/logs')
+    collect_paths('~/Library/Application\ Support/Steam/steamapps/shadercache')
+    collect_paths('~/Library/Application\ Support/Steam/steamapps/temp')
+    collect_paths('~/Library/Application\ Support/Steam/steamapps/download')
+    remove_paths('Clearing Steam Cache, Log, and Temp Files...')
+
+# Deletes Minecraft logs
+if check_exists('~/Library/Application\ Support/minecraft'):
+    collect_paths('~/Library/Application\ Support/minecraft/logs')
+    collect_paths('~/Library/Application\ Support/minecraft/crash-reports')
+    collect_paths('~/Library/Application\ Support/minecraft/webcache')
+    collect_paths('~/Library/Application\ Support/minecraft/webcache2')
+    collect_paths('~/Library/Application\ Support/minecraft/crash-reports')
+    collect_paths('~/Library/Application\ Support/minecraft/*.log')
+    collect_paths('~/Library/Application\ Support/minecraft/launcher_cef_log.txt')
+    if check_exists('~/Library/Application\ Support/minecraft/.mixin.out'):
+        collect_paths('~/Library/Application\ Support/minecraft/.mixin.out')
+    remove_paths('Clearing Minecraft Cache and Log Files...')
+
+# Deletes Lunar Client logs (Minecraft alternate client)
+if check_exists('~/.lunarclient'):
+    collect_paths('~/.lunarclient/game-cache')
+    collect_paths('~/.lunarclient/launcher-cache')
+    collect_paths('~/.lunarclient/logs')
+    collect_paths('~/.lunarclient/offline/*/logs')
+    collect_paths('~/.lunarclient/offline/files/*/logs')
+    remove_paths('Deleting Lunar Client logs and caches...')
+
+# Deletes Wget logs
+if check_exists('~/wget-log'):
+    collect_paths('~/wget-log')
+    collect_paths('~/.wget-hsts')
+    remove_paths('Deleting Wget log and hosts file...')
+
+# Deletes Cacher logs / I dunno either
+if check_exists('~/.cacher'):
+    collect_paths('~/.cacher/logs')
+    remove_paths('Deleting Cacher logs...')
+
+# Deletes Android (studio?) cache
+if check_exists('~/.android'):
+    collect_paths('~/.android/cache')
+    remove_paths('Deleting Android cache...')
+
+# Clears Gradle caches
+if check_exists('~/.gradle'):
+    collect_paths('~/.gradle/caches')
+    remove_paths('Clearing Gradle caches...')
+
+# Deletes Kite Autocomplete logs
+if check_exists('~/.kite'):
+    collect_paths('~/.kite/logs')
+    remove_paths('Deleting Kite logs...')
+
+if cmd('type "brew"'):
+    if args.update:
+        print('Updating Homebrew Recipes and upgrading...')
+        cmd('brew update && brew upgrade')
+    collect_paths(cmd('brew --cache'))
+    remove_paths('Cleaning up Homebrew Cache...')
+
+if cmd('type "gem"'):  # TODO add count_dry
+    if not args.dry_run:
+        collect_cmd('gem cleanup')
+        exec_cmd('Cleaning up any old versions of gems')
+
+if cmd('type "docker"'):  # TODO add count_dry
+    if not args.dry_run:
+        if not cmd('docker ps >/dev/null 2>&1'):
+            cmd('open --background -a Docker')
+        collect_cmd('docker system prune -af')
+        exec_cmd('Cleaning up Docker')
+
+if getenv('PYENV_VIRTUALENV_CACHE_PATH'):
+    collect_paths('"$PYENV_VIRTUALENV_CACHE_PATH"')
+    remove_paths('Removing Pyenv-VirtualEnv Cache...')
+
+if cmd('type "npm"'):
+    if not args.dry_run:
+        collect_cmd('npm cache clean --force')
+        exec_cmd('Cleaning up npm cache...')
+    else:
+        collect_paths('~/.npm/*')
+
+if cmd('type "yarn"'):
+    if not args.dry_run:
+        collect_cmd('yarn cache clean --force')
+        exec_cmd('Cleaning up Yarn Cache...')
+    else:
+        collect_paths('~/Library/Caches/yarn')
+
+if cmd('type "pod"'):
+    if not args.dry_run:
+        collect_cmd('pod cache clean --all')
+        exec_cmd('Cleaning up Pod Cache...')
+    else:
+        collect_paths('~/Library/Caches/CocoaPods')
+
+if cmd('type "go"'):
+    if not args.dry_run:
+        collect_cmd('go clean -modcache')
+        exec_cmd('Clearing Go module cache...')
+    else:
+        if getenv('GOPATH'):
+            collect_paths(f'{getenv("GOPATH")}/pkg/mod')
+        else:
+            collect_paths('~/go/pkg/mod')
+
+# Deletes all Microsoft Teams Caches and resets it to default - can fix also some performance issues
+if check_exists('~/Library/Application\ Support/Microsoft/Teams'):
+    collect_paths('~/Library/Application\ Support/Microsoft/Teams/IndexedDB')
+    collect_paths('~/Library/Application\ Support/Microsoft/Teams/Cache')
+    collect_paths('~/Library/Application\ Support/Microsoft/Teams/Application\ Cache')
+    collect_paths('~/Library/Application\ Support/Microsoft/Teams/Code\ Cache')
+    collect_paths('~/Library/Application\ Support/Microsoft/Teams/blob_storage')
+    collect_paths('~/Library/Application\ Support/Microsoft/Teams/databases')
+    collect_paths('~/Library/Application\ Support/Microsoft/Teams/gpucache')
+    collect_paths('~/Library/Application\ Support/Microsoft/Teams/Local\ Storage')
+    collect_paths('~/Library/Application\ Support/Microsoft/Teams/tmp')
+    collect_paths('~/Library/Application\ Support/Microsoft/Teams/*logs*.txt')
+    collect_paths('~/Library/Application\ Support/Microsoft/Teams/watchdog')
+    collect_paths('~/Library/Application\ Support/Microsoft/Teams/*watchdog*.json')
+    remove_paths('Deleting Microsoft Teams logs and caches...')
+
+# Deletes Poetry cache
+if cmd('type "poetry"') or check_exists('~/Library/Caches/pypoetry'):
+    collect_paths('~/Library/Caches/pypoetry')
+    remove_paths('Deleting Poetry cache...')
+
+# Removes Java heap dumps
+collect_paths('~/*.hprof')
+remove_paths('Deleting Java heap dumps...')
+
+if not args.dry_run:
+    collect_cmd('sudo dscacheutil -flushcache')
+    collect_cmd('sudo killall -HUP mDNSResponder')
+    exec_cmd('Cleaning up DNS cache...')
+
+if not args.dry_run:
+    collect_cmd('sudo purge')
+    exec_cmd('Purging inactive memory...')
+
+
+def main():
+    oldAvailable = int(cmd('df / | tail -1 | awk \'{print $4}\''))
+
+    def cleanup():
+        for item in remove_list:
+            for path in ProgressBar(item['paths'], prefix=item['msg']):
+                cmd(f'rm -rf {path}')
+
+        for item in exec_list:
+            for command in ProgressBar(item['cmd'], prefix=item['msg']):
+                cmd(command)
+
+        system('clear')
+        [cmd(i) for i in ProgressBar(['brew cleanup -s', 'brew tap --repair'], prefix='Cleaning Brew')]
+        print('\nSuccess')
+        newAvailable = int(cmd('df / | tail -1 | awk \'{print $4}\''))
+        print('Removed -', bytes_to_human((newAvailable - oldAvailable) * 1024))
+    if not args.dry_run:
+        cleanup()
+    else:
+        [path_list.extend(item['paths']) for item in ProgressBar(remove_list, prefix='Collecting paths')]
+        while True:
+            print(f'\nApprox {bytes_to_human(count_dry())} will be cleaned')
+            clean_results = input('Continue? [enter]')
+            if clean_results == '':
+                cleanup()
+                break
+            else:
+                system('clear')
+                print('Don\'t recognize the input, try again...')
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('\nExiting...')
+        exit(1)
