@@ -1,0 +1,27 @@
+# https://github.com/actions/stale
+name: Mark stale issues and pull requests
+
+on:
+  schedule:
+  - cron: '45 18 * * *'
+
+jobs:
+  stale:
+
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+    - uses: actions/stale@v5
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        days-before-issue-stale: 14
+        stale-issue-message: 'No activity for a long time in the issue\nIt`ll be close in 7 days, if it remains stale'
+        stale-issue-label: 'no-issue-activity'
+        days-before-issue-close: 7
+        days-before-pr-stale: 14
+        stale-pr-message: 'No activity for a long time in the PR\nIt`ll be close in 7 days, if it remains stale'
+        stale-pr-label: 'no-pr-activity'
+        days-before-pr-close: 7
