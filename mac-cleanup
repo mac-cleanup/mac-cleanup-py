@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
+from dataclasses import dataclass
+from glob import glob
 from os import getenv
 from os.path import expanduser, exists
-from glob import glob
 
 from math import floor, log, pow
 
@@ -10,12 +11,51 @@ from subprocess import Popen, PIPE, DEVNULL
 
 from argparse import ArgumentParser, RawTextHelpFormatter
 
+
+from dataclasses import dataclass
+
+
+@dataclass
+class ProgressBar:
+    object: list
+    prefix: str = ''
+    decimal: int = 1
+    fill: str = '■'
+    end: str = '\r'
+
+    def __post_init__(self):
+        self.length = 60
+        self.index = -1
+        self.total = self.object.__len__()
+        if isinstance(self.object, dict):
+            self.prefix = self.object.get('msg')
+        if self.prefix.__len__() >= 20 and isinstance(self.prefix, str):
+            self.prefix = self.prefix[:17] + '...'
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.index += 1
+
+        percent = f'{{:.{self.decimal}f}}'.format(self.index / self.total * 100)
+        filledLength = int(self.index / self.total * self.length // 3 * 2)
+
+        bar = filledLength * self.fill + (self.length // 3 * 2 - filledLength) * '-'
+
+        print(f'{self.prefix} |{bar}| {percent}%', end=self.end)
+
+        if self.index >= self.total:
+            raise StopIteration
+        return self.object[self.index] if not isinstance(self.object, dict) else self.object
+
+
 parser = ArgumentParser(
     description=
     """
-A Mac Cleanup Utility in Python
-https://github.com/Drugsosos/mac-cleanup-py
-""",
+    A Mac Cleanup Utility in Python
+    https://github.com/Drugsosos/mac-cleanup-py
+    """,
     formatter_class=RawTextHelpFormatter,
 )
 
