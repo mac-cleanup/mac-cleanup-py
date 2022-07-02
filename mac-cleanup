@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from glob import glob
-from os import getenv, walk
+from os import getenv, walk, system
 from os.path import expanduser, exists, join, getsize
 
 from math import floor, log, pow
@@ -32,11 +32,10 @@ class ProgressBar:
     end: str = '\r'
 
     def __post_init__(self):
-        self.length = 60  # TODO research, default 60, now 68
+        # terminal width - decimals after dot - ' || %%%.'
+        self.length = 80 - self.decimal - 8
         self.index = -1
         self.total = self.object.__len__()
-        if isinstance(self.object, dict):
-            self.prefix = self.object.get('msg')
         if isinstance(self.prefix, str):
             if self.prefix.__len__() >= self.length // 3:
                 self.prefix = self.prefix[:self.length // 3 - 3] + '...'
@@ -58,7 +57,7 @@ class ProgressBar:
 
         if self.index >= self.total:
             raise StopIteration
-        return self.object[self.index] if not isinstance(self.object, dict) else self.object
+        return self.object[self.index]
 
 
 parser = ArgumentParser(
@@ -120,7 +119,7 @@ def bytes_to_human(
         size_bytes: int,
 ) -> str:
     """
-    Converts bytes to human readable format
+    Converts bytes to human-readable format
     Args:
         size_bytes: Bytes
     Returns: Human readable size
@@ -203,6 +202,7 @@ def get_dir_size(
             tmp_size = getsize(join(dir_path, filename))
             total_size += tmp_size
     return total_size
+
 
 # TODO improve, counts undeletable files
 def count_dry(
@@ -441,29 +441,31 @@ def main():
 
     def cleanup():
         for item in remove_list:
-            for msg, paths in ProgressBar(item):
-                pass
-                [cmd(f'rm -rf {path}') for path in paths]
+            for path in ProgressBar(item['paths'], prefix=item['msg']):
+                cmd(f'rm -rf {path}')
 
         for item in exec_list:
-            for msg, commands in ProgressBar(item):
-                pass
-                [cmd(command) for command in commands]
+            for command in ProgressBar(item['cmd'], prefix=item['msg']):
+                cmd(command)
 
+        system('clear')
+        [cmd(i) for i in ProgressBar(['brew cleanup -s', 'brew tap --repair'], prefix='Cleaning Brew')]
         print('\nSuccess')
         newAvailable = int(cmd('df / | tail -1 | awk \'{print $4}\''))
         print('Removed -', bytes_to_human((newAvailable - oldAvailable) * 1024))
     if not args.dry_run:
         cleanup()
-        [cmd(i) for i in ProgressBar(['brew cleanup -s', 'brew tap --repair'], prefix='Cleaning Brew')]
     else:
         [path_list.extend(item['paths']) for item in remove_list]
-        print(f'Approx {bytes_to_human(count_dry())} will be cleaned')
         while True:
+            print(f'Approx {bytes_to_human(count_dry())} will be cleaned')
             clean_results = input('Continue? [enter]')
             if clean_results == '':
                 cleanup()
-            break
+                break
+            else:
+                system('clear')
+                print('Don\'t recognize the input, try again...')
 
 
 if __name__ == '__main__':
