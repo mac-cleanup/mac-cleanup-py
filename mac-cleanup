@@ -76,7 +76,6 @@ parser.add_argument('-u', '--update', help="Script will update brew while cleani
 
 args = parser.parse_args()
 
-
 home = expanduser('~')
 
 path_list = list()
@@ -187,6 +186,23 @@ def exec_cmd(
     cmd_list = list()
 
 
+def check_deletable(
+        path: str,
+) -> bool:
+    """
+    Checks if path is deletable
+    Args:
+        path: Path to be deleted
+    Returns: True/False
+    """
+    SIP_list = ['/System', '/usr', '/sbin', '/Applications', '/Library', '/usr/local']
+    if any([path.startswith(i) for i in SIP_list]) or not check_exists(path):
+        return False
+    restricted = cmd(f'ls -lo {path}')
+    return all(
+        [not bool(cmd(f'xattr -l {path}')), all([i not in restricted for i in ['restricted', 'admin'] if restricted])])
+
+
 def get_dir_size(
         path: str,
 ) -> int:
@@ -204,14 +220,13 @@ def get_dir_size(
     return total_size
 
 
-# TODO improve, counts undeletable files
 def count_dry(
 ) -> int:
     """
     Counts dry dun
     Returns: Approx amount of bytes to be removed
     """
-    return sum([get_dir_size(path) for path in path_list])
+    return sum([get_dir_size(path) if check_deletable(path) else 0 for path in path_list])
 
 
 collect_paths('/Volumes/*/.Trashes/*')
@@ -267,7 +282,7 @@ if cmd('type "xcrun"'):
     else:
         collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/[!Library|var|tmp|Media]*')
         collect_paths(
-            '/Users/wah/Library/Developer/CoreSimulator/Devices/*/data/Library/[!PreferencesCaches|Caches|AddressBook]*'
+            '/Users/wah/Library/Developer/CoreSimulator/Devices/*/data/Library/[!PreferencesCaches|Caches|AddressBook|Trial]*'
         )
         collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/Library/Caches/*')
         collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/Library/AddressBook/AddressBook*')
