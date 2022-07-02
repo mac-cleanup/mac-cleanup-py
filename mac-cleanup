@@ -2,8 +2,8 @@
 
 from dataclasses import dataclass
 from glob import glob
-from os import getenv
-from os.path import expanduser, exists
+from os import getenv, walk
+from os.path import expanduser, exists, join, getsize
 
 from math import floor, log, pow
 
@@ -12,11 +12,19 @@ from subprocess import Popen, PIPE, DEVNULL
 from argparse import ArgumentParser, RawTextHelpFormatter
 
 
-from dataclasses import dataclass
-
-
 @dataclass
 class ProgressBar:
+    """
+    Class that adds progress bar for iterable objects
+
+        Args:
+            object: Iterable object
+            prefix: String that will be displayed before progress bar
+            decimal: Amount of characters after decimal point in progress bar
+            fill: Progress bar fill character
+            end: Progress bar end parameter
+    """
+
     object: list
     prefix: str = ''
     decimal: int = 1
@@ -29,8 +37,11 @@ class ProgressBar:
         self.total = self.object.__len__()
         if isinstance(self.object, dict):
             self.prefix = self.object.get('msg')
-        if self.prefix.__len__() >= 20 and isinstance(self.prefix, str):
-            self.prefix = self.prefix[:17] + '...'
+        if isinstance(self.prefix, str):
+            if self.prefix.__len__() >= self.length // 3:
+                self.prefix = self.prefix[:self.length // 3 - 3] + '...'
+            else:
+                self.prefix = self.prefix + (self.length // 3 - self.prefix.__len__()) * ' '
 
     def __iter__(self):
         return self
@@ -79,12 +90,25 @@ exec_list = list()
 def cmd(
         command: str,
 ) -> str:
+    """
+    Executes command in Popen
+    DO NOT USE, USE COLLECT_CMD
+    Args:
+        command: Bash command
+    Returns: Stdout
+    """
     return Popen(command, shell=True, stdout=PIPE, stderr=DEVNULL).communicate()[0].strip().decode('utf-8')
 
 
 def check_exists(
         path: str,
 ) -> bool:
+    """
+    Checks if dir/file exists
+    Args:
+        path: dir/file full path
+    Returns: True/False
+    """
     if path[0] == '~':
         result = exists(home + path)
     else:
@@ -92,8 +116,16 @@ def check_exists(
     return result
 
 
-def bytes_to_human(size_bytes):
-    if size_bytes == 0:
+def bytes_to_human(
+        size_bytes: int,
+) -> str:
+    """
+    Converts bytes to human readable format
+    Args:
+        size_bytes: Bytes
+    Returns: Human readable size
+    """
+    if size_bytes <= 0:
         return '0B'
     size_name = ('B', 'KB', 'MB', 'GB', 'TB')
     i = int(floor(log(size_bytes, 1024)))
@@ -105,6 +137,11 @@ def bytes_to_human(size_bytes):
 def collect_paths(
         path: str,
 ) -> None:
+    """
+    Collects paths to be deleted in the iteration
+    Args:
+        path: Path to be deleted
+    """
     if not path:
         return
     if path[0] == '~':
@@ -116,40 +153,64 @@ def collect_paths(
 def remove_paths(
         message: str,
 ) -> None:
+    """
+    Removes paths for the iteration and resets path_list
+    Args:
+        message: Message to be printed while deleting
+    """
     global path_list
     if path_list:
-        remove_list.append({'message': message, 'paths': path_list})
+        remove_list.append({'msg': message, 'paths': path_list})
         path_list = list()
 
 
 def collect_cmd(
         command: str,
 ) -> None:
+    """
+    Collects command to be executed in the iteration
+    Args:
+        command: Command to be executed
+    """
     cmd_list.append(command)
 
 
 def exec_cmd(
         message: str,
 ) -> None:
+    """
+    Executes commands for the iteration and resets cmd_list
+    Args:
+        message: Message to be printed while executing
+    """
     global cmd_list
-    exec_list.append({'message': message, 'cmd': cmd_list})
+    exec_list.append({'msg': message, 'cmd': cmd_list})
     cmd_list = list()
 
 
 def get_dir_size(
         path: str,
-):
-    import os
-
+) -> int:
+    """
+    Counts size of dir/file
+    Args:
+        path: Full path to the dir/file
+    Returns: Size of dir/file
+    """
     total_size = 0
-    for dir_path, dir_names, filenames in os.walk(path):
+    for dir_path, dir_names, filenames in walk(path):
         for filename in filenames:
-            tmp_size = os.path.getsize(os.path.join(dir_path, filename))
+            tmp_size = getsize(join(dir_path, filename))
             total_size += tmp_size
     return total_size
 
 
-def count_dry():
+def count_dry(
+) -> int:
+    """
+    Counts dry dun
+    Returns: Approx amount of bytes to be removed
+    """
     return sum([get_dir_size(path) for path in path_list])
 
 
@@ -229,7 +290,6 @@ if cmd('type "composer"'):
         collect_paths('~/Library/Caches/composer')
 
 # Deletes Steam caches, logs, and temp files
-# -Astro
 if check_exists('~/Library/Application\ Support/Steam/'):
     collect_paths('~/Library/Application\ Support/Steam/appcache')
     collect_paths('~/Library/Application\ Support/Steam/depotcache')
@@ -240,7 +300,6 @@ if check_exists('~/Library/Application\ Support/Steam/'):
     remove_paths('Clearing Steam Cache, Log, and Temp Files...')
 
 # Deletes Minecraft logs
-# -Astro
 if check_exists('~/Library/Application\ Support/minecraft'):
     collect_paths('~/Library/Application\ Support/minecraft/logs')
     collect_paths('~/Library/Application\ Support/minecraft/crash-reports')
@@ -254,7 +313,6 @@ if check_exists('~/Library/Application\ Support/minecraft'):
     remove_paths('Clearing Minecraft Cache and Log Files...')
 
 # Deletes Lunar Client logs (Minecraft alternate client)
-# -Astro
 if check_exists('~/.lunarclient'):
     collect_paths('~/.lunarclient/game-cache')
     collect_paths('~/.lunarclient/launcher-cache')
@@ -264,33 +322,27 @@ if check_exists('~/.lunarclient'):
     remove_paths('Deleting Lunar Client logs and caches...')
 
 # Deletes Wget logs
-# -Astro
 if check_exists('~/wget-log'):
     collect_paths('~/wget-log')
     collect_paths('~/.wget-hsts')
     remove_paths('Deleting Wget log and hosts file...')
 
-# Deletes Cacher logs
-# I dunno either
-# -Astro
+# Deletes Cacher logs / I dunno either
 if check_exists('~/.cacher'):
     collect_paths('~/.cacher/logs')
     remove_paths('Deleting Cacher logs...')
 
 # Deletes Android (studio?) cache
-# -Astro
 if check_exists('~/.android'):
     collect_paths('~/.android/cache')
     remove_paths('Deleting Android cache...')
 
 # Clears Gradle caches
-# -Astro
 if check_exists('~/.gradle'):
     collect_paths('~/.gradle/caches')
     remove_paths('Clearing Gradle caches...')
 
 # Deletes Kite Autocomplete logs
-# -Astro
 if check_exists('~/.kite'):
     collect_paths('~/.kite/logs')
     remove_paths('Deleting Kite logs...')
@@ -350,7 +402,6 @@ if cmd('type "go"'):
             collect_paths('~/go/pkg/mod')
 
 # Deletes all Microsoft Teams Caches and resets it to default - can fix also some performance issues
-# -Astro
 if check_exists('~/Library/Application\ Support/Microsoft/Teams'):
     collect_paths('~/Library/Application\ Support/Microsoft/Teams/IndexedDB')
     collect_paths('~/Library/Application\ Support/Microsoft/Teams/Cache')
@@ -390,21 +441,21 @@ def main():
 
     def cleanup():
         for item in remove_list:
-            print(item['message'])
-            for path in item['paths']:
-                cmd(f'rm -rf {path}')
+            for msg, paths in ProgressBar(item):
+                pass
+                [cmd(f'rm -rf {path}') for path in paths]
 
         for item in exec_list:
-            print(item['message'])
-            [cmd(command) for command in item['cmd']]
+            for msg, commands in ProgressBar(item):
+                pass
+                [cmd(command) for command in commands]
 
-        print('Success')
+        print('\nSuccess')
         newAvailable = int(cmd('df / | tail -1 | awk \'{print $4}\''))
         print('Removed -', bytes_to_human((newAvailable - oldAvailable) * 1024))
     if not args.dry_run:
-        cmd('brew cleanup -s')
-        cmd('brew tap --repair')
         cleanup()
+        [cmd(i) for i in ProgressBar(['brew cleanup -s', 'brew tap --repair'], prefix='Cleaning Brew')]
     else:
         [path_list.extend(item['paths']) for item in remove_list]
         print(f'Approx {bytes_to_human(count_dry())} will be cleaned')
@@ -416,4 +467,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('\nExiting...')
+        exit(1)
