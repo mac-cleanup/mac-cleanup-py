@@ -2,6 +2,8 @@
 
 ### 👨‍💻 Python cleanup script for macOS 
 
+#### [mac-cleanup-sh](https://github.com/mac-cleanup/mac-cleanup-sh) rewritten in Python
+
 
 ### What does script do?
 
