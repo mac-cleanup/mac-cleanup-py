@@ -1,1 +1,0 @@
-# mac-cleanup-py  # TODO add readme

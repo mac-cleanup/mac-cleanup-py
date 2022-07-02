@@ -4,11 +4,8 @@ from dataclasses import dataclass
 from glob import glob
 from os import getenv, walk, system
 from os.path import expanduser, exists, join, getsize
-
 from math import floor, log, pow
-
 from subprocess import Popen, PIPE, DEVNULL
-
 from argparse import ArgumentParser, RawTextHelpFormatter
 
 
@@ -71,7 +68,7 @@ parser = ArgumentParser(
 
 parser.add_argument('-d', '--dry-run', help='Shows approx space to be cleaned',
                     action='store_true')
-parser.add_argument('-u', '--update', help="Script will update brew while cleaning",
+parser.add_argument('-u', '--update', help='Script will update brew while cleaning',
                     action='store_true')
 
 args = parser.parse_args()
@@ -143,9 +140,9 @@ def collect_paths(
     if not path:
         return
     if path[0] == '~':
-        path_list.extend(glob(home + path[1:]))
+        path_list.extend([path for path in glob(home + path[1:]) if check_deletable(path)])
     else:
-        path_list.extend(glob(path))
+        path_list.extend([path for path in glob(path) if check_deletable(path)])
 
 
 def remove_paths(
@@ -226,7 +223,7 @@ def count_dry(
     Counts dry dun
     Returns: Approx amount of bytes to be removed
     """
-    return sum([get_dir_size(path) if check_deletable(path) else 0 for path in path_list])
+    return sum([get_dir_size(path) for path in ProgressBar(path_list, prefix='Collecting dry run')])
 
 
 collect_paths('/Volumes/*/.Trashes/*')
@@ -282,7 +279,8 @@ if cmd('type "xcrun"'):
     else:
         collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/[!Library|var|tmp|Media]*')
         collect_paths(
-            '/Users/wah/Library/Developer/CoreSimulator/Devices/*/data/Library/[!PreferencesCaches|Caches|AddressBook|Trial]*'
+            '/Users/wah/Library/Developer/CoreSimulator/Devices/*/data/Library/'
+            '[!PreferencesCaches|Caches|AddressBook|Trial]*'
         )
         collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/Library/Caches/*')
         collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/Library/AddressBook/AddressBook*')
@@ -471,9 +469,9 @@ def main():
     if not args.dry_run:
         cleanup()
     else:
-        [path_list.extend(item['paths']) for item in remove_list]
+        [path_list.extend(item['paths']) for item in ProgressBar(remove_list, prefix='Collecting paths')]
         while True:
-            print(f'Approx {bytes_to_human(count_dry())} will be cleaned')
+            print(f'\nApprox {bytes_to_human(count_dry())} will be cleaned')
             clean_results = input('Continue? [enter]')
             if clean_results == '':
                 cleanup()
