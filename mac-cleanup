@@ -105,7 +105,7 @@ def check_exists(
     Returns: True/False
     """
     if path[0] == '~':
-        result = exists(home + path)
+        result = exists(home + path[1:])
     else:
         result = exists(path)
     return result
@@ -224,6 +224,9 @@ def count_dry(
     Returns: Approx amount of bytes to be removed
     """
     return sum([get_dir_size(path) for path in ProgressBar(path_list, prefix='Collecting dry run')])
+
+
+args.dry_run = True
 
 
 collect_paths('/Volumes/*/.Trashes/*')
