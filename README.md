@@ -66,13 +66,13 @@ brew install mac-cleanup-py
 ### Using curl
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/install | bash -s install
+python3 <(curl -fsSL https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/install) --install
 ```
 
 ### Using wget
 
 ```bash
-wget https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/install -O - | bash -s install
+python3 <(wget https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/install -O -) --install
 ```
 
 ## Uninstall
@@ -80,13 +80,13 @@ wget https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/install -O 
 ### Using curl
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/install | bash -s uninstall
+python3 <(curl -fsSL https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/install) --uninstall
 ```
 
 ### Using wget
 
 ```bash
-wget https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/install -O - | bash -s uninstall
+python3 <(wget https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/install -O -)  --uninstall
 ```
 
 ## Usage Options
