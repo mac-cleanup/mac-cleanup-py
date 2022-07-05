@@ -192,12 +192,29 @@ def check_deletable(
         path: Path to be deleted
     Returns: True/False
     """
-    SIP_list = ['/System', '/usr', '/sbin', '/Applications', '/Library', '/usr/local']
-    if any([path.startswith(i) for i in SIP_list]) or not check_exists(path):
+    SIP_list = [
+        '/System',
+        '/usr',
+        '/sbin',
+        '/Applications',
+        '/Library',
+        '/usr/local',
+    ]
+    user_list = [
+        f'{home}/Documents',
+        f'{home}/Downloads',
+        f'{home}/Desktop',
+        f'{home}/Movies',
+        f'{home}/Music',
+        f'{home}/Pictures',
+    ]
+    if any([path.startswith(i) for i in SIP_list]) or \
+            any([path.startswith(i) for i in user_list]) or \
+            not check_exists(path):
         return False
     restricted = cmd(f'ls -lo {path}')
     return all(
-        [not bool(cmd(f'xattr -l {path}')), all([i not in restricted for i in ['restricted', 'admin'] if restricted])])
+        [not bool(cmd(f'xattr -l {path}')), all([i not in restricted for i in ['restricted'] if restricted])])
 
 
 def get_dir_size(
@@ -228,7 +245,6 @@ def count_dry(
 
 args.dry_run = True
 
-
 collect_paths('/Volumes/*/.Trashes/*')
 collect_paths('~/.Trash/*')
 remove_paths('Emptying the Trash 🗑 on all mounted volumes and the main HDD...')
@@ -252,18 +268,18 @@ if check_exists('~/Library/Logs/JetBrains/'):
     collect_paths('~/Library/Logs/JetBrains/*/')
     remove_paths('Clearing all application log files from JetBrains...')
 
-if check_exists('~/Library/Application\ Support/Adobe/'):
-    collect_paths('~/Library/Application\ Support/Adobe/Common/Media\ Cache\ Files/*')
+if check_exists('~/Library/Application Support/Adobe/'):
+    collect_paths('~/Library/Application Support/Adobe/Common/Media Cache Files/*')
     remove_paths('Clearing Adobe Cache Files...')
 
-if check_exists('~/Library/Application\ Support/Google/Chrome/'):
-    collect_paths('~/Library/Application\ Support/Google/Chrome/Default/Application\ Cache/*')
+if check_exists('~/Library/Application Support/Google/Chrome/'):
+    collect_paths('~/Library/Application Support/Google/Chrome/Default/Application Cache/*')
     remove_paths('Clearing Google Chrome Cache Files...')
 
-collect_paths('~/Music/iTunes/iTunes\ Media/Mobile\ Applications/*')
+collect_paths('~/Music/iTunes/iTunes Media/Mobile\ Applications/*')
 remove_paths('Cleaning up iOS Applications...')
 
-collect_paths('~/Library/Application\ Support/MobileSync/Backup/*')
+collect_paths('~/Library/Application Support/MobileSync/Backup/*')
 remove_paths('Removing iOS Device Backups...')
 
 collect_paths('~/Library/Developer/Xcode/DerivedData/*')
@@ -306,26 +322,26 @@ if cmd('type "composer"'):
         collect_paths('~/Library/Caches/composer')
 
 # Deletes Steam caches, logs, and temp files
-if check_exists('~/Library/Application\ Support/Steam/'):
-    collect_paths('~/Library/Application\ Support/Steam/appcache')
-    collect_paths('~/Library/Application\ Support/Steam/depotcache')
-    collect_paths('~/Library/Application\ Support/Steam/logs')
-    collect_paths('~/Library/Application\ Support/Steam/steamapps/shadercache')
-    collect_paths('~/Library/Application\ Support/Steam/steamapps/temp')
-    collect_paths('~/Library/Application\ Support/Steam/steamapps/download')
+if check_exists('~/Library/Application Support/Steam/'):
+    collect_paths('~/Library/Application Support/Steam/appcache')
+    collect_paths('~/Library/Application Support/Steam/depotcache')
+    collect_paths('~/Library/Application Support/Steam/logs')
+    collect_paths('~/Library/Application Support/Steam/steamapps/shadercache')
+    collect_paths('~/Library/Application Support/Steam/steamapps/temp')
+    collect_paths('~/Library/Application Support/Steam/steamapps/download')
     remove_paths('Clearing Steam Cache, Log, and Temp Files...')
 
 # Deletes Minecraft logs
-if check_exists('~/Library/Application\ Support/minecraft'):
-    collect_paths('~/Library/Application\ Support/minecraft/logs')
-    collect_paths('~/Library/Application\ Support/minecraft/crash-reports')
-    collect_paths('~/Library/Application\ Support/minecraft/webcache')
-    collect_paths('~/Library/Application\ Support/minecraft/webcache2')
-    collect_paths('~/Library/Application\ Support/minecraft/crash-reports')
-    collect_paths('~/Library/Application\ Support/minecraft/*.log')
-    collect_paths('~/Library/Application\ Support/minecraft/launcher_cef_log.txt')
-    if check_exists('~/Library/Application\ Support/minecraft/.mixin.out'):
-        collect_paths('~/Library/Application\ Support/minecraft/.mixin.out')
+if check_exists('~/Library/Application Support/minecraft'):
+    collect_paths('~/Library/Application Support/minecraft/logs')
+    collect_paths('~/Library/Application Support/minecraft/crash-reports')
+    collect_paths('~/Library/Application Support/minecraft/webcache')
+    collect_paths('~/Library/Application Support/minecraft/webcache2')
+    collect_paths('~/Library/Application Support/minecraft/crash-reports')
+    collect_paths('~/Library/Application Support/minecraft/*.log')
+    collect_paths('~/Library/Application Support/minecraft/launcher_cef_log.txt')
+    if check_exists('~/Library/Application Support/minecraft/.mixin.out'):
+        collect_paths('~/Library/Application Support/minecraft/.mixin.out')
     remove_paths('Clearing Minecraft Cache and Log Files...')
 
 # Deletes Lunar Client logs (Minecraft alternate client)
@@ -418,19 +434,19 @@ if cmd('type "go"'):
             collect_paths('~/go/pkg/mod')
 
 # Deletes all Microsoft Teams Caches and resets it to default - can fix also some performance issues
-if check_exists('~/Library/Application\ Support/Microsoft/Teams'):
-    collect_paths('~/Library/Application\ Support/Microsoft/Teams/IndexedDB')
-    collect_paths('~/Library/Application\ Support/Microsoft/Teams/Cache')
-    collect_paths('~/Library/Application\ Support/Microsoft/Teams/Application\ Cache')
-    collect_paths('~/Library/Application\ Support/Microsoft/Teams/Code\ Cache')
-    collect_paths('~/Library/Application\ Support/Microsoft/Teams/blob_storage')
-    collect_paths('~/Library/Application\ Support/Microsoft/Teams/databases')
-    collect_paths('~/Library/Application\ Support/Microsoft/Teams/gpucache')
-    collect_paths('~/Library/Application\ Support/Microsoft/Teams/Local\ Storage')
-    collect_paths('~/Library/Application\ Support/Microsoft/Teams/tmp')
-    collect_paths('~/Library/Application\ Support/Microsoft/Teams/*logs*.txt')
-    collect_paths('~/Library/Application\ Support/Microsoft/Teams/watchdog')
-    collect_paths('~/Library/Application\ Support/Microsoft/Teams/*watchdog*.json')
+if check_exists('~/Library/Application Support/Microsoft/Teams'):
+    collect_paths('~/Library/Application Support/Microsoft/Teams/IndexedDB')
+    collect_paths('~/Library/Application Support/Microsoft/Teams/Cache')
+    collect_paths('~/Library/Application Support/Microsoft/Teams/Application\ Cache')
+    collect_paths('~/Library/Application Support/Microsoft/Teams/Code\ Cache')
+    collect_paths('~/Library/Application Support/Microsoft/Teams/blob_storage')
+    collect_paths('~/Library/Application Support/Microsoft/Teams/databases')
+    collect_paths('~/Library/Application Support/Microsoft/Teams/gpucache')
+    collect_paths('~/Library/Application Support/Microsoft/Teams/Local\ Storage')
+    collect_paths('~/Library/Application Support/Microsoft/Teams/tmp')
+    collect_paths('~/Library/Application Support/Microsoft/Teams/*logs*.txt')
+    collect_paths('~/Library/Application Support/Microsoft/Teams/watchdog')
+    collect_paths('~/Library/Application Support/Microsoft/Teams/*watchdog*.json')
     remove_paths('Deleting Microsoft Teams logs and caches...')
 
 # Deletes Poetry cache
@@ -458,7 +474,7 @@ def main():
     def cleanup():
         for item in remove_list:
             for path in ProgressBar(item['paths'], prefix=item['msg']):
-                cmd(f'rm -rf {path}')
+                cmd(f'sudo rm -rf {path}')
 
         for item in exec_list:
             for command in ProgressBar(item['cmd'], prefix=item['msg']):
@@ -469,6 +485,7 @@ def main():
         print('\nSuccess')
         newAvailable = int(cmd('df / | tail -1 | awk \'{print $4}\''))
         print('Removed -', bytes_to_human((newAvailable - oldAvailable) * 1024))
+
     if not args.dry_run:
         cleanup()
     else:
