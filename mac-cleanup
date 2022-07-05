@@ -243,8 +243,6 @@ def count_dry(
     return sum([get_dir_size(path) for path in ProgressBar(path_list, prefix='Collecting dry run')])
 
 
-args.dry_run = True
-
 collect_paths('/Volumes/*/.Trashes/*')
 collect_paths('~/.Trash/*')
 remove_paths('Emptying the Trash 🗑 on all mounted volumes and the main HDD...')
