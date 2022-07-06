@@ -29,13 +29,14 @@ class ProgressBar:
     end: str = '\r'
 
     def __post_init__(self):
-        # terminal width - decimals after dot - ' || %%%.'
-        self.length = 80 - self.decimal - 8
+        self.length = 80
+        # terminal width - ' || 000.{decimals after do}%'
+        self.length -= self.decimal + 9
         self.index = -1
         self.total = self.object.__len__()
         if isinstance(self.prefix, str):
             if self.prefix.__len__() >= self.length // 3:
-                self.prefix = self.prefix[:self.length // 3 - 3] + '...'
+                self.prefix = self.prefix[:self.length // 3 - 2] + '..'
             else:
                 self.prefix = self.prefix + (self.length // 3 - self.prefix.__len__()) * ' '
 
@@ -45,12 +46,13 @@ class ProgressBar:
     def __next__(self):
         self.index += 1
 
-        percent = f'{{:.{self.decimal}f}}'.format(self.index / self.total * 100)
-        filledLength = int(self.index / self.total * self.length // 3 * 2)
+        percent = f'%.{self.decimal}f' % (self.index / self.total * 100)
+        percent_formatted = (3 - percent[:percent.find('.')].__len__()) * ' ' + percent
 
+        filledLength = int(self.index / self.total * self.length // 3 * 2)
         bar = filledLength * self.fill + (self.length // 3 * 2 - filledLength) * '-'
 
-        print(f'{self.prefix} |{bar}| {percent}%', end=self.end)
+        print(f'{self.prefix} |{bar}| {percent_formatted}%', end=self.end)
 
         if self.index >= self.total:
             raise StopIteration
