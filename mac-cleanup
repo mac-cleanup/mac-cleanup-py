@@ -61,7 +61,7 @@ parser = ArgumentParser(
     description=
     """
     A Mac Cleanup Utility in Python
-    https://github.com/Drugsosos/mac-cleanup-py
+    https://github.com/mac-cleanup/mac-cleanup-py
     """,
     formatter_class=RawTextHelpFormatter,
 )

@@ -59,20 +59,20 @@
 ### Using homebrew
 
 ```bash
-brew tap drugsosos/mac-cleanup-py
+brew tap mac-cleanup/mac-cleanup-py
 brew install mac-cleanup-py
 ```
 
 ### Using curl
 
 ```bash
-python3 <(curl -fsSL https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/install) --install
+python3 <(curl -fsSL https://raw.githubusercontent.com/mac-cleanup/mac-cleanup-py/main/install) --install
 ```
 
 ### Using wget
 
 ```bash
-python3 <(wget https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/install -O -) --install
+python3 <(wget https://raw.githubusercontent.com/mac-cleanup/mac-cleanup-py/main/install -O -) --install
 ```
 
 ## Uninstall
@@ -80,13 +80,13 @@ python3 <(wget https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/i
 ### Using curl
 
 ```bash
-python3 <(curl -fsSL https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/install) --uninstall
+python3 <(curl -fsSL https://raw.githubusercontent.com/mac-cleanup/mac-cleanup-py/main/install) --uninstall
 ```
 
 ### Using wget
 
 ```bash
-python3 <(wget https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/install -O -)  --uninstall
+python3 <(wget https://raw.githubusercontent.com/mac-cleanup/mac-cleanup-py/main/install -O -)  --uninstall
 ```
 
 ## Usage Options
@@ -99,7 +99,7 @@ $ mac-cleanup -h
 usage: mac-cleanup [-h] [-d] [-u]
 
     A Mac Cleanup Utility in Python
-    https://github.com/Drugsosos/mac-cleanup-py
+    https://github.com/mac-cleanup/mac-cleanup-py
 
 
 options:

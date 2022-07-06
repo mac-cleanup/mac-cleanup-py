@@ -7,7 +7,7 @@ parser = ArgumentParser(
     description=
     """
     Installer of mac-cleanup-py
-    https://github.com/Drugsosos/mac-cleanup-py
+    https://github.com/mac-cleanup/mac-cleanup-py
     """,
     formatter_class=RawTextHelpFormatter,
 )
@@ -32,7 +32,7 @@ def cmd(
     return Popen(command, shell=True, stdout=PIPE, stderr=DEVNULL).communicate()[0].strip().decode('utf-8')
 
 
-download_uri = 'https://raw.githubusercontent.com/drugsosos/mac-cleanup-py/main/mac-cleanup'
+download_uri = 'https://raw.githubusercontent.com/mac-cleanup/mac-cleanup-py/main/mac-cleanup'
 
 
 def install():

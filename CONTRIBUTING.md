@@ -34,7 +34,7 @@ If an issue doesn't exist, you can open a new issue using a relevant [issue form
 
 #### Solve an issue
 
-View the [existing issues](https://github.com/Drugsosos/mac-cleanup-py/issues) to find something interesting to you. 
+View the [existing issues](https://github.com/mac-cleanup/mac-cleanup-py/issues) to find something interesting to you. 
 
 In general, issues are not assigned to anyone
 
@@ -70,4 +70,4 @@ Once you submit your PR, someone of collaborators will come and see your PR.
 
 Congratulations :tada::sparkles:
 
-Once your PR is merged, your contributions will be publicly visible on the [mac-cleanup-py](https://github.com/Drugsosos/mac-cleanup-py).
+Once your PR is merged, your contributions will be publicly visible on the [mac-cleanup-py](https://github.com/mac-cleanup/mac-cleanup-py).
