@@ -471,12 +471,12 @@ def main():
 
     def cleanup():
         for item in remove_list:
-            if ['msg']:
+            if item['msg']:
                 for path in ProgressBar(item['paths'], prefix=item['msg']):
                     cmd(f'sudo rm -rf {path}')
 
         for item in exec_list:
-            if ['msg']:
+            if item['msg']:
                 for command in ProgressBar(item['cmd'], prefix=item['msg']):
                     cmd(command)
 
