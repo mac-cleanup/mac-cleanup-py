@@ -276,7 +276,7 @@ if check_exists('~/Library/Application Support/Google/Chrome/'):
     collect_paths('~/Library/Application Support/Google/Chrome/Default/Application Cache/*')
     remove_paths('Clearing Google Chrome Cache Files...')
 
-collect_paths('~/Music/iTunes/iTunes Media/Mobile\ Applications/*')
+collect_paths('~/Music/iTunes/iTunes Media/Mobile Applications/*')
 remove_paths('Cleaning up iOS Applications...')
 
 collect_paths('~/Library/Application Support/MobileSync/Backup/*')
@@ -305,13 +305,13 @@ if cmd('type "xcrun"'):
         collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/Library/AddressBook/AddressBook*')
 
 # Support deleting Dropbox Cache if they exist
-if check_exists('"/Users/${HOST}/Dropbox"'):
+if check_exists('~/Dropbox'):
     collect_paths('~/Dropbox/.dropbox.cache/*')
     remove_paths('Clearing Dropbox 📦 Cache Files...')
 
-if check_exists('~/Library/Application\ Support/Google/DriveFS/'):
+if check_exists('~/Library/Application Support/Google/DriveFS/'):
     cmd('killall "Google Drive File Stream"')
-    collect_paths('~/Library/Application\ Support/Google/DriveFS/[0-9a-zA-Z]*/content_cache')
+    collect_paths('~/Library/Application Support/Google/DriveFS/[0-9a-zA-Z]*/content_cache')
     remove_paths('Clearing Google Drive File Stream Cache Files...')
 
 if cmd('type "composer"'):
@@ -399,7 +399,7 @@ if cmd('type "docker"'):  # TODO add count_dry
         exec_cmd('Cleaning up Docker')
 
 if getenv('PYENV_VIRTUALENV_CACHE_PATH'):
-    collect_paths('"$PYENV_VIRTUALENV_CACHE_PATH"')
+    collect_paths(getenv('PYENV_VIRTUALENV_CACHE_PATH'))
     remove_paths('Removing Pyenv-VirtualEnv Cache...')
 
 if cmd('type "npm"'):
@@ -437,12 +437,12 @@ if cmd('type "go"'):
 if check_exists('~/Library/Application Support/Microsoft/Teams'):
     collect_paths('~/Library/Application Support/Microsoft/Teams/IndexedDB')
     collect_paths('~/Library/Application Support/Microsoft/Teams/Cache')
-    collect_paths('~/Library/Application Support/Microsoft/Teams/Application\ Cache')
-    collect_paths('~/Library/Application Support/Microsoft/Teams/Code\ Cache')
+    collect_paths('~/Library/Application Support/Microsoft/Teams/Application Cache')
+    collect_paths('~/Library/Application Support/Microsoft/Teams/Code Cache')
     collect_paths('~/Library/Application Support/Microsoft/Teams/blob_storage')
     collect_paths('~/Library/Application Support/Microsoft/Teams/databases')
     collect_paths('~/Library/Application Support/Microsoft/Teams/gpucache')
-    collect_paths('~/Library/Application Support/Microsoft/Teams/Local\ Storage')
+    collect_paths('~/Library/Application Support/Microsoft/Teams/Local Storage')
     collect_paths('~/Library/Application Support/Microsoft/Teams/tmp')
     collect_paths('~/Library/Application Support/Microsoft/Teams/*logs*.txt')
     collect_paths('~/Library/Application Support/Microsoft/Teams/watchdog')
