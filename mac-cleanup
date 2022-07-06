@@ -7,6 +7,7 @@ from os.path import expanduser, exists, join, getsize
 from math import floor, log, pow
 from subprocess import Popen, PIPE, DEVNULL
 from argparse import ArgumentParser, RawTextHelpFormatter
+from typing import Optional
 
 
 @dataclass
@@ -148,7 +149,7 @@ def collect_paths(
 
 
 def remove_paths(
-        message: str,
+        message: Optional[str],
 ) -> None:
     """
     Removes paths for the iteration and resets path_list
@@ -288,21 +289,21 @@ collect_paths('~/Library/Developer/Xcode/iOS Device Logs/*')
 remove_paths('Cleaning up XCode Derived Data and Archives...')
 
 if cmd('type "xcrun"'):
-    if not args.dry_run:
-        collect_cmd('osascript -e \'tell application "com.apple.CoreSimulator.CoreSimulatorService" to quit\'')
-        collect_cmd('osascript -e \'tell application "iOS Simulator" to quit\'')
-        collect_cmd('osascript -e \'tell application "Simulator" to quit\'')
-        collect_cmd('xcrun simctl shutdown all')
-        collect_cmd('xcrun simctl erase all')
-        exec_cmd('Cleaning up iOS Simulators...')
-    else:
-        collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/[!Library|var|tmp|Media]*')
-        collect_paths(
-            '/Users/wah/Library/Developer/CoreSimulator/Devices/*/data/Library/'
-            '[!PreferencesCaches|Caches|AddressBook|Trial]*'
-        )
-        collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/Library/Caches/*')
-        collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/Library/AddressBook/AddressBook*')
+    collect_cmd('osascript -e \'tell application "com.apple.CoreSimulator.CoreSimulatorService" to quit\'')
+    collect_cmd('osascript -e \'tell application "iOS Simulator" to quit\'')
+    collect_cmd('osascript -e \'tell application "Simulator" to quit\'')
+    collect_cmd('xcrun simctl shutdown all')
+    collect_cmd('xcrun simctl erase all')
+    exec_cmd('Cleaning up iOS Simulators...')
+    # For --dry run
+    collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/[!Library|var|tmp|Media]*')
+    collect_paths(
+        '/Users/wah/Library/Developer/CoreSimulator/Devices/*/data/Library/'
+        '[!PreferencesCaches|Caches|AddressBook|Trial]*'
+    )
+    collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/Library/Caches/*')
+    collect_paths('~/Library/Developer/CoreSimulator/Devices/*/data/Library/AddressBook/AddressBook*')
+    remove_paths(None)
 
 # Support deleting Dropbox Cache if they exist
 if check_exists('~/Dropbox'):
@@ -315,11 +316,11 @@ if check_exists('~/Library/Application Support/Google/DriveFS/'):
     remove_paths('Clearing Google Drive File Stream Cache Files...')
 
 if cmd('type "composer"'):
-    if not args.dry_run:
-        collect_cmd('composer clearcache --no-interaction')
-        exec_cmd('Cleaning up composer...')
-    else:
-        collect_paths('~/Library/Caches/composer')
+    collect_cmd('composer clearcache --no-interaction')
+    exec_cmd('Cleaning up composer...')
+    # For --dry run
+    collect_paths('~/Library/Caches/composer')
+    remove_paths(None)
 
 # Deletes Steam caches, logs, and temp files
 if check_exists('~/Library/Application Support/Steam/'):
@@ -403,35 +404,34 @@ if getenv('PYENV_VIRTUALENV_CACHE_PATH'):
     remove_paths('Removing Pyenv-VirtualEnv Cache...')
 
 if cmd('type "npm"'):
-    if not args.dry_run:
-        collect_cmd('npm cache clean --force')
-        exec_cmd('Cleaning up npm cache...')
-    else:
-        collect_paths('~/.npm/*')
+    collect_cmd('npm cache clean --force')
+    exec_cmd('Cleaning up npm cache...')
+    # For --dry run
+    collect_paths('~/.npm/*')
+    remove_paths(None)
 
 if cmd('type "yarn"'):
-    if not args.dry_run:
-        collect_cmd('yarn cache clean --force')
-        exec_cmd('Cleaning up Yarn Cache...')
-    else:
-        collect_paths('~/Library/Caches/yarn')
+    collect_cmd('yarn cache clean --force')
+    exec_cmd('Cleaning up Yarn Cache...')
+    # For --dry run
+    collect_paths('~/Library/Caches/yarn')
+    remove_paths(None)
 
 if cmd('type "pod"'):
-    if not args.dry_run:
-        collect_cmd('pod cache clean --all')
-        exec_cmd('Cleaning up Pod Cache...')
-    else:
-        collect_paths('~/Library/Caches/CocoaPods')
+    collect_cmd('pod cache clean --all')
+    exec_cmd('Cleaning up Pod Cache...')
+    collect_paths('~/Library/Caches/CocoaPods')
+    remove_paths(None)
 
 if cmd('type "go"'):
-    if not args.dry_run:
-        collect_cmd('go clean -modcache')
-        exec_cmd('Clearing Go module cache...')
+    collect_cmd('go clean -modcache')
+    exec_cmd('Clearing Go module cache...')
+    # For --dry run
+    if getenv('GOPATH'):
+        collect_paths(f'{getenv("GOPATH")}/pkg/mod')
     else:
-        if getenv('GOPATH'):
-            collect_paths(f'{getenv("GOPATH")}/pkg/mod')
-        else:
-            collect_paths('~/go/pkg/mod')
+        collect_paths('~/go/pkg/mod')
+    remove_paths(None)
 
 # Deletes all Microsoft Teams Caches and resets it to default - can fix also some performance issues
 if check_exists('~/Library/Application Support/Microsoft/Teams'):
@@ -458,14 +458,12 @@ if cmd('type "poetry"') or check_exists('~/Library/Caches/pypoetry'):
 collect_paths('~/*.hprof')
 remove_paths('Deleting Java heap dumps...')
 
-if not args.dry_run:
-    collect_cmd('sudo dscacheutil -flushcache')
-    collect_cmd('sudo killall -HUP mDNSResponder')
-    exec_cmd('Cleaning up DNS cache...')
+collect_cmd('sudo dscacheutil -flushcache')
+collect_cmd('sudo killall -HUP mDNSResponder')
+exec_cmd('Cleaning up DNS cache...')
 
-if not args.dry_run:
-    collect_cmd('sudo purge')
-    exec_cmd('Purging inactive memory...')
+collect_cmd('sudo purge')
+exec_cmd('Purging inactive memory...')
 
 
 def main():
@@ -473,12 +471,14 @@ def main():
 
     def cleanup():
         for item in remove_list:
-            for path in ProgressBar(item['paths'], prefix=item['msg']):
-                cmd(f'sudo rm -rf {path}')
+            if ['msg']:
+                for path in ProgressBar(item['paths'], prefix=item['msg']):
+                    cmd(f'sudo rm -rf {path}')
 
         for item in exec_list:
-            for command in ProgressBar(item['cmd'], prefix=item['msg']):
-                cmd(command)
+            if ['msg']:
+                for command in ProgressBar(item['cmd'], prefix=item['msg']):
+                    cmd(command)
 
         system('clear')
         [cmd(i) for i in ProgressBar(['brew cleanup -s', 'brew tap --repair'], prefix='Cleaning Brew')]
