@@ -18,10 +18,17 @@ parser = ArgumentParser(
     formatter_class=RawTextHelpFormatter,
 )
 
-parser.add_argument("-d", "--dry-run", help="Shows approx space to be cleaned",
-                    action="store_true")
-parser.add_argument("-u", "--update", help="Script will update brew while cleaning",
-                    action="store_true")
+parser.add_argument(
+    "-d", "--dry-run",
+    help="Shows approx space to be cleaned",
+    action="store_true"
+)
+
+parser.add_argument(
+    "-u", "--update",
+    help="Script will update brew while cleaning",
+    action="store_true"
+)
 
 args = parser.parse_args()
 # args.dry_run = True
@@ -92,8 +99,8 @@ def check_deletable(
     ):
         return False
     restricted = (
-            "restricted" not in cmd(f"ls -lo {path}")
-            and not bool(cmd(f"xattr -l {path}"))  # Returns None if not restricted otherwise string
+            "restricted" not in cmd(f'ls -lo "{path}"')
+            and not bool(cmd(f'xattr -l "{path}"'))  # Returns None if not restricted otherwise string
     )
     return restricted
 
@@ -210,7 +217,15 @@ class CleanUp:
                 [task for task in tasks.get("dry", "") if not task.startswith("cmd_")]
             )
 
-        counted_list = [get_size(path) for path in track(path_list, description="Collecting dry run")]
+        counted_list = [
+            get_size(path)
+            for path in track(
+                path_list,
+                description="Collecting dry run",
+                transient=True,
+                total=len(path_list),
+            )
+        ]
 
         return sum(counted_list)
 
@@ -443,17 +458,23 @@ def main():
             if not item.get("msg"):
                 continue
 
-            for task in item['query']:
+            for task in track(item["query"], description=item["msg"], transient=True, total=len(item["query"])):
                 if task.startswith("cmd_"):
                     task = task[4:]
                 else:
-                    task = f"rm -rf {task}"
+                    task = f'sudo rm -rf "{task}"'
                 cmd(task)
 
-        [cmd(i) for i in track(["brew cleanup -s", "brew tap --repair"], description="Cleaning Brew")]
-        print("Success")
+        for brew_task in track(
+                ["brew cleanup -s", "brew tap --repair"],
+                description="Cleaning Brew",
+                transient=True,
+                total=2,
+        ):
+            cmd(brew_task)
+        console.print("Success")
         newAvailable = count_free_space()
-        print("Removed -", bytes_to_human((newAvailable - oldAvailable) * 1024))
+        console.print("Removed -", bytes_to_human((newAvailable - oldAvailable) * 1024))
 
     if not args.dry_run:
         cleanup()
@@ -463,11 +484,12 @@ def main():
         while True:
             console.print(f"Approx {freed_space} will be cleaned")
             if console.input("Continue? [enter]").strip() == "":
+                console.clear()
                 cleanup()
                 break
             else:
                 console.clear()
-                print("Don't recognize the input, try again...")
+                console.print("Don't recognize the input, try again...")
 
 
 if __name__ == "__main__":
