@@ -47,7 +47,13 @@ def cmd(
     Returns:
         stdout of executed command
     """
-    return Popen(command, shell=True, stdout=PIPE, stderr=DEVNULL).communicate()[0].strip().decode("utf-8")
+    return (
+        Popen(command, shell=True, stdout=PIPE, stderr=DEVNULL)
+        .communicate()
+        [0]
+        .strip()
+        .decode("utf-8", errors='replace')
+    )
 
 
 def check_exists(
