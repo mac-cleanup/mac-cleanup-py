@@ -5,17 +5,24 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 
 parser = ArgumentParser(
     description=
-    """
+    """\
     Installer of mac-cleanup-py
-    https://github.com/mac-cleanup/mac-cleanup-py
+    https://github.com/mac-cleanup/mac-cleanup-py\
     """,
     formatter_class=RawTextHelpFormatter,
 )
 
-parser.add_argument('-i', '--install', help='Installs mac-cleanup-py',
-                    action='store_true')
-parser.add_argument('-u', '--uninstall', help='Uninstalls mac-cleanup-py',
-                    action='store_true')
+parser.add_argument(
+    '-i', '--install',
+    help='Installs mac-cleanup-py',
+    action='store_true'
+)
+
+parser.add_argument(
+    '-u', '--uninstall',
+    help='Uninstalls mac-cleanup-py',
+    action='store_true'
+)
 
 args = parser.parse_args()
 
@@ -25,11 +32,19 @@ def cmd(
 ) -> str:
     """
     Executes command in Popen
+
     Args:
         command: Bash command
-    Returns: Stdout
+    Returns:
+        stdout of executed command
     """
-    return Popen(command, shell=True, stdout=PIPE, stderr=DEVNULL).communicate()[0].strip().decode('utf-8')
+    return (
+        Popen(command, shell=True, stdout=PIPE, stderr=DEVNULL)
+        .communicate()
+        [0]
+        .strip()
+        .decode("utf-8", errors='replace')
+    )
 
 
 download_uri = 'https://raw.githubusercontent.com/mac-cleanup/mac-cleanup-py/main/mac-cleanup'
@@ -37,6 +52,7 @@ download_uri = 'https://raw.githubusercontent.com/mac-cleanup/mac-cleanup-py/mai
 
 def install():
     cmd('python3 -m pip install requests -q')
+    cmd('python3 -m pip install rich -q')
     import requests
 
     print('Downloading mac-cleanup-py...')
@@ -52,6 +68,7 @@ def install():
 def uninstall():
     print('Uninstalling mac-cleanup-py...')
     cmd('sudo rm -rf /usr/local/bin/mac-cleanup')
+    cmd('python3 -m pip uninstall rich -q')
     print('All done!')
 
 
