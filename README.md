@@ -11,7 +11,7 @@
 2. Deletes unnecessary logs & files
 3. Removes cache
 
-![macCleanupPy](https://user-images.githubusercontent.com/44712637/177019329-d0d40ac4-256d-4332-ac06-41ec54327d8e.gif)
+![mac-cleanup](https://user-images.githubusercontent.com/44712637/182495588-01d4c51c-2a7f-4d14-b95c-21760d6c6ca3.gif)
 
 <details>
    <summary>
