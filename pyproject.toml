@@ -1,8 +1,32 @@
-[project]
-name = "mac-cleanup-py"
+[tool.poetry]
+name = "mac_cleanup"
+version = "2.1.0"
 description = "Python cleanup script for macOS"
-version = "2.0.1"
+authors = ["Drugsosos"]
+license = "Apache-2.0 license"
+readme = "README.md"
+homepage = "https://github.com/mac-cleanup/mac-cleanup-py"
+repository = "https://github.com/mac-cleanup/mac-cleanup-py"
 
-dependencies = [
-    "rich==12.5.1"
+classifiers = [
+    "Environment :: Console",
+    "Operating System :: MacOS"
 ]
+
+[tool.poetry.urls]
+"Documentation" = "https://github.com/mac-cleanup/mac-cleanup-py#install-automatically"
+"Issue Tracker" = "https://github.com/mac-cleanup/mac-cleanup-py/issues"
+
+
+[tool.poetry.dependencies]
+python = ">=3.7,<3.12"
+rich = ">=12.2.0,<13.0.0"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+mac-cleanup = "mac_cleanup.cli:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -63,30 +63,27 @@ brew tap mac-cleanup/mac-cleanup-py
 brew install mac-cleanup-py
 ```
 
-### Using curl
+### Using pip
 
 ```bash
-python3 <(curl -fsSL https://raw.githubusercontent.com/mac-cleanup/mac-cleanup-py/main/install) --install
-```
-
-### Using wget
-
-```bash
-python3 <(wget https://raw.githubusercontent.com/mac-cleanup/mac-cleanup-py/main/install -O -) --install
+pip3 install rich
+pip3 install mac-cleanup
 ```
 
 ## Uninstall
 
-### Using curl
+### Using homebrew
 
 ```bash
-python3 <(curl -fsSL https://raw.githubusercontent.com/mac-cleanup/mac-cleanup-py/main/install) --uninstall
+brew uninstall mac-cleanup-py
+brew untap mac_cleanup/mac-cleanup-py
 ```
 
-### Using wget
+### Using pip
 
 ```bash
-python3 <(wget https://raw.githubusercontent.com/mac-cleanup/mac-cleanup-py/main/install -O -)  --uninstall
+pip3 uninstall rich
+pip3 uninstall mac-cleanup
 ```
 
 ## Usage Options
