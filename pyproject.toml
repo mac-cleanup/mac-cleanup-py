@@ -1,0 +1,8 @@
+[project]
+name = "mac-cleanup-py"
+description = "Python cleanup script for macOS"
+version = "2.0.1"
+
+dependencies = [
+    "rich==12.5.1"
+]
