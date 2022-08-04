@@ -23,6 +23,6 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
-# args.dry_run = True
+# args.dry_run = True  # debug
 
 console = Console()

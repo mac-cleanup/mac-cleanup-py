@@ -24,7 +24,7 @@ def cmd(
         .communicate()
         [0]
         .strip()
-        .decode("utf-8", errors='replace')
+        .decode("utf-8", errors="replace")
     )
 
 
