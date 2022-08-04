@@ -229,6 +229,9 @@ def main() -> None:
     def cleanup():
         oldAvailable = count_free_space()
 
+        # Ask for password input in terminal
+        cmd("sudo -E echo")
+
         for item in t.execute_list:
             if not item.get("msg"):
                 continue
