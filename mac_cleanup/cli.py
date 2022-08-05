@@ -149,7 +149,7 @@ if cmd("type 'brew'"):
 
 if cmd("type 'gem'"):  # TODO add count_dry
     t.msg("Cleaning up any old versions of gems")
-    t.collect("gem mac_cleanup", command=True)
+    t.collect("gem cleanup", command=True)
 
 if cmd("type 'docker'"):  # TODO add count_dry
     t.msg("Cleaning up Docker")
@@ -244,7 +244,7 @@ def main() -> None:
                 cmd(task)
 
         for brew_task in track(
-                ["brew mac_cleanup -s", "brew tap --repair"],
+                ["brew cleanup -s", "brew tap --repair"],
                 description="Cleaning Brew",
                 transient=True,
                 total=2,

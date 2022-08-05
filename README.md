@@ -76,7 +76,7 @@ pip3 install mac-cleanup
 
 ```bash
 brew uninstall mac-cleanup-py
-brew untap mac_cleanup/mac-cleanup-py
+brew untap mac-cleanup/mac-cleanup-py
 ```
 
 ### Using pip
