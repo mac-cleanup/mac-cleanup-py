@@ -3,7 +3,6 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 from rich.console import Console
 from rich.theme import Theme
 
-
 parser = ArgumentParser(
     description=
     f"""\
@@ -41,6 +40,7 @@ parser.add_argument(
 args = parser.parse_args()
 # args.dry_run = True  # debug
 # args.configure = True  # debug
+# args.modules = True  # debug
 
 custom_theme = Theme({
     "info": "dim cyan",

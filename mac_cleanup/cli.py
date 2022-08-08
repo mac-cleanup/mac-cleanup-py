@@ -5,12 +5,18 @@ from mac_cleanup.utils import CleanUp, cmd, bytes_to_human, catch_exception
 from mac_cleanup.console import console, args
 from mac_cleanup.config import load_config
 
-
 t = CleanUp()
 
 
 @catch_exception
 def main() -> None:
+    # Sets custom modules' path if user prompted to and exits
+    if args.modules:
+        from mac_cleanup.config import set_custom_path
+
+        set_custom_path()
+        raise KeyboardInterrupt
+
     # Loads all modules
     load_config(configuration_needed=args.configure)
 
@@ -26,7 +32,8 @@ def main() -> None:
         oldAvailable = count_free_space()
 
         # Ask for password input in terminal
-        cmd("sudo -E echo")
+        # Raises AssertionError if prompt fails
+        assert cmd("sudo -E whoami") == "root"
 
         for item in t.execute_list:
             if not item.get("msg") or not item.get("exec_list"):
@@ -74,7 +81,7 @@ def main() -> None:
         freed_space = bytes_to_human(t.count_dry())
 
         console.print(f"Approx {freed_space} will be cleaned")
-        if Confirm.ask("Continue?"):
+        if Confirm.ask("Continue?", show_default=False, default="y"):
             console.clear()
             cleanup()
         else:

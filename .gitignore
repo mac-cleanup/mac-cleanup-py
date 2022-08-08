@@ -21,3 +21,6 @@ venv.bak/
 
 # JetBrains staff
 .idea/
+
+# Ignore configuration
+mac_cleanup/modules.toml

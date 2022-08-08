@@ -1,7 +1,6 @@
-from typing import Optional
-
-from mac_cleanup.utils import _function
 from inspect import getmembers, isfunction
+from typing import Optional
+from mac_cleanup.utils import _function
 
 
 def load_default(
@@ -36,7 +35,7 @@ def load_custom(
 
     custom_modules = dict()
     # Imports all modules from the given path
-    for module in Path(custom_path).expanduser().rglob("*"):
+    for module in Path(custom_path).expanduser().rglob("*.py"):
         # Duplicates will be overwritten
         custom_modules.update(
             dict(
