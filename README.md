@@ -93,14 +93,16 @@ Help menu:
 ```
 $ mac-cleanup -h
 
-usage: mac-cleanup [-h] [-d] [-u]
+usage: mac-cleanup [-h] [-d] [-u] [-c] [-m]
 
     A Mac Cleanup Utility in Python
+    v2.2.0
     https://github.com/mac-cleanup/mac-cleanup-py
 
-
-options:
-  -h, --help     show this help message and exit
-  -d, --dry-run  Shows approx space to be cleaned
-  -u, --update   Script will update brew while cleaning
+optional arguments:
+  -h, --help       show this help message and exit
+  -d, --dry-run    Shows approx space to be cleaned
+  -u, --update     Script will update brew while cleaning
+  -c, --configure  Launch modules configuration
+  -m, --modules    Specify custom modules' path
 ```
