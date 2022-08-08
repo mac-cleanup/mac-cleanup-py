@@ -1,10 +1,12 @@
+from mac_cleanup import __version__
 from argparse import ArgumentParser, RawTextHelpFormatter
 from rich.console import Console
 
 parser = ArgumentParser(
     description=
-    """\
+    f"""\
     A Mac Cleanup Utility in Python
+    {__version__}
     https://github.com/mac-cleanup/mac-cleanup-py\
     """,
     formatter_class=RawTextHelpFormatter,
@@ -23,6 +25,6 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
-# args.dry_run = True  # debug
+args.dry_run = True  # debug
 
 console = Console()
