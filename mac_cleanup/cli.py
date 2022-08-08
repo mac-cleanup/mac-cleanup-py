@@ -1,18 +1,28 @@
 from rich.progress import track
+from rich.prompt import Confirm
+from rich.panel import Panel
 from mac_cleanup.utils import CleanUp, cmd, bytes_to_human, catch_exception
 from mac_cleanup.console import console, args
-from mac_cleanup.modules import load_default
+from mac_cleanup.config import load_config
+
 
 t = CleanUp()
-load_default()
 
 
 @catch_exception
 def main() -> None:
+    # Loads all modules
+    load_config(configuration_needed=args.configure)
+
+    # Exits if configuration was requested
+    if args.configure:
+        raise KeyboardInterrupt
+
     def count_free_space():
         return int(cmd("df / | tail -1 | awk '{print $4}'"))
 
     def cleanup():
+        # Free space before the run
         oldAvailable = count_free_space()
 
         # Ask for password input in terminal
@@ -28,12 +38,16 @@ def main() -> None:
                     transient=True,
                     total=len(item["exec_list"])
             ):
+                # Doesn't execute dry run query
                 if task["type"] == "dry":
                     continue
+                # If type == "path" add rm -rf
                 if task["type"] == "path":
-                    task["main"] = f"sudo rm -rf {task['main']}"
+                    task["main"] = "sudo rm -rf {0}".format(task["main"].replace(" ", "\ "))
+                # There are no tasks w/o main
                 cmd(task["main"])
 
+        # Launch brew additional cleanup & repair
         for brew_task in track(
                 ["brew cleanup -s", "brew tap --repair"],
                 description="Cleaning Brew",
@@ -41,24 +55,31 @@ def main() -> None:
                 total=2,
         ):
             cmd(brew_task)
-        console.print("Success")
-        newAvailable = count_free_space()
-        console.print("Removed -", bytes_to_human((newAvailable - oldAvailable) * 1024))
 
+        # Free space after the run
+        newAvailable = count_free_space()
+
+        # Print results
+        console.print(
+            Panel(
+                f"Removed - [info]{bytes_to_human((newAvailable - oldAvailable) * 1024)}",
+                title="Success",
+                title_align="center",
+            )
+        )
+    # Straight to clean up if not dry run
     if not args.dry_run:
         cleanup()
     else:
         freed_space = bytes_to_human(t.count_dry())
 
-        while True:
-            console.print(f"Approx {freed_space} will be cleaned")
-            if console.input("Continue? [enter]").strip() == "":
-                console.clear()
-                cleanup()
-                return
-            else:
-                console.clear()
-                console.print("Don't recognize the input, try again...")
+        console.print(f"Approx {freed_space} will be cleaned")
+        if Confirm.ask("Continue?"):
+            console.clear()
+            cleanup()
+        else:
+            console.clear()
+            console.print("Exiting...")
 
 
 if __name__ == "__main__":

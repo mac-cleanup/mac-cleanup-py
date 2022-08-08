@@ -46,13 +46,21 @@ class ExceptionDecorator:
             except BaseException as caughtException:
                 from mac_cleanup.console import console
 
+                # If not default exception logs stuff in console
                 if not type(caughtException) in self.exception:
-                    import traceback
+                    import logging
+                    from rich.logging import RichHandler
 
-                    console.print(f"Error occurred - {caughtException}")
-                    console.print(traceback.format_exc())
+                    logging.basicConfig(
+                        level="ERROR",
+                        format="%(message)s",
+                        datefmt="[%X]",
+                        handlers=[RichHandler(rich_tracebacks=True)]
+                    )
+
+                    log = logging.getLogger("ExceptionDecorator")
+                    log.exception("Unexpected error occurred")
                 console.print("\nExiting...")
-
         return wrapper
 
 
@@ -98,6 +106,14 @@ def cmd(
 def expanduser(
         str_path: str,
 ) -> str:
+    """
+    Expands path (replaces "~" with absolute path)
+
+    Args:
+        str_path: Path to be expanded
+    Returns:
+        Path as a string
+    """
     return Path(str_path).expanduser().as_posix()
 
 
@@ -112,6 +128,7 @@ def check_exists(
     Returns:
         True if exists
     """
+    # If glob return True (it'll delete nothing at the end, hard to hande otherwise)
     if "*" in path:
         return True
     return Path(path).expanduser().exists()
@@ -150,7 +167,7 @@ def check_deletable(
     if not path.strip():
         return False
 
-    # Returns False if path in SIP_list or in user_list
+    # Returns False if path startswith anything from SIP_list or in user_list
     if any(
             Path(path).expanduser().as_posix().startswith(i)
             for i in list(map(expanduser, SIP_list + user_list))
@@ -175,8 +192,10 @@ def get_size(
     Returns:
         Size of dir/file
     """
+    # Searching for glob in path
     split_path = path.split("*", 1)
     path, glob = split_path if len(split_path) == 2 else (path, "")
+
     return sum(p.stat().st_size for p in Path(path).expanduser().rglob("*" + glob))
 
 
@@ -254,7 +273,7 @@ class CleanUp(Borg):
         # Sets query type
         temp_query["type"] = "dry" if dry else "cmd" if command else "path"
 
-        # Adds query to query_list
+        # Adds query to query_list if deletable and exists
         temp_query["main"] = (
             query
             if temp_query["type"] != "cmd"
@@ -265,6 +284,7 @@ class CleanUp(Borg):
             else None
         )
 
+        # Do nothing if main is empty
         if temp_query["main"]:
             query_list.append(temp_query)
 
@@ -277,6 +297,7 @@ class CleanUp(Borg):
         Returns:
             Approx amount of bytes to be removed
         """
+        # Extracts paths from execute_list
         path_list = [
             task["main"]
             for tasks in self.execute_list

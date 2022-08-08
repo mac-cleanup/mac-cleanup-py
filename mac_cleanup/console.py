@@ -1,6 +1,8 @@
 from mac_cleanup import __version__
 from argparse import ArgumentParser, RawTextHelpFormatter
 from rich.console import Console
+from rich.theme import Theme
+
 
 parser = ArgumentParser(
     description=
@@ -24,7 +26,25 @@ parser.add_argument(
     action="store_true"
 )
 
-args = parser.parse_args()
-args.dry_run = True  # debug
+parser.add_argument(
+    "-c", "--configure",
+    help="Launch modules configuration",
+    action="store_true"
+)
 
-console = Console()
+parser.add_argument(
+    "-m", "--modules",
+    help="Specify custom modules' path",
+    action="store_true"
+)
+
+args = parser.parse_args()
+# args.dry_run = True  # debug
+# args.configure = True  # debug
+
+custom_theme = Theme({
+    "info": "dim cyan",
+    "warning": "magenta",
+    "danger": "bold red"
+})  # WIP
+console = Console(theme=custom_theme)
