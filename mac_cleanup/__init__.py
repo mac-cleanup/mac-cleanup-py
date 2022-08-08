@@ -3,4 +3,4 @@ try:
 except ImportError:
     __version__ = "source"
 
-__title__ = "mac_cleanup_py"
+__title__ = "mac-cleanup-py"

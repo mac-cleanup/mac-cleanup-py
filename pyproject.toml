@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mac_cleanup"
-version = "2.1.2"
+version = "2.2.0"
 description = "Python cleanup script for macOS"
 authors = ["Drugsosos"]
 license = "Apache-2.0 license"
@@ -21,6 +21,8 @@ classifiers = [
 [tool.poetry.dependencies]
 python = ">=3.7,<3.12"
 rich = ">=12.2.0,<13.0.0"
+toml = "^0.10.2"
+inquirer = "^2.10.0"
 
 [tool.poetry.dev-dependencies]
 
