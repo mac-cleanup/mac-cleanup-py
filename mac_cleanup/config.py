@@ -51,6 +51,15 @@ def config_checkbox(
     Returns:
         List w/ all modules user selected
     """
+    from mac_cleanup.console import print_panel
+
+    # Prints the legend
+    print_panel(
+        text="[success]Enable: [yellow][warning]<space>[/warning] | [warning]<--[/warning] | [warning]-->[/warning]"
+             "\t[success]Confirm: [warning]<enter>[/warning]",
+        title="[info]Controls"
+    )
+
     questions = Checkbox(
         "modules",
         message="Active modules",
@@ -58,9 +67,9 @@ def config_checkbox(
         default=enabled,
         carousel=True,
     )
-    answers = prompt([questions])
+    answers = prompt([questions], raise_keyboard_interrupt=True)
     if not answers:
-        raise KeyboardInterrupt
+        raise ValueError("Got empty answers from Checkbox")
     return answers["modules"]
 
 
