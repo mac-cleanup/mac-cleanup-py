@@ -11,7 +11,7 @@
 2. Deletes unnecessary logs & files
 3. Removes cache
 
-![mac-cleanup_v2_2_0](https://user-images.githubusercontent.com/44712637/183507992-03466528-ddb1-4370-852c-9ef8dc008a11.gif)
+![mac-cleanup_v2_X_X](https://user-images.githubusercontent.com/44712637/183507992-03466528-ddb1-4370-852c-9ef8dc008a11.gif)
 
 <details>
    <summary>
@@ -96,7 +96,7 @@ $ mac-cleanup -h
 usage: mac-cleanup [-h] [-d] [-u] [-c] [-m]
 
     A Mac Cleanup Utility in Python
-    v2.2.0
+    v2.2.2
     https://github.com/mac-cleanup/mac-cleanup-py
 
 optional arguments:
