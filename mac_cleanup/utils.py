@@ -206,7 +206,8 @@ def get_size(
     split_path = path.split("*", 1)
     path, glob = split_path if len(split_path) == 2 else (path, "")
 
-    return sum(p.stat().st_size for p in Path(path).expanduser().rglob("*" + glob))
+    # Ignores symbolic links
+    return sum(p.stat().st_size for p in Path(path).expanduser().rglob("*" + glob) if not p.is_symlink())
 
 
 def bytes_to_human(
