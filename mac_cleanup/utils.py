@@ -179,16 +179,17 @@ def check_deletable(
 
     # Returns False if path startswith anything from SIP_list or in user_list
     if any(
-            Path(path).expanduser().as_posix().startswith(i)
+            expanduser(path).startswith(i)
             for i in list(map(expanduser, SIP_list + user_list))
     ):
         return False
+    return True
 
-    restricted = (
-            "restricted" not in cmd(f"ls -lo {path} | awk '{{print $3}}'")
-            and not bool(cmd(f"xattr -l {path}"))  # Returns None if not restricted otherwise string
-    )
-    return restricted
+    # restricted = (
+    #         "restricted" not in cmd(f"ls -lo {path} | awk '{{print $3}}'")
+    #         and not bool(cmd(f"xattr -l {path}"))  # Returns None if not restricted otherwise string
+    # )
+    # return restricted
 
 
 def get_size(
