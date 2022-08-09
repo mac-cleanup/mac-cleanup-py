@@ -43,8 +43,33 @@ args = parser.parse_args()
 # args.modules = True  # debug
 
 custom_theme = Theme({
-    "info": "dim cyan",
+    "info": "cyan",
     "warning": "magenta",
-    "danger": "bold red"
-})  # WIP
+    "danger": "bold red",
+    "success": "bold green",
+})
+
 console = Console(theme=custom_theme)
+
+
+def print_panel(
+        text: str,
+        title: str = "",
+) -> None:
+    """
+    Prints a rich panel with the given text
+
+    Args:
+        text: Text to print in the panel
+        title: Title of the panel
+    """
+    from rich.panel import Panel
+    from rich.text import Text
+
+    console.print(
+        Panel(
+            Text.from_markup(text, justify="center"),
+            subtitle=title,
+            subtitle_align="right",
+        )
+    )

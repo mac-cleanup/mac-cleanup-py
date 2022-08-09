@@ -1,8 +1,5 @@
-from rich.progress import track
-from rich.prompt import Confirm
-from rich.panel import Panel
 from mac_cleanup.utils import CleanUp, cmd, bytes_to_human, catch_exception
-from mac_cleanup.console import console, args
+from mac_cleanup.console import console, args, print_panel
 from mac_cleanup.config import load_config
 
 t = CleanUp()
@@ -28,6 +25,8 @@ def main() -> None:
         return int(cmd("df / | tail -1 | awk '{print $4}'"))
 
     def cleanup():
+        from rich.progress import track
+
         # Free space before the run
         oldAvailable = count_free_space()
 
@@ -67,20 +66,22 @@ def main() -> None:
         newAvailable = count_free_space()
 
         # Print results
-        console.print(
-            Panel(
-                f"Removed - [info]{bytes_to_human((newAvailable - oldAvailable) * 1024)}",
-                title="Success",
-                title_align="center",
-            )
+        print_panel(
+            text=f"Removed - [success]{bytes_to_human((newAvailable - oldAvailable) * 1024)}",
+            title="[info]Success",
         )
     # Straight to clean up if not dry run
     if not args.dry_run:
         cleanup()
     else:
+        from rich.prompt import Confirm
+
         freed_space = bytes_to_human(t.count_dry())
 
-        console.print(f"Approx {freed_space} will be cleaned")
+        print_panel(
+            text=f"Approx [success]{freed_space}[/success] will be cleaned",
+            title="[info]Dry run results",
+        )
         if Confirm.ask("Continue?", show_default=False, default="y"):
             console.clear()
             cleanup()
