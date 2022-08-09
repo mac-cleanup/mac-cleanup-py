@@ -1,7 +1,4 @@
-from rich.progress import track
-from pathlib import Path
-from subprocess import Popen, PIPE, DEVNULL
-from typing import TypeVar, Callable, Type, Optional, Union, Dict
+from typing import TypeVar, Callable, Type, Optional, Union
 from inspect import isclass
 
 _function = TypeVar(
@@ -104,6 +101,8 @@ def cmd(
     Returns:
         stdout of executed command
     """
+    from subprocess import Popen, PIPE, DEVNULL
+
     return (
         Popen(command, shell=True, stdout=PIPE, stderr=DEVNULL)
         .communicate()
@@ -124,6 +123,8 @@ def expanduser(
     Returns:
         Path as a string
     """
+    from pathlib import Path
+
     return Path(str_path).expanduser().as_posix()
 
 
@@ -138,6 +139,8 @@ def check_exists(
     Returns:
         True if exists
     """
+    from pathlib import Path
+
     # If glob return True (it'll delete nothing at the end, hard to hande otherwise)
     if "*" in path:
         return True
@@ -203,6 +206,8 @@ def get_size(
     Returns:
         Size of dir/file
     """
+    from pathlib import Path
+
     # Searching for glob in path
     split_path = path.split("*", 1)
     path, glob = split_path if len(split_path) == 2 else (path, "")
@@ -233,7 +238,7 @@ def bytes_to_human(
 
 
 class Borg:
-    _shared_state: Dict[str, list] = dict()
+    _shared_state: dict[str, list] = dict()
 
     def __init__(self):
         self.__dict__ = self._shared_state
@@ -309,6 +314,8 @@ class CleanUp(Borg):
         Returns:
             Approx amount of bytes to be removed
         """
+        from rich.progress import track
+
         # Extracts paths from execute_list
         path_list = [
             task["main"]

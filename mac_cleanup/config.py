@@ -1,7 +1,4 @@
-import toml
 from pathlib import Path
-from inquirer import Checkbox, prompt
-from rich.prompt import Prompt
 
 config_path = Path(__file__).parent.resolve().as_posix() + "/modules.toml"
 
@@ -14,13 +11,15 @@ def get_config(
     Returns:
         Config as a dict
     """
+    from toml import load, TomlDecodeError
+
     # Creates config if it's not already created
     Path(config_path).touch(exist_ok=True)
 
     # Loads config (in case something got wrong there is try -> except)
     try:
-        config = toml.load(config_path)
-    except toml.TomlDecodeError:
+        config = load(config_path)
+    except TomlDecodeError:
         config = dict()
     return config
 
@@ -34,8 +33,10 @@ def set_config(
     Args:
         config: Config as a dict to be written
     """
+    from toml import dump
+
     with open(config_path, "w+") as f:
-        toml.dump(config, f)
+        dump(config, f)
 
 
 def config_checkbox(
@@ -51,7 +52,8 @@ def config_checkbox(
     Returns:
         List w/ all modules user selected
     """
-    from mac_cleanup.console import print_panel
+    from inquirer import Checkbox, prompt
+    from mac_cleanup.console import print_panel, console
 
     # Prints the legend
     print_panel(
@@ -68,6 +70,9 @@ def config_checkbox(
         carousel=True,
     )
     answers = prompt([questions], raise_keyboard_interrupt=True)
+
+    # Clear console after checkbox
+    console.clear()
     if not answers:
         raise ValueError("Got empty answers from Checkbox")
     return answers["modules"]
@@ -78,6 +83,8 @@ def set_custom_path(
     """
     Sets path for custom modules in config
     """
+    from rich.prompt import Prompt
+
     # Ask for user input
     custom_path = Prompt.ask(
         "Enter path to custom modules",
@@ -116,6 +123,9 @@ def load_config(
 
     # If config is empty requestes configuration and selects all modules as enabled
     if config.get("enabled", 0) == 0 or not isinstance(config["enabled"], list):
+        from mac_cleanup.console import console
+
+        console.print("[danger]Modules not configured, opening configuration screen...[/danger]")
         enabled = config_checkbox(
             all_modules=all_modules_keys,
             enabled=all_modules_keys,
