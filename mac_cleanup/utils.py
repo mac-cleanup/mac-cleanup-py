@@ -30,7 +30,7 @@ class ExceptionDecorator:
     ):
         # Sets default exception if none was provided
         if not exception:
-            self.exception = KeyboardInterrupt
+            self.exception = tuple()
 
         # If class convert to tuple
         if isclass(self.exception):
@@ -43,6 +43,11 @@ class ExceptionDecorator:
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
+            except KeyboardInterrupt:
+                from mac_cleanup.console import console
+
+                console.print("\n[warning]Exiting...")
+                exit(0)
             # Ignore SystemExit
             except SystemExit:
                 pass
@@ -51,19 +56,21 @@ class ExceptionDecorator:
 
                 # If not default exception logs stuff in console
                 if not type(caughtException) in self.exception:
-                    import logging
+                    import os
+                    from logging import basicConfig, getLogger
                     from rich.logging import RichHandler
 
-                    logging.basicConfig(
+                    basicConfig(
                         level="ERROR",
                         format="%(message)s",
                         datefmt="[%X]",
                         handlers=[RichHandler(rich_tracebacks=True)]
                     )
 
-                    log = logging.getLogger("ExceptionDecorator")
+                    log = getLogger("ExceptionDecorator")
                     log.exception("Unexpected error occurred")
-                    console.print("Exiting...")
+                    console.print("\n[danger]Exiting...")
+                    os._exit(1)  # noqa  It exists, exit whole process
         return wrapper
 
 
