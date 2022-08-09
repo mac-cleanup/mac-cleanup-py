@@ -7,6 +7,9 @@ t = CleanUp()
 
 @catch_exception
 def main() -> None:
+    # Clear console at the start
+    console.clear()
+
     # Sets custom modules' path if user prompted to and exits
     if args.modules:
         from mac_cleanup.config import set_custom_path
@@ -21,10 +24,12 @@ def main() -> None:
     if args.configure:
         raise KeyboardInterrupt
 
-    def count_free_space():
+    def count_free_space(
+    ) -> int:
         return int(cmd("df / | tail -1 | awk '{print $4}'"))
 
-    def cleanup():
+    def cleanup(
+    ) -> None:
         from rich.progress import track
 
         # Free space before the run

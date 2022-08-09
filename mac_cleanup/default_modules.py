@@ -5,13 +5,13 @@ t = CleanUp()
 
 
 def trash():
-    t.msg("Emptying the Trash 🗑 on all mounted volumes and the main HDD...")
+    t.msg("Emptying the Trash 🗑 on all mounted volumes and the main HDD")
     t.collect("/Volumes/*/.Trashes/*")
     t.collect("~/.Trash/*")
 
 
 def system_caches():
-    t.msg("Clearing System Cache Files...")
+    t.msg("Clearing System Cache Files")
     t.collect("/Library/Caches/*")
     t.collect("/System/Library/Caches/*")
     t.collect("~/Library/Caches/*")
@@ -19,7 +19,7 @@ def system_caches():
 
 
 def system_log():
-    t.msg("Clearing System Log Files...")
+    t.msg("Clearing System Log Files")
     t.collect("/private/var/log/asl/*.asl")
     t.collect("/Library/Logs/DiagnosticReports/*")
     t.collect("/Library/Logs/CreativeCloud/*")
@@ -33,7 +33,7 @@ def jetbrains():
     from mac_cleanup.utils import check_exists
 
     if check_exists("~/Library/Logs/JetBrains/"):
-        t.msg("Clearing all application log files from JetBrains...")
+        t.msg("Clearing all application log files from JetBrains")
         t.collect("~/Library/Logs/JetBrains/*/")
 
 
@@ -41,7 +41,7 @@ def adobe():
     from mac_cleanup.utils import check_exists
 
     if check_exists("~/Library/Application Support/Adobe/"):
-        t.msg("Clearing Adobe Cache Files...")
+        t.msg("Clearing Adobe Cache Files")
         t.collect("~/Library/Application Support/Adobe/Common/Media Cache Files/*")
 
 
@@ -49,22 +49,22 @@ def chrome():
     from mac_cleanup.utils import check_exists
 
     if check_exists("~/Library/Application Support/Google/Chrome/"):
-        t.msg("Clearing Google Chrome Cache Files...")
+        t.msg("Clearing Google Chrome Cache Files")
         t.collect("~/Library/Application Support/Google/Chrome/Default/Application Cache/*")
 
 
 def ios_apps():
-    t.msg("Cleaning up iOS Applications...")
+    t.msg("Cleaning up iOS Applications")
     t.collect("~/Music/iTunes/iTunes Media/Mobile Applications/*")
 
 
 def ios_backups():
-    t.msg("Removing iOS Device Backups...")
+    t.msg("Removing iOS Device Backups")
     t.collect("~/Library/Application Support/MobileSync/Backup/*")
 
 
 def xcode():
-    t.msg("Cleaning up XCode Derived Data and Archives...")
+    t.msg("Cleaning up XCode Derived Data and Archives")
     t.collect("~/Library/Developer/Xcode/DerivedData/*")
     t.collect("~/Library/Developer/Xcode/Archives/*")
     t.collect("~/Library/Developer/Xcode/iOS Device Logs/*")
@@ -74,7 +74,7 @@ def xcode_simulators():
     from mac_cleanup.utils import cmd
 
     if cmd("type 'xcrun'"):
-        t.msg("Cleaning up iOS Simulators...")
+        t.msg("Cleaning up iOS Simulators")
         t.collect("osascript -e 'tell application 'com.apple.CoreSimulator.CoreSimulatorService' to quit'",
                   command=True)
         t.collect("osascript -e 'tell application 'iOS Simulator' to quit'", command=True)
@@ -97,7 +97,7 @@ def dropbox():
     from mac_cleanup.utils import check_exists
 
     if check_exists("~/Dropbox"):
-        t.msg("Clearing Dropbox 📦 Cache Files...")
+        t.msg("Clearing Dropbox 📦 Cache Files")
         t.collect("~/Dropbox/.dropbox.cache/*")
 
 
@@ -105,7 +105,7 @@ def google_drive():
     from mac_cleanup.utils import check_exists
 
     if check_exists("~/Library/Application Support/Google/DriveFS/"):
-        t.msg("Clearing Google Drive File Stream Cache Files...")
+        t.msg("Clearing Google Drive File Stream Cache Files")
         t.collect("killall 'Google Drive File Stream'", command=True)
         t.collect("~/Library/Application Support/Google/DriveFS/[0-9a-zA-Z]*/content_cache")
 
@@ -114,7 +114,7 @@ def composer():
     from mac_cleanup.utils import cmd
 
     if cmd("type 'composer'"):
-        t.msg("Cleaning up composer...")
+        t.msg("Cleaning up composer")
         t.collect("composer clearcache --no-interaction", command=True)
         # For dry_run
         t.collect("~/Library/Caches/composer", dry=True)
@@ -125,7 +125,7 @@ def steam():
     from mac_cleanup.utils import check_exists
 
     if check_exists("~/Library/Application Support/Steam/"):
-        t.msg("Clearing Steam Cache, Log, and Temp Files...")
+        t.msg("Clearing Steam Cache, Log, and Temp Files")
         t.collect("~/Library/Application Support/Steam/appcache")
         t.collect("~/Library/Application Support/Steam/depotcache")
         t.collect("~/Library/Application Support/Steam/logs")
@@ -139,7 +139,7 @@ def minecraft():
     from mac_cleanup.utils import check_exists
 
     if check_exists("~/Library/Application Support/minecraft"):
-        t.msg("Clearing Minecraft Cache and Log Files...")
+        t.msg("Clearing Minecraft Cache and Log Files")
         t.collect("~/Library/Application Support/minecraft/logs")
         t.collect("~/Library/Application Support/minecraft/crash-reports")
         t.collect("~/Library/Application Support/minecraft/webcache")
@@ -156,7 +156,7 @@ def lunarclient():  # noqa
     from mac_cleanup.utils import check_exists
 
     if check_exists("~/.lunarclient"):
-        t.msg("Deleting Lunar Client logs and caches...")
+        t.msg("Deleting Lunar Client logs and caches")
         t.collect("~/.lunarclient/game-cache")
         t.collect("~/.lunarclient/launcher-cache")
         t.collect("~/.lunarclient/logs")
@@ -169,7 +169,7 @@ def wget_logs():
     from mac_cleanup.utils import check_exists
 
     if check_exists("~/wget-log"):
-        t.msg("Deleting Wget log and hosts file...")
+        t.msg("Deleting Wget log and hosts file")
         t.collect("~/wget-log")
         t.collect("~/.wget-hsts")
 
@@ -179,7 +179,7 @@ def cacher():
     from mac_cleanup.utils import check_exists
 
     if check_exists("~/.cacher"):
-        t.msg("Deleting Cacher logs...")
+        t.msg("Deleting Cacher logs")
         t.collect("~/.cacher/logs")
 
 
@@ -188,7 +188,7 @@ def android():
     from mac_cleanup.utils import check_exists
 
     if check_exists("~/.android"):
-        t.msg("Deleting Android cache...")
+        t.msg("Deleting Android cache")
         t.collect("~/.android/cache")
 
 
@@ -197,7 +197,7 @@ def gradle():
     from mac_cleanup.utils import check_exists
 
     if check_exists("~/.gradle"):
-        t.msg("Clearing Gradle caches...")
+        t.msg("Clearing Gradle caches")
         t.collect("~/.gradle/caches")
 
 
@@ -206,7 +206,7 @@ def kite():
     from mac_cleanup.utils import check_exists
 
     if check_exists("~/.kite"):
-        t.msg("Deleting Kite logs...")
+        t.msg("Deleting Kite logs")
         t.collect("~/.kite/logs")
 
 
@@ -214,12 +214,12 @@ def brew():
     from mac_cleanup.utils import cmd
 
     if cmd("type 'brew'"):
-        t.msg("Cleaning up Homebrew Cache...")
+        t.msg("Cleaning up Homebrew Cache")
         t.collect("brew cleanup -s", command=True)
         t.collect(cmd("brew --cache"))
         t.collect("brew tap --repair", command=True)
         if args.update:
-            t.msg("Updating Homebrew Recipes and upgrading...")
+            t.msg("Updating Homebrew Recipes and upgrading")
             t.collect("brew update && brew upgrade", command=True)
 
 
@@ -245,7 +245,7 @@ def pyenv():
     from os import getenv
 
     if getenv("PYENV_VIRTUALENV_CACHE_PATH"):
-        t.msg("Removing Pyenv-VirtualEnv Cache...")
+        t.msg("Removing Pyenv-VirtualEnv Cache")
         t.collect(getenv("PYENV_VIRTUALENV_CACHE_PATH"))
 
 
@@ -253,7 +253,7 @@ def npm():
     from mac_cleanup.utils import cmd
 
     if cmd("type 'npm'"):
-        t.msg("Cleaning up npm cache...")
+        t.msg("Cleaning up npm cache")
         t.collect("npm cache clean --force", command=True)
         # For dry_run
         t.collect("~/.npm/*", dry=True)
@@ -263,7 +263,7 @@ def yarn():
     from mac_cleanup.utils import cmd
 
     if cmd("type 'yarn'"):
-        t.msg("Cleaning up Yarn Cache...")
+        t.msg("Cleaning up Yarn Cache")
         t.collect("yarn cache clean --force", command=True)
         # For dry_run
         t.collect("~/Library/Caches/yarn", dry=True)
@@ -273,7 +273,7 @@ def pod():
     from mac_cleanup.utils import cmd
 
     if cmd("type 'pod'"):
-        t.msg("Cleaning up Pod Cache...")
+        t.msg("Cleaning up Pod Cache")
         t.collect("pod cache clean --all", command=True)
         # For dry_run
         t.collect("~/Library/Caches/CocoaPods", dry=True)
@@ -285,7 +285,7 @@ def go():
     if cmd("type 'go'"):
         from os import getenv
 
-        t.msg("Clearing Go module cache...")
+        t.msg("Clearing Go module cache")
         t.collect("go clean -modcache", command=True)
         # For dry_run
         if getenv("GOPATH"):
@@ -299,7 +299,7 @@ def microsoft_teams():
     from mac_cleanup.utils import check_exists
 
     if check_exists("~/Library/Application Support/Microsoft/Teams"):
-        t.msg("Deleting Microsoft Teams logs and caches...")
+        t.msg("Deleting Microsoft Teams logs and caches")
         t.collect("~/Library/Application Support/Microsoft/Teams/IndexedDB")
         t.collect("~/Library/Application Support/Microsoft/Teams/Cache")
         t.collect("~/Library/Application Support/Microsoft/Teams/Application Cache")
@@ -319,22 +319,22 @@ def poetry():
     from mac_cleanup.utils import cmd, check_exists
 
     if cmd("type 'poetry'") or check_exists("~/Library/Caches/pypoetry"):
-        t.msg("Deleting Poetry cache...")
+        t.msg("Deleting Poetry cache")
         t.collect("~/Library/Caches/pypoetry")
 
 
 # Removes Java heap dumps
 def java_cache():
-    t.msg("Deleting Java heap dumps...")
+    t.msg("Deleting Java heap dumps")
     t.collect("~/*.hprof")
 
 
 def dns_cache():
-    t.msg("Cleaning up DNS cache...")
+    t.msg("Cleaning up DNS cache")
     t.collect("sudo dscacheutil -flushcache", command=True)
     t.collect("sudo killall -HUP mDNSResponder", command=True)
 
 
 def inactive_memory():
-    t.msg("Purging inactive memory...")
+    t.msg("Purging inactive memory")
     t.collect("sudo purge", command=True)
