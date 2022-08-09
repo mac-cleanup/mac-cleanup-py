@@ -43,6 +43,9 @@ class ExceptionDecorator:
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
+            # Ignore SystemExit
+            except SystemExit:
+                pass
             except BaseException as caughtException:
                 from mac_cleanup.console import console
 
@@ -60,7 +63,7 @@ class ExceptionDecorator:
 
                     log = logging.getLogger("ExceptionDecorator")
                     log.exception("Unexpected error occurred")
-                console.print("\nExiting...")
+                    console.print("Exiting...")
         return wrapper
 
 
