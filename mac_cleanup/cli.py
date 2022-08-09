@@ -53,15 +53,6 @@ def main() -> None:
                 # There are no tasks w/o main
                 cmd(task["main"])
 
-        # Launch brew additional cleanup & repair
-        for brew_task in track(
-                ["brew cleanup -s", "brew tap --repair"],
-                description="Cleaning Brew",
-                transient=True,
-                total=2,
-        ):
-            cmd(brew_task)
-
         # Free space after the run
         newAvailable = count_free_space()
 

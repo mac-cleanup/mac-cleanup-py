@@ -215,7 +215,9 @@ def brew():
 
     if cmd("type 'brew'"):
         t.msg("Cleaning up Homebrew Cache...")
+        t.collect("brew cleanup -s", command=True)
         t.collect(cmd("brew --cache"))
+        t.collect("brew tap --repair", command=True)
         if args.update:
             t.msg("Updating Homebrew Recipes and upgrading...")
             t.collect("brew update && brew upgrade", command=True)
