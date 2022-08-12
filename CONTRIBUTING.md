@@ -1,4 +1,4 @@
-# Welcome to VideoBot contributing guide 
+# Welcome to contributing guide 
 
 Thank you for investing your time in contributing to the project!
 
@@ -36,11 +36,9 @@ If an issue doesn't exist, you can open a new issue using a relevant [issue form
 
 View the [existing issues](https://github.com/mac-cleanup/mac-cleanup-py/issues) to find something interesting to you. 
 
-In general, issues are not assigned to anyone
+In general, new issues will be assigned on [Drugsosos](https://github.com/Drugsosos).
 
-> Except for newcomers issues, they'll be assigned on [Drugsosos](https://github.com/Drugsosos)
-
-If you find an issue to work on, you are welcome to open a PR with a fix.
+If you find an issue to work on, just post a comment on the issue's page and you are welcome to open a PR with a fix.
 
 ### Make Changes
 
