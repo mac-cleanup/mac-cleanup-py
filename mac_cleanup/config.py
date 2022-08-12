@@ -150,7 +150,7 @@ def load_config(
         [
             enabled.remove(i)
             for i in enabled
-            if not all_modules.get(i)
+            if i not in all_modules
         ]
 
     # Sets enabled in config
