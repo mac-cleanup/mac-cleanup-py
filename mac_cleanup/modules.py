@@ -13,6 +13,7 @@ def load_default(
     """
     import mac_cleanup.default_modules as default_modules
 
+    # getmembers returns sorted set
     return dict(getmembers(default_modules, isfunction))
 
 
@@ -44,8 +45,9 @@ def load_custom(
                         module.name.split(".py")[0],
                         module.as_posix(),
                     ).load_module(),
-                    isfunction
+                    isfunction,
                 )
             )
         )
+    # getmembers returns sorted set
     return custom_modules

@@ -1,7 +1,4 @@
-from rich.progress import track
-from pathlib import Path
-from subprocess import Popen, PIPE, DEVNULL
-from typing import TypeVar, Callable, Type, Optional, Union, Dict
+from typing import TypeVar, Callable, Type, Optional, Union
 from inspect import isclass
 
 _function = TypeVar(
@@ -30,7 +27,7 @@ class ExceptionDecorator:
     ):
         # Sets default exception if none was provided
         if not exception:
-            self.exception = KeyboardInterrupt
+            self.exception = tuple()
 
         # If class convert to tuple
         if isclass(self.exception):
@@ -43,24 +40,34 @@ class ExceptionDecorator:
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
+            except KeyboardInterrupt:
+                from mac_cleanup.console import console
+
+                console.print("\n[warning]Exiting...")
+                exit(0)
+            # Ignore SystemExit
+            except SystemExit:
+                pass
             except BaseException as caughtException:
                 from mac_cleanup.console import console
 
                 # If not default exception logs stuff in console
                 if not type(caughtException) in self.exception:
-                    import logging
+                    import os
+                    from logging import basicConfig, getLogger
                     from rich.logging import RichHandler
 
-                    logging.basicConfig(
+                    basicConfig(
                         level="ERROR",
                         format="%(message)s",
                         datefmt="[%X]",
                         handlers=[RichHandler(rich_tracebacks=True)]
                     )
 
-                    log = logging.getLogger("ExceptionDecorator")
+                    log = getLogger("ExceptionDecorator")
                     log.exception("Unexpected error occurred")
-                console.print("\nExiting...")
+                    console.print("\n[danger]Exiting...")
+                    os._exit(1)  # noqa  It exists, exit whole process
         return wrapper
 
 
@@ -94,6 +101,8 @@ def cmd(
     Returns:
         stdout of executed command
     """
+    from subprocess import Popen, PIPE, DEVNULL
+
     return (
         Popen(command, shell=True, stdout=PIPE, stderr=DEVNULL)
         .communicate()
@@ -114,6 +123,8 @@ def expanduser(
     Returns:
         Path as a string
     """
+    from pathlib import Path
+
     return Path(str_path).expanduser().as_posix()
 
 
@@ -128,6 +139,8 @@ def check_exists(
     Returns:
         True if exists
     """
+    from pathlib import Path
+
     # If glob return True (it'll delete nothing at the end, hard to hande otherwise)
     if "*" in path:
         return True
@@ -167,18 +180,23 @@ def check_deletable(
     if not path.strip():
         return False
 
+    # If glob return True (it'll delete nothing at the end, hard to hande otherwise)
+    if "*" in path:
+        return True
+
     # Returns False if path startswith anything from SIP_list or in user_list
     if any(
-            Path(path).expanduser().as_posix().startswith(i)
+            expanduser(path).startswith(i)
             for i in list(map(expanduser, SIP_list + user_list))
     ):
         return False
+    return "restricted" not in cmd(f"ls -lo {path} | awk '{{print $3, $4}}'")
 
-    restricted = (
-            "restricted" not in cmd(f"ls -lo {path} | awk '{{print $3}}'")
-            and not bool(cmd(f"xattr -l {path}"))  # Returns None if not restricted otherwise string
-    )
-    return restricted
+    # restricted = (
+    #         "restricted" not in cmd(f"ls -lo {path} | awk '{{print $3, $4}}'")
+    #         and not bool(cmd(f"xattr -l {path}"))  # Returns None if not restricted otherwise string
+    # )
+    # return restricted
 
 
 def get_size(
@@ -192,11 +210,14 @@ def get_size(
     Returns:
         Size of dir/file
     """
+    from pathlib import Path
+
     # Searching for glob in path
     split_path = path.split("*", 1)
     path, glob = split_path if len(split_path) == 2 else (path, "")
 
-    return sum(p.stat().st_size for p in Path(path).expanduser().rglob("*" + glob))
+    # Ignores symbolic links
+    return sum(p.stat().st_size for p in Path(path).expanduser().rglob("*" + glob) if not p.is_symlink())
 
 
 def bytes_to_human(
@@ -221,7 +242,7 @@ def bytes_to_human(
 
 
 class Borg:
-    _shared_state: Dict[str, list] = dict()
+    _shared_state: dict[str, list] = dict()
 
     def __init__(self):
         self.__dict__ = self._shared_state
@@ -297,6 +318,8 @@ class CleanUp(Borg):
         Returns:
             Approx amount of bytes to be removed
         """
+        from rich.progress import track
+
         # Extracts paths from execute_list
         path_list = [
             task["main"]

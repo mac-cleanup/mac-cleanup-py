@@ -11,44 +11,50 @@
 2. Deletes unnecessary logs & files
 3. Removes cache
 
-![mac-cleanup_v2_2_0](https://user-images.githubusercontent.com/44712637/183507992-03466528-ddb1-4370-852c-9ef8dc008a11.gif)
+![mac-cleanup_v2_X_X](https://user-images.githubusercontent.com/44712637/183507992-03466528-ddb1-4370-852c-9ef8dc008a11.gif)
 
 <details>
    <summary>
-   Full functionality
+   Default modules
    </summary>
 
-  * Empty the Trash on All Mounted Volumes and the Main HDD
-  * Clear System Log Files
-  * Clear Adobe Cache Files
-  * Cleanup iOS Applications
-  * Remove iOS Device Backups
-  * Cleanup Xcode Derived Data and Archives
-  * Reset iOS simulators
-  * Cleanup Homebrew Cache
-  * Cleanup Any Old Versions of Gems
-  * Cleanup Dangling Docker Images
-  * Purge Inactive Memory
-  * Cleanup pip cache
-  * Cleanup Pyenv-VirtualEnv Cache
-  * Cleanup npm Cache
-  * Cleanup Yarn Cache
-  * Cleanup Docker Images and Stopped Containers
-  * Cleanup CocoaPods Cache Files
-  * Cleanup composer cache
-  * Cleanup Dropbox cache
-  * Remove PhpStorm logs
-  * Remove Minecraft logs and cache
-  * Remove Steam logs and cache
-  * Remove Lunar Client logs and cache
-  * Remove Microsoft Teams logs and cache
-  * Remove Wget logs and hosts
-  * Removes Cacher logs
-  * Deletes Android caches
-  * Clears Gradle caches
-  * Deletes Kite logs
-  * Clears Go module cache
-  * Clears Poetry cache
+  </br>
+
+  - `adobe` - Clears **Adobe** cache files
+  - `android` - Clears **Android** caches
+  - `brew` - Clears **Homebrew** cache
+  - `cacher` - Clears **Cacher** logs
+  - `chrome` - Clears Google Chrome cache
+  - `composer` - Clears composer cache
+  - `dns_cache` - Clears DNS cache
+  - `docker` - Cleanup dangling **Docker Images** and stopped **containers**
+  - `dropbox` - Clears **Dropbox** cache
+  - `gem` - Cleanup any old versions of **Gems**
+  - `go` - Clears **Go** cache
+  - `google_drive` - Clears **Google Drive** caches
+  - `gradle` - Clears **Gradle** caches
+  - `inactive_memory` - Purge Inactive Memory
+  - `ios_apps` - Cleanup **iOS Applications**
+  - `ios_backups` - Removes **iOS Device Backups**
+  - `java_cache` - Removes **Java head dumps** from home directory
+  - `jetbrains` - Removes logs from **PhpStorm**, **PyCharm**  etc
+  - `kite` - Deletes **Kite** logs
+  - `lunarclient` - Removes **Lunar Client** logs and cache
+  - `microsoft_teams` - Remove **Microsoft Teams** logs and cache
+  - `minecraft` - Remove **Minecraft** logs and cache
+  - `npm` - Cleanup **npm** Cache
+  - `pod` - Cleanup **CocoaPods** Cache Files
+  - `poetry` - Clears **Poetry** cache
+  - `pyenv` - Cleanup **Pyenv-VirtualEnv** Cache
+  - `steam` - Remove **Steam** logs and cache
+  - `system_caches` - Clear **System cache**
+  - `system_log` - Clear **System Log** Files
+  - `trash` - Empty the **Trash** on All Mounted Volumes and the Main HDD
+  - `wget_logs` - Remove **Wget** logs and hosts
+  - `xcode` - Cleanup **Xcode Derived Data** and **Archives**
+  - `xcode_simulators` - Reset **iOS simulators**
+  - `yarn` - Cleanup **yarn** Cache
+
 
 </details>
 
@@ -96,7 +102,7 @@ $ mac-cleanup -h
 usage: mac-cleanup [-h] [-d] [-u] [-c] [-m]
 
     A Mac Cleanup Utility in Python
-    v2.2.0
+    v2.2.2
     https://github.com/mac-cleanup/mac-cleanup-py
 
 optional arguments:

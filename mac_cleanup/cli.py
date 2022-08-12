@@ -1,8 +1,5 @@
-from rich.progress import track
-from rich.prompt import Confirm
-from rich.panel import Panel
 from mac_cleanup.utils import CleanUp, cmd, bytes_to_human, catch_exception
-from mac_cleanup.console import console, args
+from mac_cleanup.console import console, args, print_panel
 from mac_cleanup.config import load_config
 
 t = CleanUp()
@@ -10,6 +7,9 @@ t = CleanUp()
 
 @catch_exception
 def main() -> None:
+    # Clear console at the start
+    console.clear()
+
     # Sets custom modules' path if user prompted to and exits
     if args.modules:
         from mac_cleanup.config import set_custom_path
@@ -24,10 +24,14 @@ def main() -> None:
     if args.configure:
         raise KeyboardInterrupt
 
-    def count_free_space():
+    def count_free_space(
+    ) -> int:
         return int(cmd("df / | tail -1 | awk '{print $4}'"))
 
-    def cleanup():
+    def cleanup(
+    ) -> None:
+        from rich.progress import track
+
         # Free space before the run
         oldAvailable = count_free_space()
 
@@ -54,33 +58,26 @@ def main() -> None:
                 # There are no tasks w/o main
                 cmd(task["main"])
 
-        # Launch brew additional cleanup & repair
-        for brew_task in track(
-                ["brew cleanup -s", "brew tap --repair"],
-                description="Cleaning Brew",
-                transient=True,
-                total=2,
-        ):
-            cmd(brew_task)
-
         # Free space after the run
         newAvailable = count_free_space()
 
         # Print results
-        console.print(
-            Panel(
-                f"Removed - [info]{bytes_to_human((newAvailable - oldAvailable) * 1024)}",
-                title="Success",
-                title_align="center",
-            )
+        print_panel(
+            text=f"Removed - [success]{bytes_to_human((newAvailable - oldAvailable) * 1024)}",
+            title="[info]Success",
         )
     # Straight to clean up if not dry run
     if not args.dry_run:
         cleanup()
     else:
+        from rich.prompt import Confirm
+
         freed_space = bytes_to_human(t.count_dry())
 
-        console.print(f"Approx {freed_space} will be cleaned")
+        print_panel(
+            text=f"Approx [success]{freed_space}[/success] will be cleaned",
+            title="[info]Dry run results",
+        )
         if Confirm.ask("Continue?", show_default=False, default="y"):
             console.clear()
             cleanup()

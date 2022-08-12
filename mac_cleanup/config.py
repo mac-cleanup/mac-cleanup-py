@@ -1,9 +1,42 @@
-import toml
 from pathlib import Path
-from inquirer import Checkbox, prompt
-from rich.prompt import Prompt
 
 config_path = Path(__file__).parent.resolve().as_posix() + "/modules.toml"
+
+
+def get_config(
+) -> dict:
+    """
+    Gets the config or creates it if it doesn't exist
+
+    Returns:
+        Config as a dict
+    """
+    from toml import load, TomlDecodeError
+
+    # Creates config if it's not already created
+    Path(config_path).touch(exist_ok=True)
+
+    # Loads config (in case something got wrong there is try -> except)
+    try:
+        config = load(config_path)
+    except TomlDecodeError:
+        config = dict()
+    return config
+
+
+def set_config(
+        config: dict,
+) -> None:
+    """
+    Updates and writes config
+
+    Args:
+        config: Config as a dict to be written
+    """
+    from toml import dump
+
+    with open(config_path, "w+") as f:
+        dump(config, f)
 
 
 def config_checkbox(
@@ -19,16 +52,29 @@ def config_checkbox(
     Returns:
         List w/ all modules user selected
     """
+    from inquirer import Checkbox, prompt
+    from mac_cleanup.console import print_panel, console
+
+    # Prints the legend
+    print_panel(
+        text="[success]Enable: [yellow][warning]<space>[/warning] | [warning]<--[/warning] | [warning]-->[/warning]"
+             "\t[success]Confirm: [warning]<enter>[/warning]",
+        title="[info]Controls"
+    )
+
     questions = Checkbox(
         "modules",
-        message="Activated modules",
+        message="Active modules",
         choices=all_modules,
         default=enabled,
         carousel=True,
     )
-    answers = prompt([questions])
+    answers = prompt([questions], raise_keyboard_interrupt=True)
+
+    # Clear console after checkbox
+    console.clear()
     if not answers:
-        raise KeyboardInterrupt
+        raise ValueError("Got empty answers from Checkbox")
     return answers["modules"]
 
 
@@ -37,6 +83,8 @@ def set_custom_path(
     """
     Sets path for custom modules in config
     """
+    from rich.prompt import Prompt
+
     # Ask for user input
     custom_path = Prompt.ask(
         "Enter path to custom modules",
@@ -53,39 +101,6 @@ def set_custom_path(
     set_config(config)
 
 
-def get_config(
-) -> dict:
-    """
-    Gets the config or creates it if it doesn't exist
-
-    Returns:
-        Config as a dict
-    """
-    # Creates config if it's not already created
-    Path(config_path).touch()
-
-    # Loads config (in case something got wrong there is try -> except)
-    try:
-        config = toml.load(config_path)
-    except toml.TomlDecodeError:
-        config = dict()
-    return config
-
-
-def set_config(
-        config: dict,
-) -> None:
-    """
-    Updates and writes config
-
-    Args:
-        config: Config as a dict to be written
-    """
-    config.update(config)
-    with open(config_path, 'w+') as f:
-        toml.dump(config, f)
-
-
 def load_config(
         configuration_needed: bool = False,
 ) -> None:
@@ -97,33 +112,45 @@ def load_config(
     """
     from mac_cleanup.modules import load_default, load_custom
 
-    requested_configure = configuration_needed
-
     config = get_config()
 
-    # Joins default and custom modules together
-    all_modules = dict()
-    all_modules.update(load_default())
-    all_modules.update(load_custom(config.get("custom_path")))
+    # Joins default and custom modules together and sort 'em
+    all_modules = dict(
+        load_custom(config.get("custom_path")),
+        **load_default(),
+    )
+    all_modules_keys = list(all_modules.keys())
 
     # If config is empty requestes configuration and selects all modules as enabled
-    if config == dict() or not config.get("enabled"):
-        configuration_needed = True
-        enabled = list(all_modules.keys())
+    if config.get("enabled", 0) == 0 or not isinstance(config["enabled"], list):
+        from mac_cleanup.console import console
+
+        console.print("[danger]Modules not configured, opening configuration screen...[/danger]")
+        enabled = config_checkbox(
+            all_modules=all_modules_keys,
+            enabled=all_modules_keys,
+        )
+        configuration_needed = False
     else:
-        enabled = config.get("enabled", list())
+        enabled = config["enabled"]
 
     if configuration_needed:
+        from mac_cleanup.console import console
+
         enabled = config_checkbox(
-            all_modules=list(all_modules.keys()),
+            all_modules=all_modules_keys,
             enabled=enabled,
         )
+        config.update({"enabled": enabled})
+        set_config(config)
+        console.print("Config saved, exiting...")
+        exit(0)
     else:
         # Checks if enabled modules exists else removes 'em
         [
             enabled.remove(i)
             for i in enabled
-            if not all_modules.get(i)
+            if i not in all_modules
         ]
 
     # Sets enabled in config
@@ -134,7 +161,6 @@ def load_config(
     [
         all_modules[module]()
         for module in enabled
-        if not requested_configure
     ]
 
 
