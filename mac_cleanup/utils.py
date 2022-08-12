@@ -180,16 +180,20 @@ def check_deletable(
     if not path.strip():
         return False
 
+    # If glob return True (it'll delete nothing at the end, hard to hande otherwise)
+    if "*" in path:
+        return True
+
     # Returns False if path startswith anything from SIP_list or in user_list
     if any(
             expanduser(path).startswith(i)
             for i in list(map(expanduser, SIP_list + user_list))
     ):
         return False
-    return True
+    return "restricted" not in cmd(f"ls -lo {path} | awk '{{print $3, $4}}'")
 
     # restricted = (
-    #         "restricted" not in cmd(f"ls -lo {path} | awk '{{print $3}}'")
+    #         "restricted" not in cmd(f"ls -lo {path} | awk '{{print $3, $4}}'")
     #         and not bool(cmd(f"xattr -l {path}"))  # Returns None if not restricted otherwise string
     # )
     # return restricted
