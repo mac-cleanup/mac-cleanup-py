@@ -27,7 +27,7 @@ inquirer = "^2.10.0"
 [tool.poetry.dev-dependencies]
 
 [tool.poetry.scripts]
-mac-cleanup = "mac_cleanup.cli:main"
+mac-cleanup = "mac_cleanup:main"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
