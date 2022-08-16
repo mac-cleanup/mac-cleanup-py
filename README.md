@@ -72,7 +72,6 @@ brew install mac-cleanup-py
 ### Using pip
 
 ```bash
-pip3 install rich toml inquirer 
 pip3 install mac-cleanup
 ```
 
@@ -88,8 +87,8 @@ brew untap mac-cleanup/mac-cleanup-py
 ### Using pip
 
 ```bash
-pip3 uninstall rich toml inquirer 
 pip3 uninstall mac-cleanup
+pip3 uninstall rich toml inquirer 
 ```
 
 ## Usage Options
