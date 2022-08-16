@@ -221,8 +221,6 @@ def _get_size(
         return sum(
             p.stat().st_size
             for p in Path(path).expanduser().rglob("*" + glob)
-            # Ignores symbolic links
-            if not p.is_symlink()
         )
     except PermissionError:
         return 0
