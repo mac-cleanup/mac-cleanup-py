@@ -53,7 +53,7 @@ def config_checkbox(
         List w/ all modules user selected
     """
     from inquirer import Checkbox, prompt
-    from mac_cleanup.console import print_panel, console
+    from .console import print_panel, console
 
     # Prints the legend
     print_panel(
@@ -110,7 +110,7 @@ def load_config(
     Args:
         configuration_needed: Request configuration
     """
-    from mac_cleanup.modules import load_default, load_custom
+    from .modules import load_default, load_custom
 
     config = get_config()
 
@@ -123,7 +123,7 @@ def load_config(
 
     # If config is empty requestes configuration and selects all modules as enabled
     if config.get("enabled", 0) == 0 or not isinstance(config["enabled"], list):
-        from mac_cleanup.console import console
+        from .console import console
 
         console.print("[danger]Modules not configured, opening configuration screen...[/danger]")
         enabled = config_checkbox(
@@ -135,7 +135,7 @@ def load_config(
         enabled = config["enabled"]
 
     if configuration_needed:
-        from mac_cleanup.console import console
+        from .console import console
 
         enabled = config_checkbox(
             all_modules=all_modules_keys,

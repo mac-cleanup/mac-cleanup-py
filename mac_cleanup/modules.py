@@ -1,17 +1,17 @@
 from inspect import getmembers, isfunction
 from typing import Optional
-from mac_cleanup.utils import _function
+from .utils import function
 
 
 def load_default(
-) -> dict[str, _function]:
+) -> dict[str, function]:
     """
     Loads the default modules
 
     Returns:
         Dict w/ the module name and the module function respectively
     """
-    import mac_cleanup.default_modules as default_modules
+    from . import default_modules
 
     # getmembers returns sorted set
     return dict(getmembers(default_modules, isfunction))
@@ -19,7 +19,7 @@ def load_default(
 
 def load_custom(
         custom_path: Optional[str],
-) -> dict[str, _function]:
+) -> dict[str, function]:
     """
     Loads the custom modules from the given path
 

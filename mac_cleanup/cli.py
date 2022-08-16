@@ -1,8 +1,9 @@
-from mac_cleanup.utils import CleanUp, cmd, bytes_to_human, catch_exception
-from mac_cleanup.console import console, args, print_panel
-from mac_cleanup.config import load_config
+from . import *
+from .utils import cmd, bytes_to_human, catch_exception
+from .console import console, print_panel
+from .config import load_config
 
-t = CleanUp()
+t = Collector()
 
 
 @catch_exception
@@ -12,7 +13,7 @@ def main() -> None:
 
     # Sets custom modules' path if user prompted to and exits
     if args.modules:
-        from mac_cleanup.config import set_custom_path
+        from .config import set_custom_path
 
         set_custom_path()
         raise KeyboardInterrupt

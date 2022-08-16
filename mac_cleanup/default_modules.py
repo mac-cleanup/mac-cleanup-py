@@ -1,7 +1,6 @@
-from mac_cleanup.utils import CleanUp
-from mac_cleanup.console import args
+from . import *
 
-t = CleanUp()
+t = Collector()
 
 
 def trash():
@@ -30,7 +29,7 @@ def system_log():
 
 
 def jetbrains():
-    from mac_cleanup.utils import check_exists
+    from .utils import check_exists
 
     if check_exists("~/Library/Logs/JetBrains/"):
         t.msg("Clearing all application log files from JetBrains")
@@ -38,7 +37,7 @@ def jetbrains():
 
 
 def adobe():
-    from mac_cleanup.utils import check_exists
+    from .utils import check_exists
 
     if check_exists("~/Library/Application Support/Adobe/"):
         t.msg("Clearing Adobe Cache Files")
@@ -46,7 +45,7 @@ def adobe():
 
 
 def chrome():
-    from mac_cleanup.utils import check_exists
+    from .utils import check_exists
 
     if check_exists("~/Library/Application Support/Google/Chrome/"):
         t.msg("Clearing Google Chrome Cache Files")
@@ -71,30 +70,53 @@ def xcode():
 
 
 def xcode_simulators():
-    from mac_cleanup.utils import cmd
+    from .utils import cmd
 
     if cmd("type 'xcrun'"):
         t.msg("Cleaning up iOS Simulators")
-        t.collect("osascript -e 'tell application 'com.apple.CoreSimulator.CoreSimulatorService' to quit'",
-                  command=True)
-        t.collect("osascript -e 'tell application 'iOS Simulator' to quit'", command=True)
-        t.collect("osascript -e 'tell application 'Simulator' to quit'", command=True)
-        t.collect("xcrun simctl shutdown all", command=True)
-        t.collect("xcrun simctl erase all", command=True)
+        t.collect(
+            "osascript -e 'tell application 'com.apple.CoreSimulator.CoreSimulatorService' to quit'",
+            command=True
+        )
+        t.collect(
+            "osascript -e 'tell application 'iOS Simulator' to quit'",
+            command=True
+        )
+        t.collect(
+            "osascript -e 'tell application 'Simulator' to quit'",
+            command=True
+        )
+        t.collect(
+            "xcrun simctl shutdown all",
+            command=True
+        )
+        t.collect(
+            "xcrun simctl erase all",
+            command=True
+        )
         # For dry_run
-        t.collect("~/Library/Developer/CoreSimulator/Devices/*/data/[!Library|var|tmp|Media]*", dry=True)
+        t.collect(
+            "~/Library/Developer/CoreSimulator/Devices/*/data/[!Library|var|tmp|Media]*",
+            dry=True
+        )
         t.collect(
             "/Users/wah/Library/Developer/CoreSimulator/Devices/*/data/Library/"
             "[!PreferencesCaches|Caches|AddressBook|Trial]*",
             dry=True
         )
-        t.collect("~/Library/Developer/CoreSimulator/Devices/*/data/Library/Caches/*", dry=True)
-        t.collect("~/Library/Developer/CoreSimulator/Devices/*/data/Library/AddressBook/AddressBook*", dry=True)
+        t.collect(
+            "~/Library/Developer/CoreSimulator/Devices/*/data/Library/Caches/*",
+            dry=True
+        )
+        t.collect(
+            "~/Library/Developer/CoreSimulator/Devices/*/data/Library/AddressBook/AddressBook*",
+            dry=True
+        )
 
 
 # Support deleting Dropbox Cache if they exist
 def dropbox():
-    from mac_cleanup.utils import check_exists
+    from .utils import check_exists
 
     if check_exists("~/Dropbox"):
         t.msg("Clearing Dropbox 📦 Cache Files")
@@ -102,27 +124,36 @@ def dropbox():
 
 
 def google_drive():
-    from mac_cleanup.utils import check_exists
+    from .utils import check_exists
 
     if check_exists("~/Library/Application Support/Google/DriveFS/"):
         t.msg("Clearing Google Drive File Stream Cache Files")
-        t.collect("killall 'Google Drive File Stream'", command=True)
+        t.collect(
+            "killall 'Google Drive File Stream'",
+            command=True
+        )
         t.collect("~/Library/Application Support/Google/DriveFS/[0-9a-zA-Z]*/content_cache")
 
 
 def composer():
-    from mac_cleanup.utils import cmd
+    from .utils import cmd
 
     if cmd("type 'composer'"):
         t.msg("Cleaning up composer")
-        t.collect("composer clearcache --no-interaction", command=True)
+        t.collect(
+            "composer clearcache --no-interaction",
+            command=True
+        )
         # For dry_run
-        t.collect("~/Library/Caches/composer", dry=True)
+        t.collect(
+            "~/Library/Caches/composer",
+            dry=True
+        )
 
 
 # Deletes Steam caches, logs, and temp files
 def steam():
-    from mac_cleanup.utils import check_exists
+    from .utils import check_exists
 
     if check_exists("~/Library/Application Support/Steam/"):
         t.msg("Clearing Steam Cache, Log, and Temp Files")
@@ -136,7 +167,7 @@ def steam():
 
 # Deletes Minecraft logs
 def minecraft():
-    from mac_cleanup.utils import check_exists
+    from .utils import check_exists
 
     if check_exists("~/Library/Application Support/minecraft"):
         t.msg("Clearing Minecraft Cache and Log Files")
@@ -153,7 +184,7 @@ def minecraft():
 
 # Deletes Lunar Client logs (Minecraft alternate client)
 def lunarclient():  # noqa
-    from mac_cleanup.utils import check_exists
+    from .utils import check_exists
 
     if check_exists("~/.lunarclient"):
         t.msg("Deleting Lunar Client logs and caches")
@@ -166,7 +197,7 @@ def lunarclient():  # noqa
 
 # Deletes Wget logs
 def wget_logs():
-    from mac_cleanup.utils import check_exists
+    from .utils import check_exists
 
     if check_exists("~/wget-log"):
         t.msg("Deleting Wget log and hosts file")
@@ -176,7 +207,7 @@ def wget_logs():
 
 # Deletes Cacher logs / I dunno either
 def cacher():
-    from mac_cleanup.utils import check_exists
+    from .utils import check_exists
 
     if check_exists("~/.cacher"):
         t.msg("Deleting Cacher logs")
@@ -185,7 +216,7 @@ def cacher():
 
 # Deletes Android cache
 def android():
-    from mac_cleanup.utils import check_exists
+    from .utils import check_exists
 
     if check_exists("~/.android"):
         t.msg("Deleting Android cache")
@@ -194,7 +225,7 @@ def android():
 
 # Clears Gradle caches
 def gradle():
-    from mac_cleanup.utils import check_exists
+    from .utils import check_exists
 
     if check_exists("~/.gradle"):
         t.msg("Clearing Gradle caches")
@@ -203,7 +234,7 @@ def gradle():
 
 # Deletes Kite Autocomplete logs
 def kite():
-    from mac_cleanup.utils import check_exists
+    from .utils import check_exists
 
     if check_exists("~/.kite"):
         t.msg("Deleting Kite logs")
@@ -211,34 +242,52 @@ def kite():
 
 
 def brew():
-    from mac_cleanup.utils import cmd
+    from .utils import cmd
 
     if cmd("type 'brew'"):
         t.msg("Cleaning up Homebrew Cache")
-        t.collect("brew cleanup -s", command=True)
+        t.collect(
+            "brew cleanup -s",
+            command=True
+        )
         t.collect(cmd("brew --cache"))
-        t.collect("brew tap --repair", command=True)
+        t.collect(
+            "brew tap --repair",
+            command=True
+        )
         if args.update:
             t.msg("Updating Homebrew Recipes and upgrading")
-            t.collect("brew update && brew upgrade", command=True)
+            t.collect(
+                "brew update && brew upgrade",
+                command=True
+            )
 
 
 def gem():
-    from mac_cleanup.utils import cmd
+    from .utils import cmd
 
     if cmd("type 'gem'"):  # TODO add count_dry
         t.msg("Cleaning up any old versions of gems")
-        t.collect("gem cleanup", command=True)
+        t.collect(
+            "gem cleanup",
+            command=True
+        )
 
 
 def docker():
-    from mac_cleanup.utils import cmd
+    from .utils import cmd
 
     if cmd("type 'docker'"):  # TODO add count_dry
         t.msg("Cleaning up Docker")
         if not cmd("docker ps >/dev/null 2>&1"):
-            t.collect("open --background -a Docker", command=True)
-        t.collect("docker system prune -af", command=True)
+            t.collect(
+                "open --background -a Docker",
+                command=True
+            )
+        t.collect(
+            "docker system prune -af",
+            command=True
+        )
 
 
 def pyenv():
@@ -250,53 +299,80 @@ def pyenv():
 
 
 def npm():
-    from mac_cleanup.utils import cmd
+    from .utils import cmd
 
     if cmd("type 'npm'"):
         t.msg("Cleaning up npm cache")
-        t.collect("npm cache clean --force", command=True)
+        t.collect(
+            "npm cache clean --force",
+            command=True
+        )
         # For dry_run
-        t.collect("~/.npm/*", dry=True)
+        t.collect(
+            "~/.npm/*",
+            dry=True
+        )
 
 
 def yarn():
-    from mac_cleanup.utils import cmd
+    from .utils import cmd
 
     if cmd("type 'yarn'"):
         t.msg("Cleaning up Yarn Cache")
-        t.collect("yarn cache clean --force", command=True)
+        t.collect(
+            "yarn cache clean --force",
+            command=True
+        )
         # For dry_run
-        t.collect("~/Library/Caches/yarn", dry=True)
+        t.collect(
+            "~/Library/Caches/yarn",
+            dry=True
+        )
 
 
 def pod():
-    from mac_cleanup.utils import cmd
+    from .utils import cmd
 
     if cmd("type 'pod'"):
         t.msg("Cleaning up Pod Cache")
-        t.collect("pod cache clean --all", command=True)
+        t.collect(
+            "pod cache clean --all",
+            command=True
+        )
         # For dry_run
-        t.collect("~/Library/Caches/CocoaPods", dry=True)
+        t.collect(
+            "~/Library/Caches/CocoaPods",
+            dry=True
+        )
 
 
 def go():
-    from mac_cleanup.utils import cmd
+    from .utils import cmd
 
     if cmd("type 'go'"):
         from os import getenv
 
         t.msg("Clearing Go module cache")
-        t.collect("go clean -modcache", command=True)
+        t.collect(
+            "go clean -modcache",
+            command=True
+        )
         # For dry_run
         if getenv("GOPATH"):
-            t.collect(f"{getenv('GOPATH')}/pkg/mod", dry=True)
+            t.collect(
+                f"{getenv('GOPATH')}/pkg/mod",
+                dry=True
+            )
         else:
-            t.collect("~/go/pkg/mod", dry=True)
+            t.collect(
+                "~/go/pkg/mod",
+                dry=True
+            )
 
 
 # Deletes all Microsoft Teams Caches and resets it to default - can fix also some performance issues
 def microsoft_teams():
-    from mac_cleanup.utils import check_exists
+    from .utils import check_exists
 
     if check_exists("~/Library/Application Support/Microsoft/Teams"):
         t.msg("Deleting Microsoft Teams logs and caches")
@@ -316,9 +392,12 @@ def microsoft_teams():
 
 # Deletes Poetry cache
 def poetry():
-    from mac_cleanup.utils import cmd, check_exists
+    from .utils import cmd, check_exists
 
-    if cmd("type 'poetry'") or check_exists("~/Library/Caches/pypoetry"):
+    if (
+            cmd("type 'poetry'")
+            or check_exists("~/Library/Caches/pypoetry")
+    ):
         t.msg("Deleting Poetry cache")
         t.collect("~/Library/Caches/pypoetry")
 
@@ -331,10 +410,19 @@ def java_cache():
 
 def dns_cache():
     t.msg("Cleaning up DNS cache")
-    t.collect("sudo dscacheutil -flushcache", command=True)
-    t.collect("sudo killall -HUP mDNSResponder", command=True)
+    t.collect(
+        "sudo dscacheutil -flushcache",
+        command=True
+    )
+    t.collect(
+        "sudo killall -HUP mDNSResponder",
+        command=True
+    )
 
 
 def inactive_memory():
     t.msg("Purging inactive memory")
-    t.collect("sudo purge", command=True)
+    t.collect(
+        "sudo purge",
+        command=True
+    )

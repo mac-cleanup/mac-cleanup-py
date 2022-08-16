@@ -1,4 +1,4 @@
-from mac_cleanup import __version__
+from .__version__ import __version__
 from argparse import ArgumentParser, RawTextHelpFormatter
 from rich.console import Console
 from rich.theme import Theme

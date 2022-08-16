@@ -1,8 +1,8 @@
 from typing import TypeVar, Callable, Type, Optional, Union
 from inspect import isclass
 
-_function = TypeVar(
-    "_function",
+function = TypeVar(
+    "function",
     bound=Callable[..., object]
 )
 
@@ -15,7 +15,7 @@ _exception = TypeVar(
     ])
 
 
-class ExceptionDecorator:
+class _ExceptionDecorator:
     """
     Decorator for catching exceptions and printing logs
     """
@@ -25,23 +25,23 @@ class ExceptionDecorator:
             self,
             exception: _exception = None,
     ):
-        # Sets default exception if none was provided
+        # Sets default exception (empty tuple) if none was provided
         if not exception:
             self.exception = tuple()
 
-        # If class convert to tuple
+        # If exception is singe convert to tuple
         if isclass(self.exception):
             self.exception = self.exception,
 
     def __call__(
             self,
-            func: _function,
+            func: function,
     ):
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
             except KeyboardInterrupt:
-                from mac_cleanup.console import console
+                from .console import console
 
                 console.print("\n[warning]Exiting...")
                 exit(0)
@@ -49,7 +49,7 @@ class ExceptionDecorator:
             except SystemExit:
                 pass
             except BaseException as caughtException:
-                from mac_cleanup.console import console
+                from .console import console
 
                 # If not default exception logs stuff in console
                 if not type(caughtException) in self.exception:
@@ -72,9 +72,9 @@ class ExceptionDecorator:
 
 
 def catch_exception(
-        func: Optional[_function] = None,
+        func: Optional[function] = None,
         exception: Optional[_exception] = None,
-) -> Union[ExceptionDecorator, _function]:
+) -> Union[_ExceptionDecorator, function]:
     """
     Decorator for catching exceptions and printing logs
 
@@ -84,7 +84,7 @@ def catch_exception(
     Returns:
         Decorated function
     """
-    exceptor = ExceptionDecorator(exception)
+    exceptor = _ExceptionDecorator(exception)
     if func:
         exceptor = exceptor(func)
     return exceptor
@@ -199,7 +199,7 @@ def check_deletable(
     # return restricted
 
 
-def get_size(
+def _get_size(
         path: str,
 ) -> int:
     """
@@ -249,14 +249,14 @@ def bytes_to_human(
     return f"{s} {size_name[i]}"
 
 
-class Borg:
+class _Borg:
     _shared_state: dict[str, list] = dict()
 
     def __init__(self):
         self.__dict__ = self._shared_state
 
 
-class CleanUp(Borg):
+class Collector(_Borg):
     def __init__(self, execute_list=None):
         super().__init__()
         if execute_list:
@@ -337,7 +337,7 @@ class CleanUp(Borg):
         ]
 
         counted_list = [
-            get_size(path)
+            _get_size(path)
             for path in track(
                 path_list,
                 description="Collecting dry run",
