@@ -3,7 +3,7 @@
 
 version: 2
 updates:
-  - package-ecosystem: "poetry"
+  - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"
@@ -13,6 +13,7 @@ updates:
       - "drugsosos"
     reviewers:
       - "drugsosos"
-    commit-message: "poetry"
+    commit-message:
+      prefix: "poetry"
     target-branch: "develop"
     
