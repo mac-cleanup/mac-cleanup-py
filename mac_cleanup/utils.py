@@ -212,7 +212,6 @@ def _get_size(
     split_path = path.split("*", 1)
     path, glob = split_path if len(split_path) == 2 else (path, "")
 
-    # Slow af, maybe use multiprocessing?
     temp_size: float = 0
 
     for p in Path(path).expanduser().rglob("*" + glob):
@@ -225,7 +224,7 @@ def _get_size(
 
 
 def bytes_to_human(
-        size_bytes: int,
+        size_bytes: float,
 ) -> str:
     """
     Converts bytes to human-readable format
@@ -348,7 +347,7 @@ class Collector(_Borg):
 
     def count_dry(
             self,
-    ) -> int:
+    ) -> float:
         """
         Counts free space for dry dun
 
@@ -356,6 +355,7 @@ class Collector(_Borg):
             Approx amount of bytes to be removed
         """
         from rich.progress import track
+        from multiprocessing import Pool
 
         # Extracts paths from execute_list
         path_list = [
@@ -365,14 +365,17 @@ class Collector(_Borg):
             if not unit.cmd
         ]
 
-        counted_list = [
-            _get_size(path)
-            for path in track(
-                path_list,
-                description="Collecting dry run",
-                transient=True,
-                total=len(path_list),
-            )
-        ]
+        counted_list: float = 0
 
-        return sum(counted_list)
+        with Pool() as pool:
+            for temp_size in track(
+                    pool.imap_unordered(
+                        _get_size,
+                        path_list
+                    ),
+                    description="Collecting dry run",
+                    transient=True,
+                    total=len(path_list),
+            ):
+                counted_list += temp_size
+        return counted_list

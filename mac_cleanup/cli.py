@@ -69,6 +69,7 @@ def main() -> None:
             text=f"Removed - [success]{bytes_to_human((newAvailable - oldAvailable) * 1024)}",
             title="[info]Success",
         )
+
     # Straight to clean up if not dry run
     if not args.dry_run:
         cleanup()
