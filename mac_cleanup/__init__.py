@@ -3,7 +3,7 @@ from .utils import Collector
 from .cli import main  # noqa ignore F401
 
 try:
-    from __version__ import __version__
+    from .__version__ import __version__
 except ImportError:
     __version__ = "source"
 
