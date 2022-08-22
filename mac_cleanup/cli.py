@@ -82,11 +82,20 @@ def main() -> None:
             text=f"Approx [success]{freed_space}[/success] will be cleaned",
             title="[info]Dry run results",
         )
-        if Confirm.ask("Continue?", show_default=False, default="y"):
+        try:
+            if Confirm.ask("Continue?", show_default=False, default="y"):
+                console.clear()
+                cleanup()
+            else:
+                console.clear()
+                console.print("Exiting...")
+        # At least Cyrillic symbols will crash rich.Confirm
+        except UnicodeDecodeError:
             console.clear()
-            cleanup()
-        else:
-            console.clear()
+            console.print(
+                "Do not enter symbols that can't be decoded to utf8",
+                style="danger",
+            )
             console.print("Exiting...")
 
 
