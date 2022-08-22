@@ -363,8 +363,8 @@ class Collector(_Borg):
                 if cmd
                 else query
                 if (
-                        check_deletable(query)
-                        and check_exists(query)
+                    check_deletable(query)
+                    and check_exists(query)
                 )
                 else None
             )

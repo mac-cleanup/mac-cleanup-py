@@ -1,6 +1,6 @@
 from .console import args
 from .utils import Collector
-from .cli import main
+from .cli import main  # noqa ignore F401
 
 try:
     from __version__ import __version__

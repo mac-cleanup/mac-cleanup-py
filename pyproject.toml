@@ -8,10 +8,7 @@ readme = "README.md"
 homepage = "https://github.com/mac-cleanup/mac-cleanup-py"
 repository = "https://github.com/mac-cleanup/mac-cleanup-py"
 
-classifiers = [
-    "Environment :: Console",
-    "Operating System :: MacOS"
-]
+classifiers = [ "Environment :: Console", "Operating System :: MacOS", ]
 
 [tool.poetry.urls]
 "Documentation" = "https://github.com/mac-cleanup/mac-cleanup-py#install-automatically"
@@ -37,22 +34,6 @@ mac-cleanup = "mac_cleanup:main"
 
 [options.package_data]
 mac_cleanup = "py.typed"
-
-[tool.mypy]
-python_version = "3.10"
-platform = "darwin"
-warn_return_any = true
-warn_unused_configs = true
-ignore_missing_imports = true
-disallow_untyped_calls = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-disallow_untyped_decorators = true
-exclude = "default_modules.py"
-
-
-[tool.flake8]
-max-line-length = 120
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

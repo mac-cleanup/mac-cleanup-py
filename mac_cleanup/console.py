@@ -4,8 +4,7 @@ from rich.console import Console
 from rich.theme import Theme
 
 parser = ArgumentParser(
-    description=
-    f"""\
+    description=f"""\
     A Mac Cleanup Utility in Python
     {__version__}
     https://github.com/mac-cleanup/mac-cleanup-py\

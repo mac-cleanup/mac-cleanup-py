@@ -18,9 +18,11 @@ def module_example_1():
         # .collect() w/o arguments will delete path
         t.collect("~/example/path")
 
-        # .collect() w/ command=True will execute command and return stdout & stderr
-        t.collect("whoami",
-                  command=True)
+        # cmd() will execute the command and return the stdout & stderr
+        if cmd("echo 1") == "1":
+            # .collect() w/ command=True will execute command and return stdout & stderr
+            t.collect("whoami",
+                      command=True)
 
         # .collect() w/ dry=True will be counted in dry run but won't be deleted
         t.collect("~/example/dry_run/file.webm",
