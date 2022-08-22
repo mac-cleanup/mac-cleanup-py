@@ -1,5 +1,6 @@
 from typing import TypeVar, Callable, Type, Optional, Union
 from inspect import isclass
+from dataclasses import dataclass, field
 
 function = TypeVar(
     "function",
@@ -8,11 +9,11 @@ function = TypeVar(
 
 _exception = TypeVar(
     "_exception",
-    bound=Union[
-        Type[BaseException],
-        tuple[Type[BaseException]],
-        list[Type[BaseException]]
-    ])
+    # Removed bound 'cause it can only be one type at a time
+    Type[BaseException],
+    tuple[Type[BaseException]],
+    list[Type[BaseException]]
+)
 
 
 class _ExceptionDecorator:
@@ -67,7 +68,8 @@ class _ExceptionDecorator:
                     log = getLogger("ExceptionDecorator")
                     log.exception("Unexpected error occurred")
                     console.print("\n[danger]Exiting...")
-                    os._exit(1)  # noqa  It exists, exit whole process
+                    os._exit(1)  # noqa  It exists, exits whole process
+
         return wrapper
 
 
@@ -192,16 +194,10 @@ def check_deletable(
         return False
     return "restricted" not in cmd(f"ls -lo {path} | awk '{{print $3, $4}}'")
 
-    # restricted = (
-    #         "restricted" not in cmd(f"ls -lo {path} | awk '{{print $3, $4}}'")
-    #         and not bool(cmd(f"xattr -l {path}"))  # Returns None if not restricted otherwise string
-    # )
-    # return restricted
-
 
 def _get_size(
         path: str,
-) -> int:
+) -> float:
     """
     Counts size of dir/file
 
@@ -216,14 +212,16 @@ def _get_size(
     split_path = path.split("*", 1)
     path, glob = split_path if len(split_path) == 2 else (path, "")
 
-    # Return 0 if SIP check failed
-    try:
-        return sum(
-            p.stat().st_size
-            for p in Path(path).expanduser().rglob("*" + glob)
-        )
-    except PermissionError:
-        return 0
+    # Slow af, maybe use multiprocessing?
+    temp_size: float = 0
+
+    for p in Path(path).expanduser().rglob("*" + glob):
+        # Except SIP and symlinks
+        try:
+            temp_size += p.stat().st_size
+        except (PermissionError, FileNotFoundError):
+            continue
+    return temp_size
 
 
 def bytes_to_human(
@@ -247,6 +245,33 @@ def bytes_to_human(
     return f"{s} {size_name[i]}"
 
 
+@dataclass
+class _ExecUnit:
+    """
+    Unit of the execution list
+    """
+    command: str = field(
+        default=None,
+    )
+    cmd: bool = field(
+        default=None,
+    )
+    dry: bool = field(
+        default=None,
+    )
+
+
+@dataclass
+class _Module:
+    """
+    Instance of a module. Contains the message and the execution list
+    """
+    msg: str = field()
+    unit_list: list[_ExecUnit] = field(
+        default_factory=list,
+    )
+
+
 class _Borg:
     _shared_state: dict[str, list] = dict()
 
@@ -255,6 +280,7 @@ class _Borg:
 
 
 class Collector(_Borg):
+
     def __init__(self, execute_list=None):
         super().__init__()
         if execute_list:
@@ -262,7 +288,7 @@ class Collector(_Borg):
         else:
             # initiate the first instance with default state
             if not hasattr(self, "execute_list"):
-                self.execute_list: list[dict] = list()
+                self.execute_list: list[_Module] = list()
 
     def msg(
             self,
@@ -274,7 +300,9 @@ class Collector(_Borg):
         Args:
             message: message to be displayed in progress bar
         """
-        self.execute_list.append({"msg": message})
+        self.execute_list.append(
+            _Module(msg=message),
+        )
 
     def collect(
             self,
@@ -293,27 +321,30 @@ class Collector(_Borg):
         if dry and command:
             raise ValueError("Not supported yet")
 
-        query_list = self.execute_list[-1].setdefault("exec_list", list())
+        # Gets last module's exec_list
+        exec_list = self.execute_list[-1].unit_list
 
-        temp_query = dict()
+        temp_unit = _ExecUnit(
+            # Sets query type
+            cmd=command,
+            dry=dry,
 
-        # Sets query type
-        temp_query["type"] = "dry" if dry else "cmd" if command else "path"
-
-        # Adds query to query_list if deletable and exists
-        temp_query["main"] = (
-            query
-            if temp_query["type"] != "cmd"
-            and check_deletable(query)
-            and check_exists(query)
-            else query
-            if temp_query["type"] == "cmd"
-            else None
+            # Adds command to temp_unit if deletable and exists
+            command=(
+                query
+                if cmd
+                else query
+                if (
+                        check_deletable(query)
+                        and check_exists(query)
+                )
+                else None
+            )
         )
 
         # Do nothing if main is empty
-        if temp_query["main"]:
-            query_list.append(temp_query)
+        if temp_unit.command:
+            exec_list.append(temp_unit)
 
     def count_dry(
             self,
@@ -328,10 +359,10 @@ class Collector(_Borg):
 
         # Extracts paths from execute_list
         path_list = [
-            task["main"]
-            for tasks in self.execute_list
-            for task in tasks["exec_list"]
-            if task["type"] != "cmd"
+            unit.command
+            for module in self.execute_list
+            for unit in module.unit_list
+            if not unit.cmd
         ]
 
         counted_list = [
