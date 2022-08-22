@@ -1,4 +1,4 @@
-from typing import TypeVar, Callable, Type, Optional, Union
+from typing import TypeVar, Callable, Type, Optional, Union, overload, Generic
 from inspect import isclass
 from dataclasses import dataclass, field
 
@@ -16,15 +16,15 @@ _exception = TypeVar(
 )
 
 
-class _ExceptionDecorator:
+class _ExceptionDecorator(Generic[_exception]):
     """
     Decorator for catching exceptions and printing logs
     """
-    exception: _exception
+    exception: Union[_exception, tuple]
 
     def __init__(
             self,
-            exception: _exception = None,
+            exception: Optional[_exception] = None,
     ):
         # Sets default exception (empty tuple) if none was provided
         if not exception:
@@ -34,11 +34,11 @@ class _ExceptionDecorator:
         if isclass(self.exception):
             self.exception = self.exception,
 
-    def __call__(
+    def __call__(  # type: ignore
             self,
             func: function,
     ):
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs):  # type: ignore
             try:
                 return func(*args, **kwargs)
             except KeyboardInterrupt:
@@ -71,6 +71,22 @@ class _ExceptionDecorator:
                     os._exit(1)  # noqa  It exists, exits whole process
 
         return wrapper
+
+
+@overload
+def catch_exception(
+        func: function,
+        exception: Optional[_exception] = ...
+) -> function:
+    ...
+
+
+@overload
+def catch_exception(
+        func: None = ...,
+        exception: Optional[_exception] = ...
+) -> _ExceptionDecorator:
+    ...
 
 
 def catch_exception(
@@ -260,15 +276,9 @@ class _ExecUnit:
     """
     Unit of the execution list
     """
-    command: str = field(
-        default=None,
-    )
-    cmd: bool = field(
-        default=None,
-    )
-    dry: bool = field(
-        default=None,
-    )
+    command: str
+    cmd: bool
+    dry: bool
 
 
 @dataclass
@@ -276,7 +286,7 @@ class _Module:
     """
     Instance of a module. Contains the message and the execution list
     """
-    msg: str = field()
+    msg: str
     unit_list: list[_ExecUnit] = field(
         default_factory=list,
     )
@@ -285,20 +295,28 @@ class _Module:
 class _Borg:
     _shared_state: dict[str, list] = dict()
 
-    def __init__(self):
+    def __init__(
+            self
+    ) -> None:
         self.__dict__ = self._shared_state
 
 
 class Collector(_Borg):
+    """
+    Class collection execute list of all active modules
+    """
 
-    def __init__(self, execute_list=None):
+    def __init__(
+            self,
+            execute_list: Optional[list[_Module]] = None,
+    ) -> None:
         super().__init__()
         if execute_list:
             self.execute_list = execute_list
         else:
             # initiate the first instance with default state
             if not hasattr(self, "execute_list"):
-                self.execute_list: list[_Module] = list()
+                self.execute_list = list()
 
     def msg(
             self,
@@ -382,7 +400,7 @@ class Collector(_Borg):
             try:
                 for temp_size in track(
                         pool.imap_unordered(
-                            _get_size,
+                            _get_size,  # type: ignore
                             path_list,
                         ),
                         description="Collecting dry run",

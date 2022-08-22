@@ -1,4 +1,5 @@
 from pathlib import Path
+from .utils import function
 
 config_path = Path(__file__).parent.resolve().as_posix() + "/modules.toml"
 
@@ -69,7 +70,7 @@ def config_checkbox(
         default=enabled,
         carousel=True,
     )
-    answers = prompt([questions], raise_keyboard_interrupt=True)
+    answers: dict[str, list[str]] = prompt([questions], raise_keyboard_interrupt=True)
 
     # Clear console after checkbox
     console.clear()
@@ -115,7 +116,7 @@ def load_config(
     config = get_config()
 
     # Joins default and custom modules together and sort 'em
-    all_modules = dict(
+    all_modules: dict[str, function] = dict(  # type: ignore
         load_custom(config.get("custom_path")),
         **load_default(),
     )
@@ -147,11 +148,9 @@ def load_config(
         exit(0)
     else:
         # Checks if enabled modules exists else removes 'em
-        [
-            enabled.remove(i)
-            for i in enabled
-            if i not in all_modules
-        ]
+        for i in enabled:
+            if i not in all_modules:
+                enabled.remove(i)
 
     # Sets enabled in config
     config.update({"enabled": enabled})
@@ -159,7 +158,7 @@ def load_config(
 
     # Loads all enabled modules
     [
-        all_modules[module]()
+        all_modules[module]()  # type: ignore
         for module in enabled
     ]
 

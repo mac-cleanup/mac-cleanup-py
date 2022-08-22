@@ -56,7 +56,7 @@ def main() -> None:
 
                 # If not cmd then add "sudo rm -rf"
                 if not unit.cmd:
-                    unit.command = "sudo rm -rf {0}".format(unit.command.replace(" ", "\ "))
+                    unit.command = "sudo rm -rf {0}".format(unit.command.replace(" ", "\ "))  # type: ignore
 
                 # There are no tasks w/o command
                 cmd(unit.command)
