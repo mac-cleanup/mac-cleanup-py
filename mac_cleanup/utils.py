@@ -195,6 +195,13 @@ def check_deletable(
     return "restricted" not in cmd(f"ls -lo {path} | awk '{{print $3, $4}}'")
 
 
+class _KeyboardInterrupt(Exception):
+    """
+    Inherited from Exception class to handle exceptions in multiprocessing.Pool
+    """
+    pass
+
+
 def _get_size(
         path: str,
 ) -> float:
@@ -208,19 +215,23 @@ def _get_size(
     """
     from pathlib import Path
 
-    # Searching for glob in path
-    split_path = path.split("*", 1)
-    path, glob = split_path if len(split_path) == 2 else (path, "")
+    try:
+        # Searching for glob in path
+        split_path = path.split("*", 1)
+        path, glob = split_path if len(split_path) == 2 else (path, "")
 
-    temp_size: float = 0
+        temp_size: float = 0
 
-    for p in Path(path).expanduser().rglob("*" + glob):
-        # Except SIP and symlinks
-        try:
-            temp_size += p.stat().st_size
-        except (PermissionError, FileNotFoundError):
-            continue
-    return temp_size
+        for p in Path(path).expanduser().rglob("*" + glob):
+            # Except SIP and symlinks
+            try:
+                temp_size += p.stat().st_size
+            except (PermissionError, FileNotFoundError):
+                continue
+        return temp_size
+    except KeyboardInterrupt:
+        # Needed to handle KeyboardInterrupt in Pool
+        raise _KeyboardInterrupt
 
 
 def bytes_to_human(
@@ -368,14 +379,20 @@ class Collector(_Borg):
         counted_list: float = 0
 
         with Pool() as pool:
-            for temp_size in track(
-                    pool.imap_unordered(
-                        _get_size,
-                        path_list
-                    ),
-                    description="Collecting dry run",
-                    transient=True,
-                    total=len(path_list),
-            ):
-                counted_list += temp_size
+            try:
+                for temp_size in track(
+                        pool.imap_unordered(
+                            _get_size,
+                            path_list,
+                        ),
+                        description="Collecting dry run",
+                        transient=True,
+                        total=len(path_list),
+                ):
+                    counted_list += temp_size
+            except _KeyboardInterrupt:
+                # Closing pool w/ .close() to wait for unfinished tasks
+                pool.close()
+                # Waits for the worker processes to terminate
+                pool.join()
         return counted_list
