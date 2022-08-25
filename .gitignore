@@ -24,3 +24,12 @@ venv.bak/
 
 # Ignore configuration
 mac_cleanup/modules.toml
+
+# mypy stuff
+.mypy_cache/*
+
+# pytest stuff
+.pytest_cache/*
+
+# coverage stuff
+.coverage*

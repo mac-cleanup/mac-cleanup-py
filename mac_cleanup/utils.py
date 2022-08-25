@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import TypeVar, Callable, Type, Optional, Union, overload, Generic
 from inspect import isclass
 from dataclasses import dataclass, field
@@ -21,18 +22,23 @@ class _ExceptionDecorator(Generic[_exception]):
     Decorator for catching exceptions and printing logs
     """
     exception: Union[_exception, tuple]
+    exit_on_exception: bool
 
     def __init__(
             self,
-            exception: Optional[_exception] = None,
+            exception: Optional[Union[_exception, tuple]] = None,
+            exit_on_exception: bool = False,
     ):
         # Sets default exception (empty tuple) if none was provided
-        if not exception:
+        if exception is None:
             self.exception = tuple()
-
-        # If exception is singe convert to tuple
-        if isclass(self.exception):
-            self.exception = self.exception,
+        # Changes exception class to tuple if it's class
+        elif isclass(exception):
+            self.exception = exception,
+        else:
+            self.exception = exception
+        # Sets exit_on_exception
+        self.exit_on_exception = exit_on_exception
 
     def __call__(  # type: ignore
             self,
@@ -45,7 +51,8 @@ class _ExceptionDecorator(Generic[_exception]):
                 from .console import console
 
                 console.print("\n[warning]Exiting...")
-                exit(0)
+                if self.exit_on_exception:
+                    exit(0)  # pragma: no cover
             # Ignore SystemExit
             except SystemExit:
                 pass
@@ -53,7 +60,7 @@ class _ExceptionDecorator(Generic[_exception]):
                 from .console import console
 
                 # If not default exception logs stuff in console
-                if not type(caughtException) in self.exception:
+                if type(caughtException) not in self.exception:
                     import os
                     from logging import basicConfig, getLogger
                     from rich.logging import RichHandler
@@ -68,7 +75,8 @@ class _ExceptionDecorator(Generic[_exception]):
                     log = getLogger("ExceptionDecorator")
                     log.exception("Unexpected error occurred")
                     console.print("\n[danger]Exiting...")
-                    os._exit(1)  # noqa  It exists, exits whole process
+                    if self.exit_on_exception:
+                        os._exit(1)  # noqa  It exists, exits whole process  # pragma: no cover
 
         return wrapper
 
@@ -76,22 +84,25 @@ class _ExceptionDecorator(Generic[_exception]):
 @overload
 def catch_exception(
         func: function,
-        exception: Optional[_exception] = ...
+        exception: Optional[_exception] = ...,
+        exit_on_exception: bool = ...,
 ) -> function:
-    ...
+    ...  # pragma: no cover
 
 
 @overload
 def catch_exception(
         func: None = ...,
-        exception: Optional[_exception] = ...
+        exception: Optional[_exception] = ...,
+        exit_on_exception: bool = ...,
 ) -> _ExceptionDecorator:
-    ...
+    ...  # pragma: no cover
 
 
 def catch_exception(
         func: Optional[function] = None,
         exception: Optional[_exception] = None,
+        exit_on_exception: bool = True,
 ) -> Union[_ExceptionDecorator, function]:
     """
     Decorator for catching exceptions and printing logs
@@ -99,34 +110,49 @@ def catch_exception(
     Args:
         func: Function to be decorated
         exception: Expected exception(s)
+        exit_on_exception: If True, exit after unexpected exception was handled
     Returns:
         Decorated function
     """
-    exceptor = _ExceptionDecorator(exception)
+    exception_instance = _ExceptionDecorator(
+        exception=exception,
+        exit_on_exception=exit_on_exception,
+    )
     if func:
-        exceptor = exceptor(func)
-    return exceptor
+        exception_instance = exception_instance(func)
+    return exception_instance
 
 
 def cmd(
         command: str,
+        ignore_errors: bool = True,
 ) -> str:
     """
     Executes command in Popen
 
     Args:
         command: Bash command
+        ignore_errors: If True, no stderr in return
     Returns:
         stdout of executed command
     """
     from subprocess import Popen, PIPE, DEVNULL
 
     return (
-        Popen(command, shell=True, stdout=PIPE, stderr=DEVNULL)
-        .communicate()
-        [0]
-        .strip()
-        .decode("utf-8", errors="replace")
+        ""
+        .join(
+            out
+            .strip()
+            .decode("utf-8", errors="replace")
+            for out in Popen(
+                command,
+                shell=True,
+                stdout=PIPE,
+                stderr=(DEVNULL if ignore_errors else PIPE),
+            )
+            .communicate()
+            if out is not None
+        )
     )
 
 
@@ -220,7 +246,7 @@ class _KeyboardInterrupt(Exception):
 
 def _get_size(
         path: str,
-) -> float:
+) -> float:  # pragma: no cover
     """
     Counts size of dir/file
 
@@ -306,12 +332,14 @@ class Collector(_Borg):
     Class collection execute list of all active modules
     """
 
+    execute_list: list[_Module]
+
     def __init__(
             self,
             execute_list: Optional[list[_Module]] = None,
     ) -> None:
         super().__init__()
-        if execute_list:
+        if execute_list is not None:
             self.execute_list = execute_list
         else:
             # initiate the first instance with default state
@@ -360,13 +388,10 @@ class Collector(_Borg):
             # Adds command to temp_unit if deletable and exists
             command=(
                 query
-                if cmd
+                if command
                 else query
-                if (
-                    check_deletable(query)
-                    and check_exists(query)
-                )
-                else None
+                if check_deletable(query) and check_exists(query)
+                else ""
             )
         )
 
@@ -408,7 +433,7 @@ class Collector(_Borg):
                         total=len(path_list),
                 ):
                     counted_list += temp_size
-            except _KeyboardInterrupt:
+            except _KeyboardInterrupt:  # pragma: no cover
                 # Closing pool w/ .close() to wait for unfinished tasks
                 pool.close()
                 # Waits for the worker processes to terminate
