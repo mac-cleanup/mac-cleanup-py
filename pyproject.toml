@@ -2,13 +2,16 @@
 name = "mac_cleanup"
 version = "2.2.4"
 description = "Python cleanup script for macOS"
-authors = ["Drugsosos"]
-license = "Apache-2.0 license"
+license = "Apache-2.0"
+authors = [ "Drugsosos <44712637+Drugsosos@users.noreply.github.com>" ]
 readme = "README.md"
 homepage = "https://github.com/mac-cleanup/mac-cleanup-py"
 repository = "https://github.com/mac-cleanup/mac-cleanup-py"
-
+keywords = [ "macos", "script", "cleanup", "cleaner" ]
 classifiers = [ "Environment :: Console", "Operating System :: MacOS", ]
+
+include = [ "LICENSE" ]
+exclude = [ "mac_cleanup/__main__.py", "mac_cleanup/py.typed" ]
 
 [tool.poetry.urls]
 "Documentation" = "https://github.com/mac-cleanup/mac-cleanup-py#install-automatically"

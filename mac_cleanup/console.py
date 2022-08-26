@@ -54,7 +54,7 @@ console = Console(theme=custom_theme)
 def print_panel(
         text: str,
         title: str = "",
-) -> None:
+) -> None:  # pragma: no cover
     """
     Prints a rich panel with the given text
 
@@ -67,7 +67,10 @@ def print_panel(
 
     console.print(
         Panel(
-            Text.from_markup(text, justify="center"),
+            Text.from_markup(
+                text,
+                justify="center"
+            ),
             subtitle=title,
             subtitle_align="right",
         )
