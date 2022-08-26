@@ -1,0 +1,6 @@
+pytest >= 7.1.2
+tox >= 3.25.1
+flake8 >= 5.0.4
+mypy >= 0.971
+pytest-cov >= 3.0.0
+types-toml >= 0.10.8

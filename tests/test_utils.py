@@ -7,27 +7,27 @@ from mac_cleanup.utils import *
     [
         # specified exceptions are caught w/o exit
         (
-                KeyboardInterrupt,
-                False,
-                KeyboardInterrupt,
+            KeyboardInterrupt,
+            False,
+            KeyboardInterrupt,
         ),
         # SystemExit caught by default w/o exit
         (
-                None,
-                True,
-                SystemExit,
+            None,
+            True,
+            SystemExit,
         ),
         # specified exceptions as a tuple are caught w/o exit
         (
-                (ValueError,),
-                True,
-                ValueError,
+            (ValueError,),
+            True,
+            ValueError,
         ),
         # Unexpected exception caught w/o exit
         (
-                None,
-                False,
-                ValueError,
+            None,
+            False,
+            ValueError,
         ),
     ]
 )
@@ -101,8 +101,8 @@ def test_check_exists():
     test_file.touch(exist_ok=True)
 
     results = (
-            check_exists("~/.mac_cleanup")
-            and check_exists("~/.mac_cleanup/test_dry")
+        check_exists("~/.mac_cleanup")
+        and check_exists("~/.mac_cleanup/test_dry")
     )
 
     from os import remove, rmdir

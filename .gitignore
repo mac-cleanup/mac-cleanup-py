@@ -33,3 +33,6 @@ mac_cleanup/modules.toml
 
 # coverage stuff
 .coverage*
+
+# tox
+.tox/*
