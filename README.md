@@ -1,5 +1,8 @@
 # mac-cleanup-py
 
+![Tests](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/tox.yml/badge.svg)
+![CodeQL](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/codeql.yml/badge.svg)
+
 ### 👨‍💻 Python cleanup script for macOS 
 
 #### [mac-cleanup-sh](https://github.com/mac-cleanup/mac-cleanup-sh) rewritten in Python
