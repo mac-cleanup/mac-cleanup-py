@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TypeVar, Callable, Type, Optional, Union, overload, Generic
+from typing import TypeVar, Callable, Type, Optional, Union, overload, Generic, Tuple, List
 from inspect import isclass
 from dataclasses import dataclass, field
 
@@ -12,8 +12,8 @@ _exception = TypeVar(
     "_exception",
     bound=Union[
         Type[BaseException],
-        tuple[Type[BaseException]],
-        list[Type[BaseException]],
+        Tuple[Type[BaseException]],
+        List[Type[BaseException]],
     ]
 )
 

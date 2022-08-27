@@ -1,6 +1,6 @@
-from importlib.metadata import version
+try:  # For gh-actions
+    from importlib.metadata import version
 
-try:
     __version__ = version(__package__)
-except ModuleNotFoundError:  # For gh-actions  # pragma: no cover
+except ModuleNotFoundError:  # pragma: no cover
     __version__ = "source"
