@@ -10,10 +10,11 @@ function = TypeVar(
 
 _exception = TypeVar(
     "_exception",
-    # Removed bound 'cause it can only be one type at a time
-    Type[BaseException],
-    tuple[Type[BaseException]],
-    list[Type[BaseException]],
+    bound=Union[
+        Type[BaseException],
+        tuple[Type[BaseException]],
+        list[Type[BaseException]],
+    ]
 )
 
 
