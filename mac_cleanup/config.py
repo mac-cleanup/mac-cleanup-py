@@ -1,3 +1,4 @@
+from typing import List, Dict  # Generic's is fun
 from pathlib import Path
 from .utils import function
 
@@ -43,7 +44,7 @@ def set_config(
 def config_checkbox(
         all_modules: list,
         enabled: list,
-) -> list[str]:
+) -> List[str]:
     """
     Opens the checkbox list in the terminal to enable modules
 
@@ -70,7 +71,7 @@ def config_checkbox(
         default=enabled,
         carousel=True,
     )
-    answers: dict[str, list[str]] = prompt([questions], raise_keyboard_interrupt=True)
+    answers: Dict[str, List[str]] = prompt([questions], raise_keyboard_interrupt=True)
 
     # Clear console after checkbox
     console.clear()
@@ -116,7 +117,7 @@ def load_config(
     config = get_config()
 
     # Joins default and custom modules together and sort 'em
-    all_modules: dict[str, function] = dict(  # type: ignore
+    all_modules: Dict[str, function] = dict(  # type: ignore
         load_custom(config.get("custom_path")),
         **load_default(),
     )

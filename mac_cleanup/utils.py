@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import TypeVar, Callable, Type, Optional, Union, overload, Generic, Tuple, List
+from typing import TypeVar, Callable, Type, Optional, Union, overload
+from typing import Generic, Tuple, List, Dict  # Generic's is fun
 from inspect import isclass
 from dataclasses import dataclass, field
 
@@ -314,13 +315,13 @@ class _Module:
     Instance of a module. Contains the message and the execution list
     """
     msg: str
-    unit_list: list[_ExecUnit] = field(
+    unit_list: List[_ExecUnit] = field(
         default_factory=list,
     )
 
 
 class _Borg:
-    _shared_state: dict[str, list] = dict()
+    _shared_state: Dict[str, list] = dict()
 
     def __init__(
             self
@@ -333,11 +334,11 @@ class Collector(_Borg):
     Class collection execute list of all active modules
     """
 
-    execute_list: list[_Module]
+    execute_list: List[_Module]
 
     def __init__(
             self,
-            execute_list: Optional[list[_Module]] = None,
+            execute_list: Optional[List[_Module]] = None,
     ) -> None:
         super().__init__()
         if execute_list is not None:

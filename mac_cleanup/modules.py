@@ -1,10 +1,11 @@
 from inspect import getmembers, isfunction
 from typing import Optional
+from typing import Dict  # Generic's is fun
 from .utils import function
 
 
 def load_default(
-) -> dict[str, function]:
+) -> Dict[str, function]:
     """
     Loads the default modules
 
@@ -19,7 +20,7 @@ def load_default(
 
 def load_custom(
         custom_path: Optional[str],
-) -> dict[str, function]:
+) -> Dict[str, function]:
     """
     Loads the custom modules from the given path
 
@@ -34,7 +35,7 @@ def load_custom(
     from importlib.machinery import SourceFileLoader
     from pathlib import Path
 
-    custom_modules = dict()
+    custom_modules: Dict[str, function] = dict()
     # Imports all modules from the given path
     for module in Path(custom_path).expanduser().rglob("*.py"):
         # Duplicates will be overwritten
