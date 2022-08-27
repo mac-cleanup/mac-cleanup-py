@@ -35,12 +35,12 @@ def test_catch_exception(
         exception: Optional[Type[BaseException]],
         exit_on_exception: bool,
         raises: Type[BaseException],
-):
+) -> None:
     @catch_exception(
         exception=exception,
         exit_on_exception=exit_on_exception,
     )
-    def raise_error():
+    def raise_error() -> None:
         raise raises
 
     raise_error()
@@ -73,23 +73,27 @@ def test_cmd(
         command: str,
         expected: str,
         ignore_errors: bool,
-):
+) -> None:
     assert cmd(
         command=command,
         ignore_errors=ignore_errors
     ) == expected
 
 
-def test_expand_user():
+def test_expand_user(
+        get_current_os: str,
+) -> None:
     # "~" transforms to user's home location
-    assert expanduser("~/").startswith("/Users/")
+    assert expanduser("~/").startswith("/Users/" if get_current_os == "Darwin" else "/home/runner")
 
 
-def test_check_exists():
+def test_check_exists(
+        get_current_os: str,
+) -> None:
     # Always True w/ glob
     assert check_exists("*")
     # Check Users folder exists - always True
-    assert check_exists("/Users/")
+    assert check_exists("/Users/" if get_current_os == "Darwin" else "/home/runner")
 
     from pathlib import Path
 
@@ -129,7 +133,7 @@ def test_check_exists():
 def test_deletable(
         path: str,
         expected: bool,
-):
+) -> None:
     assert check_deletable(path) is expected
 
 
@@ -153,11 +157,11 @@ def test_deletable(
 def test_bytes_to_human(
         byte: float,
         human: str,
-):
+) -> None:
     assert bytes_to_human(byte) == human
 
 
-def test_collector_msg():
+def test_collector_msg() -> None:
     t = Collector(execute_list=list())
 
     assert t.execute_list == list()
@@ -165,7 +169,7 @@ def test_collector_msg():
     assert t.execute_list[-1].msg == "test"
 
 
-def test_collector_sip():
+def test_collector_sip() -> None:
     t = Collector(execute_list=list())
     t.msg("test")
 
@@ -189,9 +193,13 @@ def test_collector_types(
         query: str,
         command: bool,
         dry: bool,
-):
+        get_current_os: str,
+) -> None:
     t = Collector(execute_list=list())
     t.msg("test")
+
+    if get_current_os != "Darwin":
+        query = query.replace("/Users/", "/home/runner/")
 
     t.collect(query, command=command, dry=dry)
     assert t.execute_list[-1].unit_list[-1].command == query
@@ -203,13 +211,13 @@ def test_collector_types(
 @pytest.mark.xfail(
     raises=ValueError,
 )
-def test_collector_all_types():
+def test_collector_all_types() -> None:
     t = Collector(execute_list=list())
     t.msg("test")
     t.collect("test", command=True, dry=True)
 
 
-def test_collector_count_dry():
+def test_collector_count_dry() -> None:
     t = Collector(execute_list=list())
     t.msg("test")
 
