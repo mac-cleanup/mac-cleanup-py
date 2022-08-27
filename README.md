@@ -1,5 +1,6 @@
 # mac-cleanup-py
 
+![PyPI](https://img.shields.io/pypi/v/mac_cleanup)
 ![Tests](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/tox.yml/badge.svg)
 ![CodeQL](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/codeql.yml/badge.svg)
 
