@@ -1,6 +1,6 @@
 from inspect import getmembers, isfunction
 from typing import Optional
-from typing import Dict  # Generic's is fun
+from typing import Dict  # Generics are fun
 from .utils import function
 
 

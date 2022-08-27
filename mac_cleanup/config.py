@@ -1,4 +1,4 @@
-from typing import List, Dict  # Generic's is fun
+from typing import List, Dict  # Generics are fun
 from pathlib import Path
 from .utils import function
 
