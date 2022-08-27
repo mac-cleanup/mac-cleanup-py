@@ -7,27 +7,27 @@ from mac_cleanup.utils import *
     [
         # specified exceptions are caught w/o exit
         (
-            KeyboardInterrupt,
-            False,
-            KeyboardInterrupt,
+                KeyboardInterrupt,
+                False,
+                KeyboardInterrupt,
         ),
         # SystemExit caught by default w/o exit
         (
-            None,
-            True,
-            SystemExit,
+                None,
+                True,
+                SystemExit,
         ),
         # specified exceptions as a tuple are caught w/o exit
         (
-            (ValueError,),
-            True,
-            ValueError,
+                (ValueError,),
+                True,
+                ValueError,
         ),
         # Unexpected exception caught w/o exit
         (
-            None,
-            False,
-            ValueError,
+                None,
+                False,
+                ValueError,
         ),
     ]
 )
@@ -51,21 +51,21 @@ def test_catch_exception(
     [
         # stdout works
         (
-            "echo test",
-            "test",
-            True,
+                "echo test",
+                "test",
+                True,
         ),
         # stderr doesn't work
         (
-            "echo test >&2",
-            "",
-            True,
+                "echo test >&2",
+                "",
+                True,
         ),
         # stderr works w/ ignore_errors agr
         (
-            "echo test >&2",
-            "test",
-            False,
+                "echo test >&2",
+                "test",
+                False,
         ),
     ]
 )
@@ -105,8 +105,8 @@ def test_check_exists(
     test_file.touch(exist_ok=True)
 
     results = (
-        check_exists("~/.mac_cleanup")
-        and check_exists("~/.mac_cleanup/test_dry")
+            check_exists("~/.mac_cleanup")
+            and check_exists("~/.mac_cleanup/test_dry")
     )
 
     from os import remove, rmdir
@@ -169,9 +169,10 @@ def test_collector_msg() -> None:
     assert t.execute_list[-1].msg == "test"
 
 
-def test_collector_sip() -> None:
-    t = Collector(execute_list=list())
-    t.msg("test")
+def test_collector_sip(
+        get_collector: Collector,
+) -> None:
+    t = get_collector
 
     t.collect("")
     t.collect("/System/test")
@@ -194,9 +195,9 @@ def test_collector_types(
         command: bool,
         dry: bool,
         get_current_os: str,
+        get_collector: Collector,
 ) -> None:
-    t = Collector(execute_list=list())
-    t.msg("test")
+    t = get_collector
 
     if get_current_os != "Darwin":
         query = query.replace("/Users/", "/home/runner/")
@@ -211,15 +212,16 @@ def test_collector_types(
 @pytest.mark.xfail(
     raises=ValueError,
 )
-def test_collector_all_types() -> None:
-    t = Collector(execute_list=list())
-    t.msg("test")
-    t.collect("test", command=True, dry=True)
+def test_collector_all_types(
+        get_collector: Collector,
+) -> None:
+    get_collector.collect("test", command=True, dry=True)
 
 
-def test_collector_count_dry() -> None:
-    t = Collector(execute_list=list())
-    t.msg("test")
+def test_collector_count_dry(
+        get_collector: Collector,
+) -> None:
+    t = get_collector
 
     t.collect(
         "echo test",
