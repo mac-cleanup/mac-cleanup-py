@@ -51,9 +51,7 @@ skip_covered = true
 [tool.flake8]
 max-line-length = 120
 per-file-ignores = [
-    "default_modules.py:F403, F405",
-    "cli.py:F403, F405",
-    "test_utils.py:F403, F405",
+    "default_modules.py, cli.py, test_utils.py:F403, F405",
 ]
 count = true
 
