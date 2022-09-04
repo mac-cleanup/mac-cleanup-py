@@ -92,7 +92,6 @@ brew untap mac-cleanup/mac-cleanup-py
 
 ```bash
 pip3 uninstall mac-cleanup
-pip3 uninstall rich toml inquirer 
 ```
 
 ## Usage Options
