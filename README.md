@@ -1,5 +1,9 @@
 # mac-cleanup-py
 
+[![PyPI](https://img.shields.io/pypi/v/mac_cleanup)](https://pypi.org/project/mac-cleanup/)
+[![Tests](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/tox.yml/badge.svg)](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/tox.yml)
+[![CodeQL](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/codeql.yml/badge.svg)](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/codeql.yml)
+
 ### 👨‍💻 Python cleanup script for macOS 
 
 #### [mac-cleanup-sh](https://github.com/mac-cleanup/mac-cleanup-sh) rewritten in Python
@@ -72,7 +76,6 @@ brew install mac-cleanup-py
 ### Using pip
 
 ```bash
-pip3 install rich toml inquirer 
 pip3 install mac-cleanup
 ```
 
@@ -88,7 +91,6 @@ brew untap mac-cleanup/mac-cleanup-py
 ### Using pip
 
 ```bash
-pip3 uninstall rich toml inquirer 
 pip3 uninstall mac-cleanup
 ```
 
@@ -102,7 +104,7 @@ $ mac-cleanup -h
 usage: mac-cleanup [-h] [-d] [-u] [-c] [-m]
 
     A Mac Cleanup Utility in Python
-    v2.2.3
+    v2.2.4
     https://github.com/mac-cleanup/mac-cleanup-py
 
 optional arguments:

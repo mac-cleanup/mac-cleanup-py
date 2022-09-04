@@ -1,11 +1,10 @@
-from mac_cleanup import __version__
+from .__version__ import __version__
 from argparse import ArgumentParser, RawTextHelpFormatter
 from rich.console import Console
 from rich.theme import Theme
 
 parser = ArgumentParser(
-    description=
-    f"""\
+    description=f"""\
     A Mac Cleanup Utility in Python
     {__version__}
     https://github.com/mac-cleanup/mac-cleanup-py\
@@ -55,7 +54,7 @@ console = Console(theme=custom_theme)
 def print_panel(
         text: str,
         title: str = "",
-) -> None:
+) -> None:  # pragma: no cover
     """
     Prints a rich panel with the given text
 
@@ -68,7 +67,10 @@ def print_panel(
 
     console.print(
         Panel(
-            Text.from_markup(text, justify="center"),
+            Text.from_markup(
+                text,
+                justify="center"
+            ),
             subtitle=title,
             subtitle_align="right",
         )

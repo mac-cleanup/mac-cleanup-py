@@ -1,58 +1,67 @@
-from typing import TypeVar, Callable, Type, Optional, Union
+from __future__ import annotations
+from typing import TypeVar, Callable, Type, Optional, Union, overload
+from typing import Generic, Tuple, List, Dict  # Generics are fun
 from inspect import isclass
+from attr import attrs, attrib
 
-_function = TypeVar(
-    "_function",
+function = TypeVar(
+    "function",
     bound=Callable[..., object]
 )
 
 _exception = TypeVar(
     "_exception",
-    bound=Union[
-        Type[BaseException],
-        tuple[Type[BaseException]],
-        list[Type[BaseException]]
-    ])
+    # Removed bound 'cause it can only be one type at a time
+    Type[BaseException],
+    Tuple[Type[BaseException]],
+    List[Type[BaseException]],
+)
 
 
-class ExceptionDecorator:
+class _ExceptionDecorator(Generic[_exception]):
     """
     Decorator for catching exceptions and printing logs
     """
-    exception: _exception
+    exception: Union[_exception, tuple]
+    exit_on_exception: bool
 
     def __init__(
             self,
-            exception: _exception = None,
+            exception: Optional[Union[_exception, tuple]] = None,
+            exit_on_exception: bool = False,
     ):
-        # Sets default exception if none was provided
-        if not exception:
+        # Sets default exception (empty tuple) if none was provided
+        if exception is None:
             self.exception = tuple()
+        # Changes exception class to tuple if it's class
+        elif isclass(exception):
+            self.exception = exception,
+        else:
+            self.exception = exception
+        # Sets exit_on_exception
+        self.exit_on_exception = exit_on_exception
 
-        # If class convert to tuple
-        if isclass(self.exception):
-            self.exception = self.exception,
-
-    def __call__(
+    def __call__(  # type: ignore
             self,
-            func: _function,
+            func: function,
     ):
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs):  # type: ignore
             try:
                 return func(*args, **kwargs)
             except KeyboardInterrupt:
-                from mac_cleanup.console import console
+                from .console import console
 
                 console.print("\n[warning]Exiting...")
-                exit(0)
+                if self.exit_on_exception:
+                    exit(0)  # pragma: no cover
             # Ignore SystemExit
             except SystemExit:
                 pass
             except BaseException as caughtException:
-                from mac_cleanup.console import console
+                from .console import console
 
                 # If not default exception logs stuff in console
-                if not type(caughtException) in self.exception:
+                if type(caughtException) not in self.exception:
                     import os
                     from logging import basicConfig, getLogger
                     from rich.logging import RichHandler
@@ -67,48 +76,84 @@ class ExceptionDecorator:
                     log = getLogger("ExceptionDecorator")
                     log.exception("Unexpected error occurred")
                     console.print("\n[danger]Exiting...")
-                    os._exit(1)  # noqa  It exists, exit whole process
+                    if self.exit_on_exception:
+                        os._exit(1)  # noqa  It exists, exits whole process  # pragma: no cover
+
         return wrapper
 
 
+@overload
 def catch_exception(
-        func: Optional[_function] = None,
+        func: function,
+        exception: Optional[_exception] = ...,
+        exit_on_exception: bool = ...,
+) -> function:
+    ...  # pragma: no cover
+
+
+@overload
+def catch_exception(
+        func: None = ...,
+        exception: Optional[_exception] = ...,
+        exit_on_exception: bool = ...,
+) -> _ExceptionDecorator:
+    ...  # pragma: no cover
+
+
+def catch_exception(
+        func: Optional[function] = None,
         exception: Optional[_exception] = None,
-) -> Union[ExceptionDecorator, _function]:
+        exit_on_exception: bool = True,
+) -> Union[_ExceptionDecorator, function]:
     """
     Decorator for catching exceptions and printing logs
 
     Args:
         func: Function to be decorated
         exception: Expected exception(s)
+        exit_on_exception: If True, exit after unexpected exception was handled
     Returns:
         Decorated function
     """
-    exceptor = ExceptionDecorator(exception)
+    exception_instance = _ExceptionDecorator(
+        exception=exception,
+        exit_on_exception=exit_on_exception,
+    )
     if func:
-        exceptor = exceptor(func)
-    return exceptor
+        exception_instance = exception_instance(func)
+    return exception_instance
 
 
 def cmd(
         command: str,
+        ignore_errors: bool = True,
 ) -> str:
     """
     Executes command in Popen
 
     Args:
         command: Bash command
+        ignore_errors: If True, no stderr in return
     Returns:
         stdout of executed command
     """
     from subprocess import Popen, PIPE, DEVNULL
 
     return (
-        Popen(command, shell=True, stdout=PIPE, stderr=DEVNULL)
-        .communicate()
-        [0]
-        .strip()
-        .decode("utf-8", errors="replace")
+        ""
+        .join(
+            out
+            .strip()
+            .decode("utf-8", errors="replace")
+            for out in Popen(
+                command,
+                shell=True,
+                stdout=PIPE,
+                stderr=(DEVNULL if ignore_errors else PIPE),
+            )
+            .communicate()
+            if out is not None
+        )
     )
 
 
@@ -192,16 +237,17 @@ def check_deletable(
         return False
     return "restricted" not in cmd(f"ls -lo {path} | awk '{{print $3, $4}}'")
 
-    # restricted = (
-    #         "restricted" not in cmd(f"ls -lo {path} | awk '{{print $3, $4}}'")
-    #         and not bool(cmd(f"xattr -l {path}"))  # Returns None if not restricted otherwise string
-    # )
-    # return restricted
+
+class _KeyboardInterrupt(Exception):
+    """
+    Inherited from Exception class to handle exceptions in multiprocessing.Pool
+    """
+    pass
 
 
-def get_size(
+def _get_size(
         path: str,
-) -> int:
+) -> float:  # pragma: no cover
     """
     Counts size of dir/file
 
@@ -212,24 +258,27 @@ def get_size(
     """
     from pathlib import Path
 
-    # Searching for glob in path
-    split_path = path.split("*", 1)
-    path, glob = split_path if len(split_path) == 2 else (path, "")
-
-    # Return 0 if SIP check failed
     try:
-        return sum(
-            p.stat().st_size
-            for p in Path(path).expanduser().rglob("*" + glob)
-            # Ignores symbolic links
-            if not p.is_symlink()
-        )
-    except PermissionError:
-        return 0
+        # Searching for glob in path
+        split_path = path.split("*", 1)
+        path, glob = split_path if len(split_path) == 2 else (path, "")
+
+        temp_size: float = 0
+
+        for p in Path(path).expanduser().rglob("*" + glob):
+            # Except SIP and symlinks
+            try:
+                temp_size += p.stat().st_size
+            except (PermissionError, FileNotFoundError):
+                continue
+        return temp_size
+    except KeyboardInterrupt:
+        # Needed to handle KeyboardInterrupt in Pool
+        raise _KeyboardInterrupt
 
 
 def bytes_to_human(
-        size_bytes: int,
+        size_bytes: float,
 ) -> str:
     """
     Converts bytes to human-readable format
@@ -249,22 +298,54 @@ def bytes_to_human(
     return f"{s} {size_name[i]}"
 
 
-class Borg:
-    _shared_state: dict[str, list] = dict()
+@attrs(slots=True, auto_attribs=True)
+class _ExecUnit:
+    """
+    Unit of the execution list
+    """
+    command: str
+    cmd: bool
+    dry: bool
 
-    def __init__(self):
+
+@attrs(slots=True)
+class _Module:
+    """
+    Instance of a module. Contains the message and the execution list
+    """
+    msg: str = attrib()
+    unit_list: List[_ExecUnit] = attrib(
+        factory=list,
+    )
+
+
+class _Borg:
+    _shared_state: Dict[str, list] = dict()
+
+    def __init__(
+            self
+    ) -> None:
         self.__dict__ = self._shared_state
 
 
-class CleanUp(Borg):
-    def __init__(self, execute_list=None):
+class Collector(_Borg):
+    """
+    Class collection execute list of all active modules
+    """
+
+    execute_list: List[_Module]
+
+    def __init__(
+            self,
+            execute_list: Optional[List[_Module]] = None,
+    ) -> None:
         super().__init__()
-        if execute_list:
+        if execute_list is not None:
             self.execute_list = execute_list
         else:
             # initiate the first instance with default state
             if not hasattr(self, "execute_list"):
-                self.execute_list: list[dict] = list()
+                self.execute_list = list()
 
     def msg(
             self,
@@ -276,7 +357,9 @@ class CleanUp(Borg):
         Args:
             message: message to be displayed in progress bar
         """
-        self.execute_list.append({"msg": message})
+        self.execute_list.append(
+            _Module(msg=message),
+        )
 
     def collect(
             self,
@@ -295,31 +378,31 @@ class CleanUp(Borg):
         if dry and command:
             raise ValueError("Not supported yet")
 
-        query_list = self.execute_list[-1].setdefault("exec_list", list())
+        # Gets last module's exec_list
+        exec_list = self.execute_list[-1].unit_list
 
-        temp_query = dict()
+        temp_unit = _ExecUnit(
+            # Sets query type
+            cmd=command,
+            dry=dry,
 
-        # Sets query type
-        temp_query["type"] = "dry" if dry else "cmd" if command else "path"
-
-        # Adds query to query_list if deletable and exists
-        temp_query["main"] = (
-            query
-            if temp_query["type"] != "cmd"
-            and check_deletable(query)
-            and check_exists(query)
-            else query
-            if temp_query["type"] == "cmd"
-            else None
+            # Adds command to temp_unit if deletable and exists
+            command=(
+                query
+                if command
+                else query
+                if check_deletable(query) and check_exists(query)
+                else ""
+            )
         )
 
         # Do nothing if main is empty
-        if temp_query["main"]:
-            query_list.append(temp_query)
+        if temp_unit.command:
+            exec_list.append(temp_unit)
 
     def count_dry(
             self,
-    ) -> int:
+    ) -> float:
         """
         Counts free space for dry dun
 
@@ -327,23 +410,33 @@ class CleanUp(Borg):
             Approx amount of bytes to be removed
         """
         from rich.progress import track
+        from multiprocessing import Pool
 
         # Extracts paths from execute_list
         path_list = [
-            task["main"]
-            for tasks in self.execute_list
-            for task in tasks["exec_list"]
-            if task["type"] != "cmd"
+            unit.command
+            for module in self.execute_list
+            for unit in module.unit_list
+            if not unit.cmd
         ]
 
-        counted_list = [
-            get_size(path)
-            for path in track(
-                path_list,
-                description="Collecting dry run",
-                transient=True,
-                total=len(path_list),
-            )
-        ]
+        counted_list: float = 0
 
-        return sum(counted_list)
+        with Pool() as pool:
+            try:
+                for temp_size in track(
+                        pool.imap_unordered(
+                            _get_size,  # type: ignore
+                            path_list,
+                        ),
+                        description="Collecting dry run",
+                        transient=True,
+                        total=len(path_list),
+                ):
+                    counted_list += temp_size
+            except _KeyboardInterrupt:  # pragma: no cover
+                # Closing pool w/ .close() to wait for unfinished tasks
+                pool.close()
+                # Waits for the worker processes to terminate
+                pool.join()
+        return counted_list

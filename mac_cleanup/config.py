@@ -1,4 +1,6 @@
+from typing import List, Dict  # Generics are fun
 from pathlib import Path
+from .utils import function
 
 config_path = Path(__file__).parent.resolve().as_posix() + "/modules.toml"
 
@@ -42,7 +44,7 @@ def set_config(
 def config_checkbox(
         all_modules: list,
         enabled: list,
-) -> list[str]:
+) -> List[str]:
     """
     Opens the checkbox list in the terminal to enable modules
 
@@ -53,7 +55,7 @@ def config_checkbox(
         List w/ all modules user selected
     """
     from inquirer import Checkbox, prompt
-    from mac_cleanup.console import print_panel, console
+    from .console import print_panel, console
 
     # Prints the legend
     print_panel(
@@ -69,7 +71,7 @@ def config_checkbox(
         default=enabled,
         carousel=True,
     )
-    answers = prompt([questions], raise_keyboard_interrupt=True)
+    answers: Dict[str, List[str]] = prompt([questions], raise_keyboard_interrupt=True)
 
     # Clear console after checkbox
     console.clear()
@@ -110,12 +112,12 @@ def load_config(
     Args:
         configuration_needed: Request configuration
     """
-    from mac_cleanup.modules import load_default, load_custom
+    from .modules import load_default, load_custom
 
     config = get_config()
 
     # Joins default and custom modules together and sort 'em
-    all_modules = dict(
+    all_modules: Dict[str, function] = dict(  # type: ignore
         load_custom(config.get("custom_path")),
         **load_default(),
     )
@@ -123,7 +125,7 @@ def load_config(
 
     # If config is empty requestes configuration and selects all modules as enabled
     if config.get("enabled", 0) == 0 or not isinstance(config["enabled"], list):
-        from mac_cleanup.console import console
+        from .console import console
 
         console.print("[danger]Modules not configured, opening configuration screen...[/danger]")
         enabled = config_checkbox(
@@ -135,7 +137,7 @@ def load_config(
         enabled = config["enabled"]
 
     if configuration_needed:
-        from mac_cleanup.console import console
+        from .console import console
 
         enabled = config_checkbox(
             all_modules=all_modules_keys,
@@ -147,11 +149,9 @@ def load_config(
         exit(0)
     else:
         # Checks if enabled modules exists else removes 'em
-        [
-            enabled.remove(i)
-            for i in enabled
-            if i not in all_modules
-        ]
+        for i in enabled:
+            if i not in all_modules:
+                enabled.remove(i)
 
     # Sets enabled in config
     config.update({"enabled": enabled})
@@ -159,7 +159,7 @@ def load_config(
 
     # Loads all enabled modules
     [
-        all_modules[module]()
+        all_modules[module]()  # type: ignore
         for module in enabled
     ]
 
