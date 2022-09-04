@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TypeVar, Callable, Type, Optional, Union, overload
 from typing import Generic, Tuple, List, Dict  # Generics are fun
 from inspect import isclass
-from dataclasses import dataclass, field
+from attr import attrs, attrib
 
 function = TypeVar(
     "function",
@@ -298,7 +298,7 @@ def bytes_to_human(
     return f"{s} {size_name[i]}"
 
 
-@dataclass
+@attrs(slots=True, auto_attribs=True)
 class _ExecUnit:
     """
     Unit of the execution list
@@ -308,14 +308,14 @@ class _ExecUnit:
     dry: bool
 
 
-@dataclass
+@attrs(slots=True)
 class _Module:
     """
     Instance of a module. Contains the message and the execution list
     """
-    msg: str
-    unit_list: List[_ExecUnit] = field(
-        default_factory=list,
+    msg: str = attrib()
+    unit_list: List[_ExecUnit] = attrib(
+        factory=list,
     )
 
 

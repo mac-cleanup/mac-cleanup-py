@@ -18,7 +18,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "attrs"
 version = "22.1.0"
 description = "Classes Without Boilerplate"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -121,7 +121,7 @@ Flake8 = ">=5,<6"
 TOMLi = {version = "*", markers = "python_version < \"3.11\""}
 
 [package.extras]
-test = ["pytest", "pytest-cov"]
+test = ["pyTest", "pyTest-cov"]
 
 [[package]]
 name = "importlib-metadata"
@@ -468,7 +468,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.12"
-content-hash = "9190e3fc33947c0ede876fd58a1d2d5c9614f8c5238fd863c04e3fa7e498823e"
+content-hash = "f7a8d881eebd63dcce445da4e44fb96bdec19ed9f1a6af761284b4b048c75081"
 
 [metadata.files]
 ansicon = [

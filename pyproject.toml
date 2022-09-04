@@ -23,6 +23,7 @@ python = ">=3.7,<3.12"
 rich = "^12.2.0"
 toml = "^0.10.2"
 inquirer = "^2.10.0"
+attrs = "^22.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
