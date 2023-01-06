@@ -20,7 +20,7 @@ exclude = [ "mac_cleanup/__main__.py", "mac_cleanup/py.typed" ]
 
 [tool.poetry.dependencies]
 python = ">=3.7,<3.12"
-rich = "^12.2.0"
+rich = ">=12.2,<14.0"
 toml = "^0.10.2"
 inquirer = "^2.10.0"
 attrs = "^22.1.0"
