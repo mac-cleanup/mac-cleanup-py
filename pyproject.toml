@@ -31,7 +31,7 @@ tox = "^3.26.0"
 flake8 = "^5.0.4"
 Flake8-pyproject = "^1.1.0"
 mypy = "^0.971"
-pytest-cov = "^3.0.0"
+pytest-cov = "^4.0.0"
 types-toml = "^0.10.8"
 
 [tool.poetry.scripts]
