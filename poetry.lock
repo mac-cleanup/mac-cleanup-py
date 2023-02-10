@@ -189,21 +189,21 @@ pyflakes = ">=2.5.0,<2.6.0"
 
 [[package]]
 name = "flake8-pyproject"
-version = "1.1.0.post0"
+version = "1.2.2"
 description = "Flake8 plug-in loading the configuration from pyproject.toml"
 category = "dev"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">= 3.6"
 files = [
-    {file = "flake8_pyproject-1.1.0.post0-py3-none-any.whl", hash = "sha256:55bc7cbb4272dca45ba42521954452be9d443237fa9b78a09d0424bbd5c94fab"},
+    {file = "flake8_pyproject-1.2.2-py3-none-any.whl", hash = "sha256:52d412219e7db6227faa654675b1435947b11d49b453f3eced760f19bdd6f06a"},
 ]
 
 [package.dependencies]
-Flake8 = ">=5,<6"
+Flake8 = ">=5"
 TOMLi = {version = "*", markers = "python_version < \"3.11\""}
 
 [package.extras]
-test = ["pyTest", "pyTest-cov"]
+dev = ["pyTest", "pyTest-cov"]
 
 [[package]]
 name = "importlib-metadata"
@@ -758,4 +758,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7,<3.12"
-content-hash = "e202d7665b50e1a25198d49c4e46295a4fe39dff7770c1a528b77a004d58d44e"
+content-hash = "b66c199aa5a8d9cb10018854346ce82cdbbcac046b926c36ea7db0bcd9dada8b"
