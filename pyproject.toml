@@ -20,18 +20,18 @@ exclude = [ "mac_cleanup/__main__.py", "mac_cleanup/py.typed" ]
 
 [tool.poetry.dependencies]
 python = ">=3.7,<3.12"
-rich = "^12.2.0"
+rich = ">=12.2,<14.0"
 toml = "^0.10.2"
 inquirer = "^2.10.0"
 attrs = "^22.1.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.1.2"
-tox = "^3.25.1"
+pytest = "^7.2.1"
+tox = "^3.28.0"
 flake8 = "^5.0.4"
-Flake8-pyproject = "^1.1.0"
-mypy = "^0.971"
-pytest-cov = "^3.0.0"
+Flake8-pyproject = "^1.2.2"
+mypy = "^1.0"
+pytest-cov = "^4.0.0"
 types-toml = "^0.10.8"
 
 [tool.poetry.scripts]
