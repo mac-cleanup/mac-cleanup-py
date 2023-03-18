@@ -104,7 +104,7 @@ $ mac-cleanup -h
 usage: mac-cleanup [-h] [-d] [-u] [-c] [-m]
 
     A Mac Cleanup Utility in Python
-    v2.2.5
+    v3.0.0
     https://github.com/mac-cleanup/mac-cleanup-py
 
 optional arguments:
