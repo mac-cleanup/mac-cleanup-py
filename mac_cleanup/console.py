@@ -1,7 +1,10 @@
-from .__version__ import __version__
+from mac_cleanup.__version__ import __version__
+
 from argparse import ArgumentParser, RawTextHelpFormatter
+
 from rich.console import Console
 from rich.theme import Theme
+
 
 parser = ArgumentParser(
     description=f"""\
@@ -48,7 +51,7 @@ custom_theme = Theme({
     "success": "bold green",
 })
 
-console = Console(theme=custom_theme)
+console = Console(theme=custom_theme, record=True)
 
 
 def print_panel(
