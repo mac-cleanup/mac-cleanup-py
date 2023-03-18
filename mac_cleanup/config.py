@@ -2,7 +2,7 @@ from typing import List, Dict  # Generics are fun
 from pathlib import Path
 from .utils import function
 
-config_path = Path(__file__).parent.resolve().as_posix() + "/modules.toml"
+config_path = Path.home().resolve().as_posix() + "/.mac_cleanup_py/modules.toml"
 
 
 def get_config(
@@ -16,6 +16,7 @@ def get_config(
     from toml import load, TomlDecodeError
 
     # Creates config if it's not already created
+    Path(Path(config_path).parent.resolve().as_posix()).mkdir(exist_ok=True)
     Path(config_path).touch(exist_ok=True)
 
     # Loads config (in case something got wrong there is try -> except)
