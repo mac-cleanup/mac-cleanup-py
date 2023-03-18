@@ -1,18 +1,17 @@
-from typing import List, Dict  # Generics are fun
+from typing import Callable
+
 from pathlib import Path
-from .utils import function
-
-config_path = Path(__file__).parent.resolve().as_posix() + "/modules.toml"
 
 
-def get_config(
-) -> dict:
+config_path = Path.home().as_posix() + "/.mac_cleanup_py"
+
+# TODO: check everything
+def get_config() -> dict:
     """
     Gets the config or creates it if it doesn't exist
-
-    Returns:
-        Config as a dict
+        :return: Config as a dict
     """
+
     from toml import load, TomlDecodeError
 
     # Creates config if it's not already created
@@ -27,14 +26,13 @@ def get_config(
 
 
 def set_config(
-        config: dict,
+        config: dict
 ) -> None:
     """
-    Updates and writes config
-
-    Args:
-        config: Config as a dict to be written
+    Updates and writes config as toml
+        :param config: Config as a dict to be written
     """
+
     from toml import dump
 
     with open(config_path, "w+") as f:
@@ -43,19 +41,17 @@ def set_config(
 
 def config_checkbox(
         all_modules: list,
-        enabled: list,
-) -> List[str]:
+        enabled: list
+) -> list[str]:  # TODO: left here
     """
     Opens the checkbox list in the terminal to enable modules
-
-    Args:
-        all_modules: List w/ all modules
-        enabled: List w/ all enabled modules
-    Returns:
-        List w/ all modules user selected
+        :param all_modules: List w/ all modules
+        :param enabled: List w/ all enabled modules
+        :return: List w/ all modules user selected
     """
+
     from inquirer import Checkbox, prompt
-    from .console import print_panel, console
+    from mac_cleanup.console import print_panel, console
 
     # Prints the legend
     print_panel(
@@ -71,27 +67,27 @@ def config_checkbox(
         default=enabled,
         carousel=True,
     )
-    answers: Dict[str, List[str]] = prompt([questions], raise_keyboard_interrupt=True)
+
+    answers: dict[str, list[str]] = prompt([questions], raise_keyboard_interrupt=True)
 
     # Clear console after checkbox
     console.clear()
+
     if not answers:
         raise ValueError("Got empty answers from Checkbox")
     return answers["modules"]
 
 
-def set_custom_path(
-) -> None:
-    """
-    Sets path for custom modules in config
-    """
+def set_custom_path() -> None:
+    """Sets path for custom modules in config"""
+
     from rich.prompt import Prompt
 
     # Ask for user input
     custom_path = Prompt.ask(
         "Enter path to custom modules",
         default="~/Documents/mac-cleanup/",
-        show_default=True,
+        show_default=True
     )
 
     # Creates directory if it doesn't exist
@@ -108,16 +104,15 @@ def load_config(
 ) -> None:
     """
     Loads & checks config and launches config_checkbox if needed
-
-    Args:
-        configuration_needed: Request configuration
+        :param configuration_needed: Request configuration
     """
-    from .modules import load_default, load_custom
+
+    from mac_cleanup.config_utils import load_default, load_custom
 
     config = get_config()
 
     # Joins default and custom modules together and sort 'em
-    all_modules: Dict[str, function] = dict(  # type: ignore
+    all_modules: dict[str, Callable] = dict(  # type: ignore
         load_custom(config.get("custom_path")),
         **load_default(),
     )
@@ -125,7 +120,7 @@ def load_config(
 
     # If config is empty requestes configuration and selects all modules as enabled
     if config.get("enabled", 0) == 0 or not isinstance(config["enabled"], list):
-        from .console import console
+        from mac_cleanup.console import console
 
         console.print("[danger]Modules not configured, opening configuration screen...[/danger]")
         enabled = config_checkbox(
@@ -137,7 +132,7 @@ def load_config(
         enabled = config["enabled"]
 
     if configuration_needed:
-        from .console import console
+        from mac_cleanup.console import console
 
         enabled = config_checkbox(
             all_modules=all_modules_keys,

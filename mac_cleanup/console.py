@@ -5,7 +5,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 from rich.console import Console
 from rich.theme import Theme
 
-
+# TODO: check everything
 parser = ArgumentParser(
     description=f"""\
     A Mac Cleanup Utility in Python
