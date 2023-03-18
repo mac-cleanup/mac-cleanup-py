@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mac_cleanup"
-version = "2.2.5"
+version = "3.0.0"
 description = "Python cleanup script for macOS"
 license = "Apache-2.0"
 authors = [ "Drugsosos <44712637+Drugsosos@users.noreply.github.com>" ]
@@ -19,7 +19,7 @@ exclude = [ "mac_cleanup/__main__.py", "mac_cleanup/py.typed" ]
 
 
 [tool.poetry.dependencies]
-python = ">=3.7,<3.12"
+python = ">=3.9,<3.12"
 rich = ">=12.2,<14.0"
 toml = "^0.10.2"
 inquirer = "^2.10.0"
