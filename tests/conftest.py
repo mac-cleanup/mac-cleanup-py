@@ -4,7 +4,7 @@ from mac_cleanup import Collector
 
 @pytest.fixture(
     scope="session",
-    autouse=False,
+    autouse=False
 )
 def get_current_os(
 ) -> str:
@@ -15,10 +15,8 @@ def get_current_os(
 
 @pytest.fixture(
     scope="function",
-    autouse=False,
+    autouse=False
 )
 def get_collector(
 ) -> Collector:
-    t = Collector(execute_list=list())
-    t.msg("test")
-    return t
+    return Collector()
