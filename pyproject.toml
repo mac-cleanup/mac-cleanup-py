@@ -20,17 +20,17 @@ exclude = [ "mac_cleanup/__main__.py", "mac_cleanup/py.typed" ]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
-rich = ">=12.2,<14.0"
-toml = "^0.10.2"
+rich = "^13.3.2"
+attrs = "^22.2.0"
 inquirer = "^2.10.0"
-attrs = "^22.1.0"
+toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.2.1"
+pytest = "^7.2.2"
 tox = "^3.28.0"
 flake8 = "^5.0.4"
 Flake8-pyproject = "^1.2.2"
-mypy = "^1.0"
+mypy = "^1.1.1"
 pytest-cov = "^4.0.0"
 types-toml = "^0.10.8"
 
@@ -50,9 +50,9 @@ skip_covered = true
 
 [tool.flake8]
 max-line-length = 120
-per-file-ignores = [
-    "default_modules.py, cli.py, test_utils.py:F403, F405",
-]
+#per-file-ignores = [
+#    "default_modules.py, cli.py, test_utils.py:F403, F405",
+#]
 count = true
 
 [tool.mypy]
@@ -69,7 +69,7 @@ disallow_incomplete_defs = true
 disallow_untyped_decorators = true
 show_error_codes = true
 strict_equality = true
-exclude = "default_modules.py"
+#exclude = "default_modules.py"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
