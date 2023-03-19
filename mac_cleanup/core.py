@@ -124,7 +124,7 @@ class Path(_BaseCommand):
             self,
             path_: str
     ):
-        self.__path: Final[Path_] = Path_(path_.replace(" ", "\ ")).expanduser()  # noqa: W605
+        self.__path: Final[Path_] = Path_(path_.replace(" ", "\\ ")).expanduser()
 
         tmp_command: Optional[str] = None
 
