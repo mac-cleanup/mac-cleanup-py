@@ -25,7 +25,17 @@ class __ProgressBar(Progress):
             choices: Optional[list[str]] = None,
             show_default: bool = True,
             show_choices: bool = True,
-    ) -> bool:  # TODO: add docstrings
+    ) -> bool:
+        """
+        Stops progress bar to show prompt to user
+            :param prompt_: Prompt text
+            :param password: Enable password input. Defaults to False.
+            :param choices: A list of valid choices. Defaults to None.
+            :param show_default: Show default in prompt. Defaults to True.
+            :param show_choices: Show choices in prompt. Defaults to True.
+            :return: True on successful prompt
+        """
+
         # Stop refreshing progress bar
         self.stop()
 
@@ -40,7 +50,7 @@ class __ProgressBar(Progress):
         )
 
         self.console.clear()
-        # self.console.clear_live()
+        self.console.clear_live()  # TODO: check if needed
 
         # Resume refreshing progress bar
         self.start()
@@ -52,7 +62,15 @@ class __ProgressBar(Progress):
             sequence: Union[Iterable[ProgressType], Sequence[ProgressType]],
             total: Optional[float] = None,
             description: str = "Working..."
-    ):  # TODO: add docstrings
+    ) -> Iterable[ProgressType]:
+        """
+        Wrapper other :func:`rich.progress.track`
+            :param sequence: Sequence (must support "len") you wish to iterate over.
+            :param total: Total number of steps. Default is len(sequence).
+            :param description: Description of task show next to progress bar. Defaults to "Working".
+            :return: An iterable of the values in the sequence
+        """
+
         with self:
             yield from self.track(
                 sequence,
