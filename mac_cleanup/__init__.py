@@ -1,6 +1,6 @@
 from mac_cleanup.core import Path, Command
 from mac_cleanup.collector import Collector
-from mac_cleanup.console import args
+from mac_cleanup.parser import args
 from mac_cleanup.main import main
 
 try:

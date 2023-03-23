@@ -15,7 +15,7 @@
 2. Deletes unnecessary logs & files
 3. Removes cache
 
-![mac-cleanup_v2_X_X](https://user-images.githubusercontent.com/44712637/184389183-449cae99-4d40-4ca1-9523-1fb3dcf809dd.gif)
+![mac-cleanup-demo](https://user-images.githubusercontent.com/44712637/184389183-449cae99-4d40-4ca1-9523-1fb3dcf809dd.gif)
 
 <details>
    <summary>
@@ -109,8 +109,8 @@ usage: mac-cleanup [-h] [-d] [-u] [-c] [-m]
 
 optional arguments:
   -h, --help       show this help message and exit
-  -d, --dry-run    Shows approx space to be cleaned
-  -u, --update     Script will update brew while cleaning
-  -c, --configure  Launch modules configuration
-  -m, --modules    Specify custom modules' path
+  -n, --dry-run    Dry run without deleting stuff
+  -u, --update     Update HomeBrew on cleanup
+  -c, --configure  Configure default and custom modules
+  -p, --modules    Specify path for custom modules
 ```

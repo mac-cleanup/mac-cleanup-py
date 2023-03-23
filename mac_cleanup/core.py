@@ -1,174 +1,190 @@
-"""All core modules"""
-from typing import final, Final, Optional
+"""Module for collecting all unit modules"""
+from typing import final, Final
 
 from beartype import beartype
 
-from abc import ABC, abstractmethod
+from itertools import chain
 
-from pathlib import Path as Path_
+import attr
 
-from mac_cleanup.progress import ProgressBar
-from mac_cleanup.utils import cmd, check_deletable, check_exists
+from mac_cleanup.core import BaseModule, Path
+from mac_cleanup.utils import _KeyboardInterrupt
+
+
+@final
+@attr.s(slots=True)
+class Unit:
+    """Unit containing message and the modules list"""
+
+    message: str = attr.ib()
+    modules: list[BaseModule] = attr.ib(
+        factory=list,
+        validator=attr.validators.deep_iterable(
+            member_validator=attr.validators.instance_of(BaseModule),
+            iterable_validator=attr.validators.instance_of(list)
+        )
+    )
 
 
 @beartype
-class BaseModule(ABC):
-    """Base abstract module"""
+@final
+class _BaseCollector:
+    """Base class with all functionality in context manager of :class:`Collector`"""
 
-    __prompt: bool = False
-    __prompt_message: str = "Do you want to proceed?"
+    _shared_instance = dict()
 
-    def with_prompt(
-            self,
-            message_: Optional[str] = None,
-            /
-    ) -> 'BaseModule':
-        """
-        Execute command with user prompt
-            :param message_: Message to be shown on prompt
-            :return: :class:`BaseModule`
-        """
+    # Init temp stuff
+    __temp_message: str
+    __temp_modules_list: list[BaseModule]
 
-        self.__prompt = True
+    def __init__(self):
+        # Borg implementation
+        self.__dict__ = self._shared_instance
 
-        if message_:
-            self.__prompt_message = message_
+        # Add execute_list if none found in shared_instance
+        if not hasattr(self, "_execute_list"):
+            self._execute_list: Final[list[Unit]] = list()
 
+    def __enter__(self) -> '_BaseCollector':
+        # Set temp stuff
+        self.__temp_message = "Working..."
+        self.__temp_modules_list = list()
+
+        # Return self
         return self
 
-    @abstractmethod
-    def _execute(self) -> bool:
-        """
-        Base exec with check for prompt
-            :return: True on successful prompt
-        """
+    def __exit__(
+            self,
+            exc_type,
+            exc_val,
+            exc_tb
+    ) -> None:
+        # Raise error if once occurred
+        if exc_type:
+            raise exc_type(exc_val)
 
-        # Call prompt if needed
-        if self.__prompt:
-            # Skip on negative prompt
-            return ProgressBar.prompt(
-                    prompt_=self.__prompt_message
+        # Add Unit to list if modules list exists
+        if self.__temp_modules_list:
+            self._execute_list.append(
+                Unit(
+                    message=self.__temp_message,
+                    modules=self.__temp_modules_list
+                )
             )
 
-        return True
+        # Unset temp stuff
+        del self.__temp_message
+        del self.__temp_modules_list
 
-
-@beartype
-class _BaseCommand(BaseModule):
-    """Base Command with basic command methods"""
-
-    __has_root: bool = False
-
-    def __init__(
+    def message(
             self,
-            command_: Optional[str]
-    ):
-        # Ask for password input in terminal (sudo -E)
-        # Raises AssertionError if prompt fails
-        if not self.__has_root:
-            # Get root
-            assert cmd("sudo -E whoami") == "root"
+            message_: str
+    ) -> None:
+        """
+        Add message to instance of :class:`Unit`
+            :param message_: Message to be printed in progress bar
+        """
 
-            # Set global root attr
-            _BaseCommand.__has_root = True
+        self.__temp_message = message_
 
-        self.__command: Final[Optional[str]] = command_
-
-    @abstractmethod
-    def _execute(
+    def add(
             self,
-            **kwargs,
-    ) -> Optional[str]:
+            module_: BaseModule
+    ) -> None:
         """
-        Execute the command specified
-            :param ignore_errors_: Ignore errors during execution
-            :return: Command execution results based on specified parameters
-        """
-
-        # Skip if there is no command
-        if not self.__command:
-            return
-
-        # Skip on negative prompt
-        if not super()._execute():
-            return
-
-        # Execute command
-        return cmd(
-            command=self.__command,
-            ignore_errors=kwargs.get("ignore_errors", True)
-        )
-
-
-@beartype
-@final
-class Command(_BaseCommand):
-    """Collector list unit for command execution"""
-
-    __ignore_errors: bool = True
-
-    def with_errors(self) -> 'Command':
-        """
-        Return errors in exec output
-            :return: :class:`Command`
+        Add module to the list of modules to instance of :class:`Unit`
+            :param module_: Module based on :class:`BaseModule`
         """
 
-        self.__ignore_errors = False
+        self.__temp_modules_list.append(module_)
 
-        return self
-
-    def _execute(
-            self,
-            *,
-            ignore_errors_: bool = True
-    ) -> Optional[str]:
-        return super()._execute(ignore_errors=self.__ignore_errors)
-
-
-@beartype
-@final
-class Path(_BaseCommand):
-    """Collector list unit for cleaning paths"""
-
-    __dry_run_only: bool = False
-
-    def __init__(
-            self,
-            path_: str
-    ):
-        self.__path: Final[Path_] = Path_(path_.replace(" ", "\\ ")).expanduser()
-
-        tmp_command: Optional[str] = None
-
-        if self.__path.as_posix():
-            tmp_command = "rm -rf {path}".format(path=self.__path.as_posix())
-
-        super().__init__(command_=tmp_command)
-
-    def dry_run_only(self) -> 'Path':
+    @staticmethod
+    def __get_size(
+            path: str
+    ) -> float:
         """
-        Set module to only count size in dry runs
-            :return: :class:`Path`
+        Counts size of directory
+            :param path: Path to the directory
+            :return: Size of specified directory
         """
 
-        self.__dry_run_only = True
+        from pathlib import Path
 
-        return self
+        try:
+            # Searching for glob in path
+            split_path = path.split("*", 1)
+            path, glob = split_path if len(split_path) == 2 else (path, "")
 
-    def _execute(self) -> None:
+            temp_size: float = 0
+
+            for p in Path(path).expanduser().rglob("*" + glob):
+                # Except SIP and symlinks
+                try:
+                    temp_size += p.stat().st_size
+                except (PermissionError, FileNotFoundError):
+                    continue
+            return temp_size
+        except KeyboardInterrupt:
+            # Needed to handle KeyboardInterrupt in Pool
+            raise _KeyboardInterrupt
+
+    @staticmethod
+    def __filter_path_modules(
+            module_
+    ) -> bool:
+        """Filter instances of :class:`Path`"""
+
+        return isinstance(module_, Path)
+
+    def _count_dry(self) -> float:
         """
-        Delete specified path
-            :return: Command execution results based on specified parameters
+        Counts free space for dry run
+            :return: Approx amount of bytes to be removed
         """
 
-        if self.__dry_run_only:
-            return
+        from mac_cleanup.progress import ProgressBar
+        from multiprocessing import Pool
 
-        # Skip if path is not deletable or undefined
-        if (
-                check_deletable(path=self.__path)
-                and not check_exists(path=self.__path)
-        ):
-            return
+        # Extracts paths from execute_list
+        modules_list = list(chain(*[unit.modules for unit in self._execute_list]))
+        path_modules_list: list[Path] = list(filter(self.__filter_path_modules, modules_list))
+        path_list: list[str] = list(map(lambda path: path.__path, path_modules_list))
 
-        super()._execute()
+        module_size: float = 0
+
+        with Pool() as pool:
+            try:
+                for path_size in ProgressBar.wrap_iter(
+                        pool.imap_unordered(
+                            self.__get_size,
+                            path_list,
+                        ),
+                        description="Collecting dry run",
+                        total=len(path_list),
+                ):
+                    module_size += path_size
+            except _KeyboardInterrupt:  # pragma: no cover
+                # Closing pool w/ pool.close() to wait for unfinished tasks
+                pool.close()
+                # Waits for the worker processes to terminate
+                pool.join()
+        return module_size
+
+
+class Collector:
+    """Class for collecting and storing unit list with all used modules"""
+
+    def __init__(self):
+        # Build a Collector object
+        self.__base = _BaseCollector()
+
+    def __enter__(self) -> _BaseCollector:
+        # Return a Collector object
+        return self.__base.__enter__()
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        # Raise errors if any
+        if exc_type:
+            raise exc_type(exc_val)
+
+        return self.__base.__exit__(exc_type, exc_val, exc_tb)
