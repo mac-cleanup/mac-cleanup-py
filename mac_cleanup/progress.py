@@ -7,7 +7,7 @@ from rich.prompt import Confirm
 from mac_cleanup.console import console
 
 
-class __ProgressBar(Progress):
+class _ProgressBar(Progress):
     def __init__(self):
         # Call parent init w/ default stuff
         super().__init__(
@@ -80,4 +80,4 @@ class __ProgressBar(Progress):
 
 
 # ProgressBar instance for all project
-ProgressBar = __ProgressBar()
+ProgressBar = _ProgressBar()
