@@ -1,4 +1,4 @@
-"""Module for collecting all unit modules"""
+"""Core for collecting all unit modules"""
 from typing import final, Final
 
 from beartype import beartype
@@ -7,7 +7,7 @@ from itertools import chain
 
 import attr
 
-from mac_cleanup.core import BaseModule, Path
+from mac_cleanup.core_modules import BaseModule, Path
 from mac_cleanup.utils import _KeyboardInterrupt
 
 
@@ -28,8 +28,8 @@ class Unit:
 
 @beartype
 @final
-class _BaseCollector:
-    """Base class with all functionality in context manager of :class:`Collector`"""
+class _Collector:
+    """Class for collecting all modules"""
 
     _shared_instance = dict()
 
@@ -45,7 +45,7 @@ class _BaseCollector:
         if not hasattr(self, "_execute_list"):
             self._execute_list: Final[list[Unit]] = list()
 
-    def __enter__(self) -> '_BaseCollector':
+    def __enter__(self) -> '_Collector':
         # Set temp stuff
         self.__temp_message = "Working..."
         self.__temp_modules_list = list()
@@ -171,14 +171,14 @@ class _BaseCollector:
         return module_size
 
 
-class Collector:
-    """Class for collecting and storing unit list with all used modules"""
+class ProxyCollector:
+    """Proxy for accessing :class:`Collector` in a context manager"""
 
     def __init__(self):
         # Build a Collector object
-        self.__base = _BaseCollector()
+        self.__base = _Collector()
 
-    def __enter__(self) -> _BaseCollector:
+    def __enter__(self) -> _Collector:
         # Return a Collector object
         return self.__base.__enter__()
 

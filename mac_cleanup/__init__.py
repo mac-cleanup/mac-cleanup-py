@@ -1,5 +1,5 @@
-from mac_cleanup.core import Path, Command
-from mac_cleanup.collector import Collector
+from mac_cleanup.core import ProxyCollector as Collector
+from mac_cleanup.core_modules import Path, Command
 from mac_cleanup.parser import args
 from mac_cleanup.main import main
 

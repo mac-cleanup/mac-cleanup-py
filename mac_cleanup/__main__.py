@@ -1,4 +1,4 @@
-"""Mocking brew entrypoint"""
+"""Mocking HomeBrew entrypoint"""
 
 # -*- coding: utf-8 -*-
 import re

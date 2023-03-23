@@ -14,12 +14,12 @@ def module_example_1():
     # check_exists - checks if specified path exists
     if check_exists("~/example/path"):
         # Open context manager of Collector
-        with clc as t:
+        with clc as unit:
             # message() - sets message to be displayed in the progress bar
-            t.message("Message you want to see in progress bar")
+            unit.message("Message you want to see in progress bar")
 
             # add() - adds desired module to modules list
-            t.add(
+            unit.add(
                 # Path - used for deleting paths
                 Path("~/example/path")
                 # with_prompt - calls for user prompt to approve "risky" action
@@ -27,7 +27,7 @@ def module_example_1():
                 .with_prompt()
             )
 
-            t.add(
+            unit.add(
                 Path("~/example/dry_run/file.webm")
                 # dry_run_only - specified path will be counted in dry run, but won't be deleted
                 .dry_run_only()
@@ -36,7 +36,7 @@ def module_example_1():
             # cmd() - executes specified command and return stdout only
             # stderr can be returned with attr "ignore_errors" set to False
             if cmd("echo 1") == "1":
-                t.add(
+                unit.add(
                     # Command - used for executing any command with :func:`mac_cleanup.utils.cmd`
                     Command("whoami")
                     .with_prompt("You will see your username. Proceed?")
