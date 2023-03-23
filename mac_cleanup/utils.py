@@ -1,7 +1,12 @@
-from pathlib import Path
 from typing import Union
 
-# TODO: check everything
+from beartype import beartype
+from beartype.cave import IntOrFloatType
+
+from pathlib import Path
+
+
+@beartype
 def cmd(
         command: str,
         ignore_errors: bool = True
@@ -33,6 +38,7 @@ def cmd(
     )
 
 
+@beartype
 def expanduser(
         str_path: str
 ) -> str:
@@ -47,6 +53,7 @@ def expanduser(
     return Path(str_path).expanduser().as_posix()
 
 
+@beartype
 def check_exists(
         path: Union[Path, str]
 ) -> bool:
@@ -66,6 +73,7 @@ def check_exists(
     return path.exists()
 
 
+@beartype
 def check_deletable(
         path: Union[Path, str]
 ) -> bool:
@@ -113,8 +121,9 @@ def check_deletable(
     return "restricted" not in cmd(f"ls -lo {path_posix} | awk '{{print $3, $4}}'")
 
 
+@beartype
 def bytes_to_human(
-        size_bytes: float
+        size_bytes: IntOrFloatType
 ) -> str:
     """
     Converts bytes to human-readable format

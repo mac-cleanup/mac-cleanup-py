@@ -1,5 +1,8 @@
 """Module for collecting all unit modules"""
 from typing import final, Final
+
+from beartype import beartype
+
 from itertools import chain
 
 import attr
@@ -23,6 +26,7 @@ class Unit:
     )
 
 
+@beartype
 @final
 class _BaseCollector:
     """Base class with all functionality in context manager of :class:`Collector`"""
@@ -96,8 +100,8 @@ class _BaseCollector:
 
     @staticmethod
     def __get_size(
-            path: str,
-    ) -> float:  # pragma: no cover
+            path: str
+    ) -> float:
         """
         Counts size of directory
             :param path: Path to the directory

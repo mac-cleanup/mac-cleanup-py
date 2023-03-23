@@ -1,6 +1,9 @@
 """All core modules"""
-from abc import ABC, abstractmethod
 from typing import final, Final, Optional
+
+from beartype import beartype
+
+from abc import ABC, abstractmethod
 
 from pathlib import Path as Path_
 
@@ -8,6 +11,7 @@ from mac_cleanup.progress import ProgressBar
 from mac_cleanup.utils import cmd, check_deletable, check_exists
 
 
+@beartype
 class BaseModule(ABC):
     """Base abstract module"""
 
@@ -16,7 +20,8 @@ class BaseModule(ABC):
 
     def with_prompt(
             self,
-            message_: Optional[str] = None
+            message_: Optional[str] = None,
+            /
     ) -> 'BaseModule':
         """
         Execute command with user prompt
@@ -45,7 +50,10 @@ class BaseModule(ABC):
                     prompt_=self.__prompt_message
             )
 
+        return True
 
+
+@beartype
 class _BaseCommand(BaseModule):
     """Base Command with basic command methods"""
 
@@ -66,9 +74,10 @@ class _BaseCommand(BaseModule):
 
         self.__command: Final[Optional[str]] = command_
 
+    @abstractmethod
     def _execute(
             self,
-            ignore_errors_: bool = True
+            **kwargs,
     ) -> Optional[str]:
         """
         Execute the command specified
@@ -87,10 +96,11 @@ class _BaseCommand(BaseModule):
         # Execute command
         return cmd(
             command=self.__command,
-            ignore_errors=ignore_errors_
+            ignore_errors=kwargs.get("ignore_errors", True)
         )
 
 
+@beartype
 @final
 class Command(_BaseCommand):
     """Collector list unit for command execution"""
@@ -109,11 +119,13 @@ class Command(_BaseCommand):
 
     def _execute(
             self,
+            *,
             ignore_errors_: bool = True
     ) -> Optional[str]:
-        return super()._execute(ignore_errors_=self.__ignore_errors)
+        return super()._execute(ignore_errors=self.__ignore_errors)
 
 
+@beartype
 @final
 class Path(_BaseCommand):
     """Collector list unit for cleaning paths"""
@@ -143,14 +155,9 @@ class Path(_BaseCommand):
 
         return self
 
-    def _execute(
-            self,
-            *,
-            ignore_errors_: bool = True
-    ) -> None:
+    def _execute(self) -> None:
         """
         Delete specified path
-            :param ignore_errors_: Ignore errors during deletion of specified path
             :return: Command execution results based on specified parameters
         """
 
@@ -164,4 +171,4 @@ class Path(_BaseCommand):
         ):
             return
 
-        super()._execute(ignore_errors_=ignore_errors_)
+        super()._execute()
