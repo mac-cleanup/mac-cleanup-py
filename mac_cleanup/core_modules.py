@@ -47,7 +47,8 @@ class BaseModule(ABC):
         if self.__prompt:
             # Skip on negative prompt
             return ProgressBar.prompt(
-                    prompt_=self.__prompt_message
+                prompt_text=self.__prompt_message,
+                prompt_title="Module requires attention"
             )
 
         return True
@@ -144,6 +145,12 @@ class Path(_BaseCommand):
             tmp_command = "rm -rf {path}".format(path=self.__path.as_posix())
 
         super().__init__(command_=tmp_command)
+
+    @property
+    def get_path(self) -> Path_:
+        """Get path specified to the module"""
+
+        return self.__path
 
     def dry_run_only(self) -> 'Path':
         """

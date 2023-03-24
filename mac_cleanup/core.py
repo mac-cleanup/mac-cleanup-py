@@ -3,6 +3,7 @@ from typing import final, Final
 
 from beartype import beartype
 
+from pathlib import Path as Path_
 from itertools import chain
 
 import attr
@@ -26,7 +27,6 @@ class Unit:
     )
 
 
-@beartype
 @final
 class _Collector:
     """Class for collecting all modules"""
@@ -76,6 +76,7 @@ class _Collector:
         del self.__temp_message
         del self.__temp_modules_list
 
+    @beartype
     def message(
             self,
             message_: str
@@ -87,6 +88,7 @@ class _Collector:
 
         self.__temp_message = message_
 
+    @beartype
     def add(
             self,
             module_: BaseModule
@@ -99,16 +101,16 @@ class _Collector:
         self.__temp_modules_list.append(module_)
 
     @staticmethod
-    def __get_size(
-            path: str
+    def _get_size(
+            path_: Path_
     ) -> float:
         """
         Counts size of directory
-            :param path: Path to the directory
+            :param path_: Path to the directory
             :return: Size of specified directory
         """
 
-        from pathlib import Path
+        path = path_.expanduser().as_posix()
 
         try:
             # Searching for glob in path
@@ -117,7 +119,7 @@ class _Collector:
 
             temp_size: float = 0
 
-            for p in Path(path).expanduser().rglob("*" + glob):
+            for p in Path_(path).rglob("*" + glob):
                 # Except SIP and symlinks
                 try:
                     temp_size += p.stat().st_size
@@ -148,7 +150,7 @@ class _Collector:
         # Extracts paths from execute_list
         modules_list = list(chain(*[unit.modules for unit in self._execute_list]))
         path_modules_list: list[Path] = list(filter(self.__filter_path_modules, modules_list))
-        path_list: list[str] = list(map(lambda path: path.__path, path_modules_list))
+        path_list: list[Path_] = list(map(lambda path: path.get_path, path_modules_list))
 
         module_size: float = 0
 
@@ -156,11 +158,11 @@ class _Collector:
             try:
                 for path_size in ProgressBar.wrap_iter(
                         pool.imap_unordered(
-                            self.__get_size,
-                            path_list,
+                            func=self._get_size,
+                            iterable=path_list
                         ),
                         description="Collecting dry run",
-                        total=len(path_list),
+                        total=len(path_list)
                 ):
                     module_size += path_size
             except _KeyboardInterrupt:  # pragma: no cover
