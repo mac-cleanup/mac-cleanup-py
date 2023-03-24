@@ -45,7 +45,7 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "-p", "--custom",
+    "-p", "--custom-path",
     help="Specify path for custom modules",
     action="store_true"
 )
@@ -55,4 +55,4 @@ parser.parse_args(namespace=args)
 
 # args.dry_run = True  # debug
 # args.configure = True  # debug
-# args.modules = True  # debug
+# args.custom_path = True  # debug
