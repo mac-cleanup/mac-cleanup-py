@@ -4,10 +4,12 @@ from typing import Union, Iterable, Sequence, Optional
 from rich.progress import Progress, SpinnerColumn, TimeElapsedColumn, ProgressType
 from rich.prompt import Confirm
 
-from mac_cleanup.console import console
+from mac_cleanup.console import console, print_panel
 
 
 class _ProgressBar(Progress):
+    """Modified rich progress bar with blocking prompt"""
+
     def __init__(self):
         # Call parent init w/ default stuff
         super().__init__(
@@ -15,20 +17,22 @@ class _ProgressBar(Progress):
             *Progress.get_default_columns(),
             TimeElapsedColumn(),
             console=console,
-            transient=True,
+            transient=True
         )
 
     def prompt(
             self,
-            prompt_: str,
+            prompt_text: str,
+            prompt_title: str,
             password: bool = False,
             choices: Optional[list[str]] = None,
             show_default: bool = True,
-            show_choices: bool = True,
+            show_choices: bool = True
     ) -> bool:
         """
         Stops progress bar to show prompt to user
-            :param prompt_: Prompt text
+            :param prompt_text: Text to be shown in panel
+            :param prompt_title: Title of panel to be shown
             :param password: Enable password input. Defaults to False.
             :param choices: A list of valid choices. Defaults to None.
             :param show_default: Show default in prompt. Defaults to True.
@@ -39,9 +43,15 @@ class _ProgressBar(Progress):
         # Stop refreshing progress bar
         self.stop()
 
-        # Ask question
+        # Print prompt to user
+        print_panel(
+            text=prompt_text,
+            title=prompt_title
+        )
+
+        # Get user input
         answer = Confirm.ask(
-            prompt=prompt_,
+            prompt="Do you want to continue?",
             console=self.console,
             password=password,
             choices=choices,
@@ -49,12 +59,14 @@ class _ProgressBar(Progress):
             show_choices=show_choices,
         )
 
+        # Clear printed stuff
         self.console.clear()
-        self.console.clear_live()  # TODO: check if needed
+        self.console.clear_live()
 
         # Resume refreshing progress bar
         self.start()
 
+        # Return user answer
         return answer
 
     def wrap_iter(
