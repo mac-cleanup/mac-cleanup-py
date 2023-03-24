@@ -399,10 +399,15 @@ def docker():
         with clc as unit:
             unit.message("Cleaning up Docker")
 
+            # Flag for turning Docker off
+            close_docker = False
+
             if not cmd("docker ps >/dev/null 2>&1"):
                 unit.add(
                     Command("open --background -a Docker")
                 )
+
+                close_docker = True
 
             unit.add(
                 Command("docker system prune -af")
@@ -413,6 +418,12 @@ def docker():
                     """
                 )
             )
+
+            # Close Docker if it was opened by cleaner
+            if close_docker:
+                unit.add(
+                    Command("killall Docker")
+                )
 
 
 def pyenv():
