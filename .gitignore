@@ -36,3 +36,6 @@ mac_cleanup/modules.toml
 
 # tox
 .tox/*
+
+# ruff
+.ruff_cache/

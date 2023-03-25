@@ -30,27 +30,22 @@ beartype = "^0.12.0"
 mac-cleanup = "mac_cleanup:main"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.2.2"
 tox = "^4.4.7"
-pyright = "^1.1.300"
-flake8 = "^6.0.0"
-flake8-pyproject = "^1.2.3"
+pytest = "^7.2.2"
 pytest-cov = "^4.0.0"
+pyright = "^1.1.300"
+ruff = "^0.0.259"
 
 [options.package_data]
 mac_cleanup = "py.typed"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = [ "poetry-core>=1.0.0" ]
 build-backend = "poetry.core.masonry.api"
 
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
-
-[tool.flake8]
-max-line-length = 120
-count = true
 
 [tool.pyright]
 pythonVersion = "3.10"
@@ -59,6 +54,11 @@ typeCheckingMode = "strict"
 reportPrivateUsage = false
 reportIncompatibleMethodOverride = false
 reportImportCycles = false
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+ignore = [ "F403", "F405" ]
 
 [tool.pytest.ini_options]
 minversion = "7.2.2"
