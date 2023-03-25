@@ -1,4 +1,6 @@
-from mac_cleanup import *
+from mac_cleanup.core import ProxyCollector as Collector
+from mac_cleanup.core_modules import Path, Command
+from mac_cleanup.parser import args
 
 clc = Collector()
 

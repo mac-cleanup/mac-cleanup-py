@@ -1,7 +1,7 @@
 """All core modules"""
-from typing import final, Final, Optional
+from typing import final, Final, Optional, TypeVar
 
-from beartype import beartype
+from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
 
 from abc import ABC, abstractmethod
 
@@ -11,28 +11,32 @@ from mac_cleanup.progress import ProgressBar
 from mac_cleanup.utils import cmd, check_deletable, check_exists
 
 
-@beartype
+T = TypeVar("T")
+
+
 class BaseModule(ABC):
     """Base abstract module"""
 
     __prompt: bool = False
     __prompt_message: str = "Do you want to proceed?"
 
+    @beartype
     def with_prompt(
-            self,
-            message_: Optional[str] = None,
-            /
-    ) -> 'BaseModule':
+            self: T,
+            message_: Optional[str] = None
+    ) -> T:
         """
         Execute command with user prompt
             :param message_: Message to be shown on prompt
             :return: :class:`BaseModule`
         """
 
-        self.__prompt = True
+        # Can't be solved without typing.Self
+        self.__prompt = True  # pyright: ignore [reportGeneralTypeIssues]
 
         if message_:
-            self.__prompt_message = message_
+            # Can't be solved without typing.Self
+            self.__prompt_message = message_  # pyright: ignore [reportGeneralTypeIssues]
 
         return self
 
@@ -54,12 +58,12 @@ class BaseModule(ABC):
         return True
 
 
-@beartype
 class _BaseCommand(BaseModule):
     """Base Command with basic command methods"""
 
     __has_root: bool = False
 
+    @beartype
     def __init__(
             self,
             command_: Optional[str]
@@ -78,7 +82,7 @@ class _BaseCommand(BaseModule):
     @abstractmethod
     def _execute(
             self,
-            **kwargs,
+            **kwargs: bool
     ) -> Optional[str]:
         """
         Execute the command specified
@@ -101,7 +105,6 @@ class _BaseCommand(BaseModule):
         )
 
 
-@beartype
 @final
 class Command(_BaseCommand):
     """Collector list unit for command execution"""
@@ -118,6 +121,7 @@ class Command(_BaseCommand):
 
         return self
 
+    @beartype
     def _execute(
             self,
             *,
@@ -133,6 +137,7 @@ class Path(_BaseCommand):
 
     __dry_run_only: bool = False
 
+    @beartype
     def __init__(
             self,
             path_: str

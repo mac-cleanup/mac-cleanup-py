@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from mac_cleanup import args
 from mac_cleanup.core import _Collector
 from mac_cleanup.core_modules import BaseModule
+from mac_cleanup.parser import args
 from mac_cleanup.console import console, print_panel
 from mac_cleanup.config import Config
 from mac_cleanup.utils import cmd, bytes_to_human
@@ -31,8 +31,8 @@ def main() -> None:
     config(configuration_prompted=args.configure)
 
     def count_free_space(
-    ) -> int:
-        return int(cmd("df / | tail -1 | awk '{print $4}'"))
+    ) -> float:
+        return float(cmd("df / | tail -1 | awk '{print $4}'"))
 
     def cleanup() -> None:
         from mac_cleanup.progress import ProgressBar
@@ -75,7 +75,7 @@ def main() -> None:
         )
 
         try:
-            continue_cleanup: bool = Confirm.ask("Continue?", show_default=False, default="y")
+            continue_cleanup = Confirm.ask("Continue?", show_default=False, default="y")
         # Cyrillic symbols may crash rich.Confirm
         except UnicodeDecodeError:
             console.clear()

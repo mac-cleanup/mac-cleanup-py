@@ -5,10 +5,10 @@ from mac_cleanup.main import main
 
 try:
     from mac_cleanup.__version__ import __version__
-except ImportError:  # pragma: no cover
+except ImportError:
     __version__ = "source"
 
 __title__ = "mac-cleanup-py"
 __all__ = [
-    "Collector", "Path", "Command", "args",
+    "Collector", "Path", "Command", "args", "main"
 ]

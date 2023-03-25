@@ -1,7 +1,6 @@
 from typing import Union
 
-from beartype import beartype
-from beartype.cave import IntOrFloatType
+from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
 
 from pathlib import Path
 
@@ -33,7 +32,6 @@ def cmd(
                 stderr=(DEVNULL if ignore_errors else PIPE),
             )
             .communicate()
-            if out is not None
         )
     )
 
@@ -83,8 +81,11 @@ def check_deletable(
         :return: True if specified path is deletable
     """
 
+    # Convert path to correct type
     if not isinstance(path, Path):
-        path: Path = Path(path)
+        path_: Path = Path(path)
+    else:
+        path_ = path
 
     sip_list = [
         "/System",
@@ -105,7 +106,7 @@ def check_deletable(
     ]
 
     # Returns False if empty
-    if not (path_posix := path.as_posix()):
+    if not (path_posix := path_.as_posix()):
         return False
 
     # If glob return True (it'll delete nothing at the end, hard to hande otherwise)
@@ -123,7 +124,7 @@ def check_deletable(
 
 @beartype
 def bytes_to_human(
-        size_bytes: IntOrFloatType
+        size_bytes: Union[int, float]
 ) -> str:
     """
     Converts bytes to human-readable format

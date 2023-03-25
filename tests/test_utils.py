@@ -1,4 +1,1 @@
-import pytest
-from mac_cleanup.utils import *
-
-# TODO: rewrite tests
+"""All tests for mac_cleanup_py.utils"""

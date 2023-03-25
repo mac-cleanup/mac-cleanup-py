@@ -1,15 +1,20 @@
 """Core for collecting all unit modules"""
-from typing import final, Final
+from typing import final, Final, TypeVar, TypeGuard, Type, Optional, Any
+from types import TracebackType
 
-from beartype import beartype
+from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
 
-from pathlib import Path as Path_
 from itertools import chain
+from functools import partial
 
 import attr
+from pathlib import Path as Path_
 
 from mac_cleanup.core_modules import BaseModule, Path
 from mac_cleanup.utils import _KeyboardInterrupt
+
+
+T = TypeVar("T")
 
 
 @final
@@ -22,7 +27,7 @@ class Unit:
         factory=list,
         validator=attr.validators.deep_iterable(
             member_validator=attr.validators.instance_of(BaseModule),
-            iterable_validator=attr.validators.instance_of(list)
+            iterable_validator=attr.validators.instance_of(list[BaseModule])
         )
     )
 
@@ -31,7 +36,7 @@ class Unit:
 class _Collector:
     """Class for collecting all modules"""
 
-    _shared_instance = dict()
+    _shared_instance: dict[str, Any] = dict()
 
     # Init temp stuff
     __temp_message: str
@@ -55,13 +60,13 @@ class _Collector:
 
     def __exit__(
             self,
-            exc_type,
-            exc_val,
-            exc_tb
+            exc_type: Optional[Type[BaseException]],
+            exc_value: Optional[BaseException],
+            traceback: Optional[TracebackType]
     ) -> None:
         # Raise error if once occurred
         if exc_type:
-            raise exc_type(exc_val)
+            raise exc_type(exc_value)
 
         # Add Unit to list if modules list exists
         if self.__temp_modules_list:
@@ -128,15 +133,16 @@ class _Collector:
             return temp_size
         except KeyboardInterrupt:
             # Needed to handle KeyboardInterrupt in Pool
-            raise _KeyboardInterrupt
+            raise _KeyboardInterrupt()
 
     @staticmethod
-    def __filter_path_modules(
-            module_
-    ) -> bool:
-        """Filter instances of :class:`Path`"""
+    def __filter_modules(
+            module_: BaseModule,
+            filter_type: Type[T]
+    ) -> TypeGuard[T]:
+        """Filter instances of specified class based on :class:`BaseModule`"""
 
-        return isinstance(module_, Path)
+        return isinstance(module_, filter_type)
 
     def _count_dry(self) -> float:
         """
@@ -147,12 +153,22 @@ class _Collector:
         from mac_cleanup.progress import ProgressBar
         from multiprocessing import Pool
 
-        # Extracts paths from execute_list
-        modules_list = list(chain(*[unit.modules for unit in self._execute_list]))
-        path_modules_list: list[Path] = list(filter(self.__filter_path_modules, modules_list))
-        path_list: list[Path_] = list(map(lambda path: path.get_path, path_modules_list))
+        # Extract all modules
+        all_modules = list(chain(*[unit.modules for unit in self._execute_list]))
 
-        module_size: float = 0
+        # Filter modules based on Path
+        path_modules: list[Path] = list(
+            filter(
+                partial(self.__filter_modules, filter_type=Path),
+                all_modules
+            )
+        )
+
+        # Extracts paths from path_modules list
+        path_list: list[Path_] = list(map(lambda path: path.get_path, path_modules))
+
+        # Set counter for estimated size
+        estimate_size: float = 0
 
         with Pool() as pool:
             try:
@@ -164,13 +180,13 @@ class _Collector:
                         description="Collecting dry run",
                         total=len(path_list)
                 ):
-                    module_size += path_size
-            except _KeyboardInterrupt:  # pragma: no cover
+                    estimate_size += path_size
+            except _KeyboardInterrupt:
                 # Closing pool w/ pool.close() to wait for unfinished tasks
                 pool.close()
                 # Waits for the worker processes to terminate
                 pool.join()
-        return module_size
+        return estimate_size
 
 
 class ProxyCollector:
@@ -184,9 +200,14 @@ class ProxyCollector:
         # Return a Collector object
         return self.__base.__enter__()
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(
+            self,
+            exc_type: Optional[Type[BaseException]],
+            exc_value: Optional[BaseException],
+            traceback: Optional[TracebackType]
+    ) -> None:
         # Raise errors if any
         if exc_type:
-            raise exc_type(exc_val)
+            raise exc_type(exc_value)
 
-        return self.__base.__exit__(exc_type, exc_val, exc_tb)
+        return self.__base.__exit__(exc_type, exc_value, traceback)

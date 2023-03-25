@@ -33,7 +33,7 @@ class Config:
         self.__path: Final = config_path_
 
         # Set modules in the class
-        self.__modules: dict[str, Callable] = dict()
+        self.__modules: dict[str, Callable[..., None]] = dict()
 
         # Load default modules
         self.__load_default()
@@ -46,10 +46,10 @@ class Config:
 
             # Set config to empty dict
             # Why: self.configure will call dict.update
-            self.__config_data = dict()
+            self.__config_data = ConfigFile(enabled=list(), custom_path=None)
 
             # Launch configuration
-            self.configure(
+            self.__configure(
                 all_modules=list(self.__modules.keys()),
                 enabled_modules=list()
             )
@@ -70,27 +70,27 @@ class Config:
         # Configure and exit on prompt
         if configuration_prompted:
             # Configure modules
-            self.configure(
+            self.__configure(
                 all_modules=list(self.__modules.keys()),
-                enabled_modules=self.__config_data.get("enabled", list())
+                enabled_modules=self.__config_data.get("enabled", list[str]())
             )
 
             # Exit
             self.full_exit(failed=False)
 
         # If config doesn't have modules configuration - launch configuration
-        if self.__config_data.get("enabled") is None:
+        if not self.__config_data.get("enabled"):
             # Notify user
             console.print("[danger]Modules not configured, opening configuration screen...[/danger]")
 
             # Configure modules
-            self.configure(
+            self.__configure(
                 all_modules=list(self.__modules.keys()),
                 enabled_modules=list()
             )
 
         # Create list with faulty modules
-        remove_list = list()
+        remove_list: list[str] = list()
 
         # Invoke modules
         for module_name in self.__config_data["enabled"]:
@@ -106,7 +106,7 @@ class Config:
 
         # Pop faulty modules from config
         for faulty_module in remove_list:
-            self.__config_data.pop(faulty_module)
+            self.__config_data.pop(faulty_module)  # pyright: ignore [reportGeneralTypeIssues]
 
         # Write updated config if faulty modules were found
         if remove_list:
@@ -126,7 +126,7 @@ class Config:
         # Loads config
         # If something got wrong there is try -> except
         try:
-            config = load(self.__path)
+            config = ConfigFile(**load(self.__path))
         except TomlDecodeError:
             raise FileNotFoundError
         return config
@@ -142,8 +142,11 @@ class Config:
     @staticmethod
     def full_exit(
             failed: bool
-    ):
-        """"""
+    ) -> None:
+        """
+        Gracefully exits from cleaner
+            :param failed: Status code of exit
+        """
 
         console.print("Config saved, exiting...")
         exit(failed)
@@ -167,20 +170,16 @@ class Config:
         tmp_custom_path.mkdir(exist_ok=True)
 
         # Changes custom_path in config
-        self.__config_data.update(
-            {
-                "custom_path": tmp_custom_path.as_posix()
-            }
-        )
+        self.__config_data["custom_path"] = tmp_custom_path.as_posix()
 
         # Update config
         self.__write()
 
-    def configure(
+    def __configure(
             self,
             *,
-            all_modules: list,
-            enabled_modules: list
+            all_modules: list[str],
+            enabled_modules: list[str]
     ) -> None:
         """
         Opens modules configuration screen
@@ -189,8 +188,9 @@ class Config:
             :return: List w/ all modules user enabled
         """
 
-        from inquirer import Checkbox, prompt
-        from mac_cleanup.console import print_panel, console
+        import inquirer  # pyright: ignore [reportMissingTypeStubs]
+
+        from mac_cleanup.console import print_panel
 
         # Prints the legend
         print_panel(
@@ -199,7 +199,7 @@ class Config:
             title="[info]Controls"
         )
 
-        questions = Checkbox(
+        questions = inquirer.Checkbox(  # pyright: ignore [reportUnknownVariableType, reportUnknownMemberType]
             "modules",
             message="Active modules",
             choices=all_modules,
@@ -207,7 +207,8 @@ class Config:
             carousel=True,
         )
 
-        answers: dict[str, list[str]] = prompt(
+        # Get user answers
+        answers = inquirer.prompt(  # pyright: ignore [reportUnknownVariableType, reportUnknownMemberType]
             questions=[questions],
             raise_keyboard_interrupt=True
         )
@@ -218,17 +219,13 @@ class Config:
         if not answers:
             console.print("Config cannot be empty. Enable some modules")
 
-            return self.configure(
+            return self.__configure(
                 all_modules=all_modules,
                 enabled_modules=enabled_modules,
             )
 
         # Update config
-        self.__config_data.update(
-            {
-                "enabled": answers["modules"]
-            }
-        )
+        self.__config_data["enabled"] = answers["modules"]
 
         # Write new config
         self.__write()
@@ -255,7 +252,7 @@ class Config:
         from importlib.machinery import SourceFileLoader
         from pathlib import Path
 
-        tmp_modules: dict[str, Callable] = dict()
+        tmp_modules: dict[str, Callable[..., None]] = dict()
 
         # Imports all modules from the given path
         for module in Path(self.__custom_modules_path).expanduser().rglob("*.py"):
