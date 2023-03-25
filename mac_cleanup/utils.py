@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional, cast
 
 from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
 
@@ -19,21 +19,21 @@ def cmd(
 
     from subprocess import Popen, PIPE, DEVNULL
 
-    return (
-        ""
-        .join(
-            out
-            .strip()
-            .decode("utf-8", errors="replace")
-            for out in Popen(
-                command,
-                shell=True,
-                stdout=PIPE,
-                stderr=(DEVNULL if ignore_errors else PIPE),
-            )
-            .communicate()
-        )
-    )
+    # Get stdout and stderr from PIPE
+    out_tuple = Popen(
+        command,
+        shell=True,
+        stdout=PIPE,
+        stderr=(DEVNULL if ignore_errors else PIPE),
+    ).communicate()
+
+    # Cast correct type on out_tuple
+    out_tuple = cast(tuple[Optional[bytes], Optional[bytes]], out_tuple)
+
+    # Filter NoneType output and decode it
+    filtered_out = [out.decode("utf-8", errors="replace").strip() for out in out_tuple if out is not None]
+
+    return "".join(filtered_out)
 
 
 @beartype
@@ -145,7 +145,7 @@ def bytes_to_human(
     return f"{s} {size_name[i]}"
 
 
-class _KeyboardInterrupt(Exception):
+class _KeyboardInterrupt(Exception):  # pyright: ignore [reportUnusedClass]
     """
     Inherited from Exception class to handle exceptions in :class:`multiprocessing.pool.Pool`
     """
