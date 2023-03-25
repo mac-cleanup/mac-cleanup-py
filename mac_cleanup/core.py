@@ -27,7 +27,7 @@ class Unit:
         factory=list,
         validator=attr.validators.deep_iterable(
             member_validator=attr.validators.instance_of(BaseModule),
-            iterable_validator=attr.validators.instance_of(list[BaseModule])
+            iterable_validator=attr.validators.instance_of(list)  # pyright: ignore [reportUnknownArgumentType]
         )
     )
 
