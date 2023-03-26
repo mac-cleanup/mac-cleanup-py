@@ -1,4 +1,4 @@
-from typing import Union, Optional, cast
+from typing import Optional, cast
 
 from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
 
@@ -53,7 +53,7 @@ def expanduser(
 
 @beartype
 def check_exists(
-        path: Union[Path, str]
+        path: Path | str
 ) -> bool:
     """
     Checks if path exists
@@ -73,7 +73,7 @@ def check_exists(
 
 @beartype
 def check_deletable(
-        path: Union[Path, str]
+        path: Path | str
 ) -> bool:
     """
     Checks if path is deletable
@@ -124,7 +124,7 @@ def check_deletable(
 
 @beartype
 def bytes_to_human(
-        size_bytes: Union[int, float]
+        size_bytes: int | float
 ) -> str:
     """
     Converts bytes to human-readable format

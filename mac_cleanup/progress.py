@@ -1,5 +1,5 @@
 """Modified rich progress bar"""
-from typing import Union, Iterable, Sequence, Optional
+from typing import Iterable, Sequence, Optional
 
 from rich.progress import Progress, SpinnerColumn, TimeElapsedColumn, ProgressType
 from rich.prompt import Confirm
@@ -71,7 +71,7 @@ class _ProgressBar(Progress):
 
     def wrap_iter(
             self,
-            sequence: Union[Iterable[ProgressType], Sequence[ProgressType]],
+            sequence: Iterable[ProgressType] | Sequence[ProgressType],
             total: Optional[float] = None,
             description: str = "Working..."
     ) -> Iterable[ProgressType]:
