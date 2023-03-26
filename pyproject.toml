@@ -35,6 +35,7 @@ pytest = "^7.2.2"
 pytest-cov = "^4.0.0"
 pyright = "^1.1.300"
 ruff = "^0.0.259"
+py = "^1.11.0"
 
 [options.package_data]
 mac_cleanup = "py.typed"
