@@ -46,7 +46,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.coverage.report]
 show_missing = true
-skip_covered = true
 
 [tool.pyright]
 pythonVersion = "3.10"
