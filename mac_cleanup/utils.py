@@ -83,9 +83,9 @@ def check_deletable(
 
     # Convert path to correct type
     if not isinstance(path, Path):
-        path_: Path = Path(path)
+        path_: Path = Path(path).expanduser()
     else:
-        path_ = path
+        path_ = path.expanduser()
 
     sip_list = [
         "/System",
@@ -106,7 +106,7 @@ def check_deletable(
     ]
 
     # Returns False if empty
-    if not (path_posix := path_.as_posix()):
+    if not path or (path_posix := path_.as_posix()) == ".":
         return False
 
     # If glob return True (it'll delete nothing at the end, hard to hande otherwise)
