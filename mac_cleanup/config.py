@@ -217,7 +217,7 @@ class Config:
         # Clear console after checkbox
         console.clear()
 
-        if not answers:
+        if not answers["modules"]:
             console.print("Config cannot be empty. Enable some modules")
 
             return self.__configure(
