@@ -21,6 +21,12 @@ def system_caches():
         unit.message("Clearing System Cache Files")
         unit.add(
             Path("/Library/Caches/*")
+            .with_prompt(
+                """\
+                    All cache will be deleted, including Poetry, Jetbrains, Cocoa, yarn, Composer etc.
+                    Continue?\
+                """
+            )
         )
         unit.add(
             Path("/System/Library/Caches/*")
@@ -142,6 +148,12 @@ def xcode_simulators():
             )
             unit.add(
                 Command("xcrun simctl erase all")
+                .with_prompt(
+                    """\
+                    All XCcode simulators will be pruned.
+                    Continue?\
+                    """
+                )
             )
 
             unit.add(
@@ -340,6 +352,12 @@ def gradle():
             unit.message("Clearing Gradle caches")
             unit.add(
                 Path("~/.gradle/caches")
+                .with_prompt(
+                    """\
+                    Gradle cache will be removed. It is chunky and kinda long to reinstall.
+                    Continue?\
+                    """
+                )
             )
 
 
@@ -415,7 +433,7 @@ def docker():
                 Command("docker system prune -af")
                 .with_prompt(
                     """\
-                    Stopped containers, dangling images, unused networks, volumes, and build cache will be deleted
+                    Stopped containers, dangling images, unused networks, volumes, and build cache will be deleted.
                     Continue?\
                     """
                 )
@@ -567,6 +585,12 @@ def poetry():
             unit.message("Deleting Poetry cache")
             unit.add(
                 Path("~/Library/Caches/pypoetry")
+                .with_prompt(
+                    """\
+                    All non-local Poetry venvs will be deleted.
+                    Continue?\
+                    """
+                )
             )
 
 
@@ -576,6 +600,12 @@ def java_cache():
         unit.message("Deleting Java heap dumps")
         unit.add(
             Path("~/*.hprof")
+            .with_prompt(
+                """\
+                All heap dumps (.hprof) in HOME dir will be deleted.
+                Continue?\
+                """
+            )
         )
 
 
