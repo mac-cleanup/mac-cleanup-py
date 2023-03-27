@@ -32,6 +32,6 @@ jobs:
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2.3.0
       - name: Install dependencies
-        run: poetry install -v
+        run: poetry install --no-root -v
       - name: Tests with Tox
         run: poetry run tox
