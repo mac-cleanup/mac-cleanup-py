@@ -44,8 +44,8 @@ def test_config_init_enabled(
         # Load config from dummy file
         config = Config(config_path_=config_path)
 
-        # Assert that dummy modules loaded
-        assert len(config.get_config_data.get("enabled")) == len(enabled_modules)  # noqa
+    # Assert that dummy modules loaded
+    assert len(config.get_config_data.get("enabled")) == len(enabled_modules)  # noqa
 
 
 @pytest.mark.parametrize(
@@ -72,8 +72,8 @@ def test_config_init_custom_path(
         # Load config from dummy file
         config = Config(config_path_=config_path)
 
-        # Assert that custom path is correct
-        assert config.get_custom_path == custom_path  # noqa
+    # Assert that custom path is correct
+    assert config.get_custom_path == custom_path  # noqa
 
 
 @pytest.fixture(
@@ -307,7 +307,7 @@ def test_configure_custom_path(
         # Check that the custom path was written to the config file
         config_data = ConfigFile(**toml.load(f))
 
-        assert config_data.get("custom_path") == custom_path
+    assert config_data.get("custom_path") == custom_path
 
 
 def test_config_init_decode_error(
