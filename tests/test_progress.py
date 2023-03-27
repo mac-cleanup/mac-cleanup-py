@@ -1,4 +1,6 @@
 """All tests for mac_cleanup_py.progress"""
+from typing import Callable
+
 import pytest
 from _pytest.capture import CaptureFixture
 from _pytest.monkeypatch import MonkeyPatch
@@ -15,8 +17,7 @@ def test_prompt(
         capsys: CaptureFixture[str],
         monkeypatch: MonkeyPatch
 ):
-    def user_input_str():
-        return "y" if user_continue else "n"
+    user_input_str: Callable[..., str] = lambda: "y" if user_continue else "n"
 
     # Check prompt output
     monkeypatch.setattr("builtins.input", user_input_str)
