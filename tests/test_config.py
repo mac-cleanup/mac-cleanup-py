@@ -346,13 +346,73 @@ def test_config_init_decode_error(
     assert "Modules not configured" in captured_stdout
 
 
+def test_config_call_with_custom_modules(
+        capsys: CaptureFixture[str],
+        monkeypatch: MonkeyPatch
+):
+    from inspect import getsource
+
+    # Clear default modules list
+    dummy_load_default: Callable[[Config], None] = lambda self: None
+
+    def dummy_module() -> None:
+        print("dummy_module_output")
+
+    dummy_module_name = dummy_module.__code__.co_name
+
+    with tempfile.NamedTemporaryFile(mode="w+", suffix=".py") as f:
+        # Get tmp module path
+        tmp_module_path = Path(f.name)
+
+        # Simulate loading of default modules
+        monkeypatch.setattr("mac_cleanup.config.Config._Config__load_default", dummy_load_default)
+
+        # Simulate
+        def dummy_read(
+                self: Config  # noqa
+        ) -> ConfigFile:
+            return ConfigFile(
+                enabled=[dummy_module_name],
+                custom_path=tmp_module_path.parent.expanduser().as_posix()
+            )
+
+        # Simulate dummy module in enabled
+        monkeypatch.setattr("mac_cleanup.config.Config._Config__read", dummy_read)
+
+        # Write dummy_module to tmp path
+        f.write(getsource(dummy_module).strip())
+
+        # Flush from buffer
+        f.flush()
+        # Move pointer to start of file
+        f.seek(0)
+
+        # Load config from dummy file
+        config = Config(Path(""))
+
+        # Call config
+        config(configuration_prompted=False)
+
+        # Get stdout
+        captured_stdout = capsys.readouterr().out
+
+        # Check message on empty config or decode error
+        assert "dummy_module_output" in captured_stdout
+
+        # Check custom_path is correct
+        assert (
+                config.get_config_data.get("custom_path")
+                == config.get_custom_path
+                == tmp_module_path.parent.expanduser().as_posix()
+        )
+
+        # Check enabled modules
+        assert config.get_config_data.get("enabled") == [dummy_module_name]
+
+
 def test_config_call_faulty_modules():
     pass
 
 
-def test_config_call_with_custom_modules():
-    pass
-
-
-def test_config_empty_modules():
+def test_config_none_modules_selected():
     pass
