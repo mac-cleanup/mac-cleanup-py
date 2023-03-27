@@ -45,7 +45,7 @@ def test_config_init_enabled(
         config = Config(config_path_=config_path)
 
     # Assert that dummy modules loaded
-    assert len(config.get_config_data.get("enabled")) == len(enabled_modules)  # noqa
+    assert len(config.get_config_data.get("enabled")) == len(enabled_modules)
 
 
 @pytest.mark.parametrize(
@@ -73,7 +73,7 @@ def test_config_init_custom_path(
         config = Config(config_path_=config_path)
 
     # Assert that custom path is correct
-    assert config.get_custom_path == custom_path  # noqa
+    assert config.get_custom_path == custom_path
 
 
 @pytest.fixture(
@@ -130,7 +130,7 @@ def config_call_final_checks(
 ):
     # Simulate dummy modules are legit
     for out in user_output:
-        monkeypatch.setitem(config.get_modules, out, dummy_module)  # noqa
+        monkeypatch.setitem(config.get_modules, out, dummy_module)
 
     # Simulate user input to enable a module
     monkeypatch.setattr("inquirer.render.console._checkbox.Checkbox.process_input", dummy_prompt)
@@ -170,7 +170,7 @@ def config_call_final_checks(
 
     # Check new config is correct
     assert (
-            config.get_config_data.get("enabled")  # noqa
+            config.get_config_data.get("enabled")
             == config_data.get("enabled")
             == user_output
     )
@@ -203,7 +203,7 @@ def test_config_call_configuration_prompted(
 
         # Check default state
         assert (
-                config.get_config_data.get("enabled")  # noqa
+                config.get_config_data.get("enabled")
                 == ConfigFile(**toml.load(f)).get("enabled")
                 == ["test"]
         )
@@ -249,7 +249,7 @@ def test_config_call_with_no_config(
 
         # Check default state
         assert (
-                config.get_config_data.get("enabled")  # noqa
+                config.get_config_data.get("enabled")
                 is ConfigFile(**toml.load(f)).get("enabled")
                 is None
         )
