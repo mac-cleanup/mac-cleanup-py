@@ -121,6 +121,7 @@ class Config:
         from toml import load, TomlDecodeError
 
         # Creates config if it's not already created
+        self.__path.parent.mkdir(exist_ok=True, parents=True)
         self.__path.touch(exist_ok=True)
 
         # Loads config
@@ -167,7 +168,7 @@ class Config:
         tmp_custom_path = Path(custom_path).expanduser()
 
         # Creates directory if it doesn't exist
-        tmp_custom_path.mkdir(exist_ok=True)
+        tmp_custom_path.mkdir(exist_ok=True, parents=True)
 
         # Changes custom_path in config
         self.__config_data["custom_path"] = tmp_custom_path.as_posix()
