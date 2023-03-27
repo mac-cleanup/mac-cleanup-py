@@ -367,7 +367,7 @@ def test_config_call_with_custom_modules(
         # Simulate loading of default modules
         monkeypatch.setattr("mac_cleanup.config.Config._Config__load_default", dummy_load_default)
 
-        # Simulate
+        # Simulate config read
         def dummy_read(
                 self: Config  # noqa
         ) -> ConfigFile:
@@ -393,25 +393,66 @@ def test_config_call_with_custom_modules(
         # Call config
         config(configuration_prompted=False)
 
-        # Get stdout
-        captured_stdout = capsys.readouterr().out
+    # Get stdout
+    captured_stdout = capsys.readouterr().out
 
-        # Check message on empty config or decode error
-        assert "dummy_module_output" in captured_stdout
+    # Check message on empty config or decode error
+    assert "dummy_module_output" in captured_stdout
 
-        # Check custom_path is correct
-        assert (
-                config.get_config_data.get("custom_path")
-                == config.get_custom_path
-                == tmp_module_path.parent.expanduser().as_posix()
-        )
+    # Check custom_path is correct
+    assert (
+            config.get_config_data.get("custom_path")
+            == config.get_custom_path
+            == tmp_module_path.parent.expanduser().as_posix()
+    )
 
-        # Check enabled modules
-        assert config.get_config_data.get("enabled") == [dummy_module_name]
+    # Check enabled modules
+    assert config.get_config_data.get("enabled") == [dummy_module_name]
 
 
-def test_config_call_faulty_modules():
-    pass
+def test_config_call_faulty_modules(
+        monkeypatch: MonkeyPatch
+):
+    # Create dummy modules list
+    modules_list = {"test": lambda: None}
+
+    # Simulate modules list
+    def dummy_load_default(
+            self: Config
+    ) -> None:
+        self.get_modules.update(modules_list)
+
+    # Simulate loading of default modules
+    monkeypatch.setattr("mac_cleanup.config.Config._Config__load_default", dummy_load_default)
+
+    # Create config
+    test_config = ConfigFile(
+        enabled=["test2"],
+        custom_path=None
+    )
+
+    with tempfile.NamedTemporaryFile(mode="w+") as f:
+        # Write config to tmp file
+        toml.dump(test_config, f)
+
+        # Flush from buffer
+        f.flush()
+        # Move pointer to start of file
+        f.seek(0)
+
+        # Get tmp file path
+        config_path = Path(f.name)
+        # Load config with tmp path
+        config = Config(config_path_=config_path)
+
+        # Call config
+        config(configuration_prompted=False)
+
+    # Check modules list
+    assert config.get_modules == modules_list
+
+    # Check enabled modules
+    assert len(config.get_config_data.get("enabled")) == 0
 
 
 def test_config_none_modules_selected():
