@@ -106,7 +106,7 @@ class Config:
 
         # Pop faulty modules from module list
         for faulty_module in remove_list:
-            self.__modules.pop(faulty_module)  # pyright: ignore [reportGeneralTypeIssues]
+            self.__config_data["enabled"].remove(faulty_module)
 
         # Write updated config if faulty modules were found
         if remove_list:
