@@ -13,8 +13,6 @@ classifiers = [ "Environment :: Console", "Operating System :: MacOS" ]
 include = [ "LICENSE" ]
 exclude = [ "mac_cleanup/__main__.py", "mac_cleanup/py.typed" ]
 
-allowlist_externals = ["poetry"]
-
 [tool.poetry.urls]
 "Documentation" = "https://github.com/mac-cleanup/mac-cleanup-py#install-automatically"
 "Issue Tracker" = "https://github.com/mac-cleanup/mac-cleanup-py/issues"
