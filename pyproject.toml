@@ -45,7 +45,10 @@ requires = [ "poetry-core>=1.0.0" ]
 build-backend = "poetry.core.masonry.api"
 
 [tool.coverage.run]
-omit = [ "mac_cleanup/__main__.py" ]
+omit = [
+    "mac_cleanup/__main__.py",
+    "mac_cleanup/default_modules.py"
+]
 
 [tool.coverage.report]
 show_missing = true
