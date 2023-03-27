@@ -104,9 +104,9 @@ class Config:
             # Call module
             module()
 
-        # Pop faulty modules from config
+        # Pop faulty modules from module list
         for faulty_module in remove_list:
-            self.__config_data.pop(faulty_module)  # pyright: ignore [reportGeneralTypeIssues]
+            self.__modules.pop(faulty_module)  # pyright: ignore [reportGeneralTypeIssues]
 
         # Write updated config if faulty modules were found
         if remove_list:
