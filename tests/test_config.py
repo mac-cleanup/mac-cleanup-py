@@ -99,7 +99,7 @@ def dummy_module() -> Callable[..., None]:
 )
 def dummy_prompt(
         user_output: list[str]
-) -> Callable[..., None]:
+) -> Callable[[list[str]], None]:
     """Dummy prompt for inquirer (args are needed for params being provided to inquirer)"""
 
     def inner(*args: list[str] | bool) -> None:  # noqa
@@ -179,7 +179,7 @@ def config_call_final_checks(
 def test_config_call_configuration_prompted(
         user_output: list[str],
         dummy_module: Callable[..., None],
-        dummy_prompt: Callable[..., None],
+        dummy_prompt: Callable[[list[str]], None],
         dummy_key: Callable[..., str],
         capsys: CaptureFixture[str],
         monkeypatch: MonkeyPatch
@@ -225,7 +225,7 @@ def test_config_call_configuration_prompted(
 def test_config_call_with_no_config(
         user_output: list[str],
         dummy_module: Callable[..., None],
-        dummy_prompt: Callable[..., None],
+        dummy_prompt: Callable[[list[str]], None],
         dummy_key: Callable[..., str],
         capsys: CaptureFixture[str],
         monkeypatch: MonkeyPatch
@@ -310,7 +310,43 @@ def test_configure_custom_path(
         assert config_data.get("custom_path") == custom_path
 
 
-def test_config_init_no_file():
+def test_config_init_decode_error(
+        user_output: list[str],
+        dummy_prompt: Callable[[list[str]], None],
+        dummy_key: Callable[..., str],
+        capsys: CaptureFixture[str],
+        monkeypatch: MonkeyPatch
+):
+    # Simulate writing config without writing it
+    dummy_write: Callable[[Config], None] = lambda self: None
+
+    # Simulate decode error
+    def dummy_load(f: Path):  # noqa
+        raise toml.TomlDecodeError("test", "test", 0)
+
+    monkeypatch.setattr("toml.load", dummy_load)
+
+    # Protect against writing config
+    monkeypatch.setattr("mac_cleanup.config.Config._Config__write", dummy_write)
+
+    # Simulate user input to enable a modules
+    monkeypatch.setattr("inquirer.render.console._checkbox.Checkbox.process_input", dummy_prompt)
+    monkeypatch.setattr("readchar.readkey", dummy_key)
+
+    # Load empty config
+    config = Config(Path(""))
+
+    # Check new config is correct
+    assert config.get_config_data.get("enabled") == user_output
+
+    # Get stdout
+    captured_stdout = capsys.readouterr().out
+
+    # Check message on empty config or decode error
+    assert "Modules not configured" in captured_stdout
+
+
+def test_config_call_faulty_modules():
     pass
 
 
