@@ -355,9 +355,11 @@ def test_config_call_with_custom_modules(
     # Clear default modules list
     dummy_load_default: Callable[[Config], None] = lambda self: None
 
+    # Dummy module with output to stdout
     def dummy_module() -> None:
         print("dummy_module_output")
 
+    # Get dummy module name
     dummy_module_name = dummy_module.__code__.co_name
 
     with tempfile.NamedTemporaryFile(mode="w+", suffix=".py") as f:
@@ -455,5 +457,48 @@ def test_config_call_faulty_modules(
     assert len(config.get_config_data.get("enabled")) == 0
 
 
-def test_config_none_modules_selected():
-    pass
+def test_config_none_modules_selected(
+        dummy_key: Callable[..., str],
+        capsys: CaptureFixture[str],
+        monkeypatch: MonkeyPatch
+):
+    # Dummy Config read with error
+    def dummy_read(self: Config):  # noqa
+        raise FileNotFoundError
+
+    # Simulate error (to launch configuration)
+    monkeypatch.setattr("mac_cleanup.config.Config._Config__read", dummy_read)
+
+    # Set enabled modules (on 2-nd prompt call)
+    enabled_modules = ["test"]
+
+    # Dummy prompt for inquirer with different output on first call and later calls
+    # (args are needed for params being provided to inquirer)
+    def dummy_prompt(*args: list[str] | bool) -> None:  # noqa
+        selection: list[str]
+
+        if not hasattr(dummy_prompt, "called"):
+            dummy_prompt.called = True  # pyright: ignore [reportFunctionMemberAccess]
+            selection = list()
+        else:
+            selection = enabled_modules
+        raise EndOfInput(selection)
+
+    # Simulate user input to enable a module
+    monkeypatch.setattr("inquirer.render.console._checkbox.Checkbox.process_input", dummy_prompt)
+    monkeypatch.setattr("readchar.readkey", dummy_key)
+
+    with tempfile.NamedTemporaryFile(mode="w+") as f:
+        # Get tmp file path
+        config_path = Path(f.name)
+        # Load config with tmp path
+        config = Config(config_path_=config_path)
+
+    # Get stdout
+    captured_stdout = capsys.readouterr().out
+
+    # Check message on empty input
+    assert "Config cannot be empty. Enable some modules" in captured_stdout
+
+    # Check new config from second input
+    assert config.get_config_data.get("enabled") == enabled_modules
