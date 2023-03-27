@@ -277,3 +277,21 @@ class Config:
             )
 
         self.__modules.update(tmp_modules)
+
+    @property
+    def get_modules(self) -> dict[str, Callable[..., None]]:
+        """Getter for private attr modules"""
+
+        return self.__modules
+
+    @property
+    def get_config_data(self) -> ConfigFile:
+        """Getter for private attr config data"""
+
+        return self.__config_data
+
+    @property
+    def get_custom_path(self) -> Optional[str]:
+        """Getter for private attr custom modules path"""
+
+        return self.__custom_modules_path

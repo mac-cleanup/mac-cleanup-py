@@ -1,12 +1,11 @@
 """All tests for mac_clean_up.config"""
-from typing import Optional, Callable
+from typing import Optional, Callable, IO
 
 import pytest
 from _pytest.capture import CaptureFixture
 from _pytest.monkeypatch import MonkeyPatch
 
 import tempfile
-from tempfile import _TemporaryFileWrapper  # noqa
 
 import toml
 
@@ -46,7 +45,7 @@ def test_config_init_enabled(
         config = Config(config_path_=config_path)
 
         # Assert that dummy modules loaded
-        assert len(config._Config__config_data.get("enabled")) == len(enabled_modules)  # noqa
+        assert len(config.get_config_data.get("enabled")) == len(enabled_modules)  # noqa
 
 
 @pytest.mark.parametrize(
@@ -74,7 +73,7 @@ def test_config_init_custom_path(
         config = Config(config_path_=config_path)
 
         # Assert that custom path is correct
-        assert config._Config__custom_modules_path == custom_path  # noqa
+        assert config.get_custom_path == custom_path  # noqa
 
 
 @pytest.fixture(
@@ -103,7 +102,7 @@ def dummy_prompt(
 ) -> Callable[..., None]:
     """Dummy prompt for inquirer (args are needed for params being provided to inquirer)"""
 
-    def inner(*args: list | bool) -> None:  # noqa
+    def inner(*args: list[str] | bool) -> None:  # noqa
         raise EndOfInput(user_output)
 
     return inner
@@ -121,7 +120,7 @@ def dummy_key() -> Callable[..., str]:
 def config_call_final_checks(
         config: Config,
         configuration_prompted: bool,
-        file_context: _TemporaryFileWrapper[str],
+        file_context: IO[str],
         capsys: CaptureFixture[str],
         monkeypatch: MonkeyPatch,
         user_output: list[str],
@@ -131,7 +130,7 @@ def config_call_final_checks(
 ):
     # Simulate dummy modules are legit
     for out in user_output:
-        monkeypatch.setitem(config._Config__modules, out, dummy_module)  # noqa
+        monkeypatch.setitem(config.get_modules, out, dummy_module)  # noqa
 
     # Simulate user input to enable a module
     monkeypatch.setattr("inquirer.render.console._checkbox.Checkbox.process_input", dummy_prompt)
@@ -171,7 +170,7 @@ def config_call_final_checks(
 
     # Check new config is correct
     assert (
-            config._Config__config_data.get("enabled")  # noqa
+            config.get_config_data.get("enabled")  # noqa
             == config_data.get("enabled")
             == user_output
     )
@@ -204,7 +203,7 @@ def test_config_call_configuration_prompted(
 
         # Check default state
         assert (
-                config._Config__config_data.get("enabled")  # noqa
+                config.get_config_data.get("enabled")  # noqa
                 == ConfigFile(**toml.load(f)).get("enabled")
                 == ["test"]
         )
@@ -250,9 +249,9 @@ def test_config_call_with_no_config(
 
         # Check default state
         assert (
-                config._Config__config_data.get("enabled")  # noqa
-                == ConfigFile(**toml.load(f)).get("enabled")
-                == None
+                config.get_config_data.get("enabled")  # noqa
+                is ConfigFile(**toml.load(f)).get("enabled")
+                is None
         )
 
         # Launch final check
