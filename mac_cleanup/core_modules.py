@@ -134,14 +134,13 @@ class Path(_BaseCommand):
     @beartype
     def __init__(
             self,
-            path_: str
+            path: str
     ):
-        self.__path: Final[Path_] = Path_(path_.replace(" ", "\\ ")).expanduser()
+        self.__path: Final[Path_] = Path_(path).expanduser()
 
-        tmp_command: Optional[str] = None
-
-        if self.__path.as_posix():
-            tmp_command = "rm -rf {path}".format(path=self.__path.as_posix())
+        tmp_command = "rm -rf '{path}'".format(
+            path=self.__path.as_posix()
+        )
 
         super().__init__(command_=tmp_command)
 
