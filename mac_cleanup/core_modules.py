@@ -121,16 +121,10 @@ class Command(_BaseCommand):
 
         return self
 
-    @beartype
-    def _execute(
-            self,
-            *,
-            ignore_errors_: bool = True
-    ) -> Optional[str]:
+    def _execute(self) -> Optional[str]:
         return super()._execute(ignore_errors=self.__ignore_errors)
 
 
-@beartype
 @final
 class Path(_BaseCommand):
     """Collector list unit for cleaning paths"""
@@ -167,7 +161,7 @@ class Path(_BaseCommand):
 
         return self
 
-    def _execute(self) -> None:
+    def _execute(self) -> Optional[str]:
         """
         Delete specified path
             :return: Command execution results based on specified parameters
@@ -183,4 +177,4 @@ class Path(_BaseCommand):
         ):
             return
 
-        super()._execute()
+        return super()._execute()  # Always ignore errors
