@@ -1,81 +1,162 @@
 """All tests for mac_clean_up.config"""
+from typing import Optional, Callable
+
 import pytest
+from _pytest.capture import CaptureFixture
+from _pytest.monkeypatch import MonkeyPatch
 
-from mac_cleanup.progress import ProgressBar
-from mac_cleanup.utils import cmd, check_deletable, check_exists
-from mac_cleanup.core_modules import BaseModule, Command, Path, _BaseCommand  # noqa
+from mac_cleanup.core_modules import Command
 
-
-class TestBaseModule:
-    @pytest.mark.parametrize
-    def test_with_prompt(self):
-        base_module = BaseModule()
-        assert base_module.with_prompt() == base_module
-        assert base_module.with_prompt("Custom message") == base_module
-
-    def test_execute(self):
-        with pytest.raises(NotImplementedError):
-            base_module = BaseModule()
-            base_module._execute()
-
-
-class TestBaseCommand:
-    def test_init(self, monkeypatch):
-        monkeypatch.setattr(cmd, "sudo -E whoami", "root")
-        base_command = _BaseCommand(command_="echo 'test'")
-        assert base_command is not None
-
-    def test_execute(self, monkeypatch):
-        monkeypatch.setattr(cmd, "sudo -E whoami", "root")
-        monkeypatch.setattr(ProgressBar, "prompt", lambda *_: True)
-
-        base_command = _BaseCommand(command_="echo 'test'")
-        result = base_command._execute()
-        assert result is None
 
 class TestCommand:
-    def test_with_errors(self):
+    @pytest.mark.parametrize(
+        "has_root",
+        [False, True]
+    )
+    def test_base_command_init(
+            self,
+            has_root: bool,
+            capsys: CaptureFixture[str],
+            monkeypatch: MonkeyPatch
+    ):
+        """Test root checking part in init of :class:`mac_cleanup.core_modules._BaseCommand`"""
+
+        # Dummy cmd for checking root
+        dummy_cmd: Callable[..., str] = lambda *_, **__: "root" if has_root else ""
+
+        # Simulate root checking
+        monkeypatch.setattr("mac_cleanup.core_modules.cmd", dummy_cmd)
+
+        # Raise error if no root
+        if not has_root:
+            with pytest.raises(AssertionError):
+                # root
+                Command("echo 'test'")
+            return
+
+        # Get Command instance and invoke root checking
         command = Command("echo 'test'")
-        assert command.with_errors() == command
 
-    def test_execute(self, monkeypatch):
-        monkeypatch.setattr(cmd, "sudo -E whoami", "root")
-        monkeypatch.setattr(ProgressBar, "prompt", lambda *_: True)
+        # Revert cmd mock
+        monkeypatch.undo()
 
-        command = Command("echo 'test'")
-        result = command._execute()
-        assert result == "test"
+        # Get command execution output
+        captured_execute = command._execute()
 
-class TestPath:
-    def test_init(self):
-        path = Path("~/test_folder")
-        assert path.get_path.as_posix() == "~/test_folder"
+        # Check command execution output is not empty
+        assert captured_execute is not None
 
-    def test_dry_run_only(self):
-        path = Path("~/test_folder")
-        assert path.dry_run_only() == path
+        # Check command execution output is correct
+        assert "test" in captured_execute
 
-    def test_execute(self, monkeypatch):
-        monkeypatch.setattr(cmd, "sudo -E whoami", "root")
-        monkeypatch.setattr(ProgressBar, "prompt", lambda *_: True)
-        monkeypatch.setattr(check_deletable, "path", lambda *_: True)
-        monkeypatch.setattr(check_exists, "path", lambda *_: False)
+    @pytest.mark.parametrize(
+        ("prompt_succeeded", "prompt"),
+        [
+            (True, "prompt"),
+            (True, None),
+            (False, "prompt"),
+            (False, None)
+        ]
+    )
+    def test_base_module_execute(
+            self,
+            prompt_succeeded: bool,
+            prompt: Optional[str],
+            capsys: CaptureFixture[str],
+            monkeypatch: MonkeyPatch
+    ):
+        """Test prompt functionality in :class:`mac_cleanup.core_modules.BaseModule`"""
 
-        path = Path("~/test_folder")
-        path.dry_run_only()
-        result = path._execute()
-        assert result is None
+        # Dummy user input in prompt
+        dummy_input: Callable[..., str] = lambda *_, **__: "y" if prompt_succeeded else "n"
 
-        path_not_dry_run = Path("~/test_folder")
-        result_not_dry_run = path_not_dry_run._execute()
-        assert result_not_dry_run is None
+        # Simulate user input in prompt
+        monkeypatch.setattr("rich.prompt.PromptBase.get_input", dummy_input)
 
-    def test_execute_not_deletable(self, monkeypatch):
-        monkeypatch.setattr(cmd, "sudo -E whoami", "root")
-        monkeypatch.setattr(ProgressBar, "prompt", lambda *_: True)
-        monkeypatch.setattr(check_deletable, "path", lambda *_: False)
-        monkeypatch.setattr(check_exists, "path", lambda *_: True)
+        # Simulate user has root
+        monkeypatch.setattr("mac_cleanup.core_modules.Command._BaseCommand__has_root", True)
 
-        path = Path("~/test_folder")
-        result = path._execute()
-        assert result is None
+        # Get command with prompt
+        command = Command("echo 'test'").with_prompt(message_=prompt)
+
+        # Get command execution output
+        captured_execute = command._execute()
+
+        # Check command execution based on prompt success
+        if prompt_succeeded:
+            assert captured_execute is not None
+            assert "test" in captured_execute
+        else:
+            assert captured_execute is None
+
+        # Get stdout
+        captured_stdout = capsys.readouterr().out
+
+        # Change prompt message to default message if prompt was empty
+        if prompt is None:
+            prompt = "Do you want to proceed?"
+
+        # Check prompt text
+        assert prompt in captured_stdout
+
+        # Check prompt title
+        assert "Module requires attention" in captured_stdout
+
+    @pytest.mark.parametrize(
+        "executed_command",
+        # Empty command or None
+        ["", None]
+    )
+    def test_base_command_execute(
+            self,
+            executed_command: Optional[str],
+            capsys: CaptureFixture[str],
+            monkeypatch: MonkeyPatch
+    ):
+        """Test no command being passed to :class:`mac_cleanup.core_modules._BaseCommand`"""
+
+        # Simulate user has root
+        monkeypatch.setattr("mac_cleanup.core_modules.Command._BaseCommand__has_root", True)
+
+        # Get command instance without command
+        command = Command(executed_command)
+
+        # Get stdout
+        captured_stdout = command._execute()
+
+        # Check there is no output and no errors
+        assert captured_stdout is None
+
+    @pytest.mark.parametrize(
+        "redirect_errors",
+        [True, False]
+    )
+    def test_with_errors(
+            self,
+            redirect_errors: bool,
+            capsys: CaptureFixture[str],
+            monkeypatch: MonkeyPatch
+    ):
+        # Simulate user has root
+        monkeypatch.setattr("mac_cleanup.core_modules.Command._BaseCommand__has_root", True)
+
+        # Get command with stderr
+        command = Command("echo 'test' >&2")
+
+        # Specify redirecting errors in Command instance
+        if redirect_errors:
+            command = command.with_errors()
+
+        # Get command execution output
+        captured_execute = command._execute()
+
+        # Check command execution output is not empty
+        assert captured_execute is not None
+
+        # Check if stderr was captured
+        if redirect_errors:
+            assert "test" in captured_execute
+            return
+
+        # Check if stderr wasn't captured
+        assert "test" not in captured_execute
