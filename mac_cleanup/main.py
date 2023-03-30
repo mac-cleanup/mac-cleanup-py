@@ -21,11 +21,8 @@ def main() -> None:
 
     # Sets custom modules' path if user prompted to and exits
     if args.custom_path:
-        # Set custom path
+        # Set custom path and exit
         config.set_custom_path()
-
-        # Exit
-        config.full_exit(failed=False)
 
     # Check config
     config(configuration_prompted=args.configure)

@@ -176,6 +176,9 @@ class Config:
         # Update config
         self.__write()
 
+        # Exit
+        self.full_exit(failed=False)
+
     def __configure(
             self,
             *,

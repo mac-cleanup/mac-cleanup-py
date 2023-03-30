@@ -293,8 +293,10 @@ class TestConfig:
             # Simulate user input with custom path
             monkeypatch.setattr("builtins.input", dummy_input)
 
-            # Call for custom path configuration
-            config.set_custom_path()
+            # Check set_custom_path exits from cleaner
+            with pytest.raises(SystemExit):
+                # Call for custom path configuration
+                config.set_custom_path()
 
             # Flush from buffer
             f.flush()
