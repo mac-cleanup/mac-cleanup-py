@@ -23,16 +23,25 @@ def system_caches():
             Path("/Library/Caches/*")
             .with_prompt(
                 """\
-                    All cache will be deleted, including Poetry, Jetbrains, Cocoa, yarn, Composer etc.
+                    All global cache will be deleted, including Poetry, Jetbrains, Cocoa, yarn, Composer etc.
                     Continue?\
                 """
             )
         )
-        unit.add(
-            Path("/System/Library/Caches/*")
-        )
+
+        # Can't be deleted
+        # unit.add(
+        #     Path("/System/Library/Caches/*")
+        # )
+
         unit.add(
             Path("~/Library/Caches/*")
+            .with_prompt(
+                """\
+                    All user cache will be deleted, including Poetry, Jetbrains, Cocoa, yarn, Composer etc.
+                    Continue?\
+                """
+            )
         )
         unit.add(
             Path("/private/var/folders/bh/*/*/*/*")
