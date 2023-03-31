@@ -1,4 +1,4 @@
-"""All tests for mac_clean_up.config"""
+"""All tests for mac_cleanup_py.config"""
 from typing import Optional, Callable, IO, cast
 
 import pytest
@@ -53,13 +53,6 @@ class TestCommand:
         # Check command execution output is correct
         assert "test" in captured_execute
 
-    @staticmethod
-    @pytest.fixture
-    def with_root(monkeypatch: MonkeyPatch):
-        """Simulate user has root"""
-
-        monkeypatch.setattr("mac_cleanup.core_modules.Command._BaseCommand__has_root", True)
-
     @pytest.mark.parametrize(
         ("prompt_succeeded", "prompt"),
         [
@@ -73,7 +66,7 @@ class TestCommand:
             self,
             prompt_succeeded: bool,
             prompt: Optional[str],
-            with_root: None,
+            command_with_root: None,
             capsys: CaptureFixture[str],
             monkeypatch: MonkeyPatch
     ):
@@ -119,7 +112,7 @@ class TestCommand:
     def test_base_command_execute(
             self,
             executed_command: Optional[str],
-            with_root: None
+            command_with_root: None
     ):
         """Test no command being passed to :class:`mac_cleanup.core_modules._BaseCommand`"""
 
@@ -139,7 +132,7 @@ class TestCommand:
     def test_with_errors(
             self,
             redirect_errors: bool,
-            with_root: None
+            command_with_root: None
     ):
         # Get command with stderr
         command = Command("echo 'test' >&2")
@@ -164,13 +157,6 @@ class TestCommand:
 
 
 class TestPath:
-    @staticmethod
-    @pytest.fixture
-    def with_root(monkeypatch: MonkeyPatch):
-        """Simulate user has root"""
-
-        monkeypatch.setattr("mac_cleanup.core_modules.Path._BaseCommand__has_root", True)
-
     @pytest.mark.parametrize(
         "is_file",
         [True, False]
@@ -178,7 +164,7 @@ class TestPath:
     def test_init(
             self,
             is_file: bool,
-            with_root: None
+            path_with_root: None
     ):
         """Tests path and command in init of :class:`mac_cleanup.core_modules.Path`"""
 
@@ -211,7 +197,7 @@ class TestPath:
 
     def test_init_expanduser(
             self,
-            with_root: None
+            path_with_root: None
     ):
         """Test expand user in :class:`mac_cleanup.core_modules.Path`"""
 
@@ -234,7 +220,7 @@ class TestPath:
     def test_dry_run_only(
             self,
             is_file: bool,
-            with_root: None
+            path_with_root: None
     ):
         """Test dry run only in :class:`mac_cleanup.core_modules.Path`"""
 
@@ -272,7 +258,7 @@ class TestPath:
     def test_execute(
             self,
             is_file: bool,
-            with_root: None
+            path_with_root: None
     ):
         """Test for path/dir deletion in :class:`mac_cleanup.core_modules.Path`"""
 
@@ -325,7 +311,7 @@ class TestPath:
             self,
             deletable: bool,
             exist: bool,
-            with_root: None,
+            path_with_root: None,
             monkeypatch: MonkeyPatch
     ):
         """Test for negative execution in :class:`mac_cleanup.core_modules.Path`"""
