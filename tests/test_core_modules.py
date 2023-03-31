@@ -49,6 +49,13 @@ class TestCommand:
         # Check command execution output is correct
         assert "test" in captured_execute
 
+    @staticmethod
+    @pytest.fixture
+    def with_root(monkeypatch: MonkeyPatch):
+        """Simulate user has root"""
+
+        monkeypatch.setattr("mac_cleanup.core_modules.Command._BaseCommand__has_root", True)
+
     @pytest.mark.parametrize(
         ("prompt_succeeded", "prompt"),
         [
@@ -62,6 +69,7 @@ class TestCommand:
             self,
             prompt_succeeded: bool,
             prompt: Optional[str],
+            with_root: None,
             capsys: CaptureFixture[str],
             monkeypatch: MonkeyPatch
     ):
@@ -72,9 +80,6 @@ class TestCommand:
 
         # Simulate user input in prompt
         monkeypatch.setattr("rich.prompt.PromptBase.get_input", dummy_input)
-
-        # Simulate user has root
-        monkeypatch.setattr("mac_cleanup.core_modules.Command._BaseCommand__has_root", True)
 
         # Get command with prompt
         command = Command("echo 'test'").with_prompt(message_=prompt)
@@ -110,13 +115,9 @@ class TestCommand:
     def test_base_command_execute(
             self,
             executed_command: Optional[str],
-            capsys: CaptureFixture[str],
-            monkeypatch: MonkeyPatch
+            with_root: None
     ):
         """Test no command being passed to :class:`mac_cleanup.core_modules._BaseCommand`"""
-
-        # Simulate user has root
-        monkeypatch.setattr("mac_cleanup.core_modules.Command._BaseCommand__has_root", True)
 
         # Get command instance without command
         command = Command(executed_command)
@@ -134,12 +135,8 @@ class TestCommand:
     def test_with_errors(
             self,
             redirect_errors: bool,
-            capsys: CaptureFixture[str],
-            monkeypatch: MonkeyPatch
+            with_root: None
     ):
-        # Simulate user has root
-        monkeypatch.setattr("mac_cleanup.core_modules.Command._BaseCommand__has_root", True)
-
         # Get command with stderr
         command = Command("echo 'test' >&2")
 
