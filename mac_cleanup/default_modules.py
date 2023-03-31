@@ -425,7 +425,7 @@ def docker():
 
             if not cmd("docker ps >/dev/null 2>&1"):
                 unit.add(
-                    Command("open --background -a Docker")
+                    Command("open -jga Docker")
                 )
 
                 close_docker = True
