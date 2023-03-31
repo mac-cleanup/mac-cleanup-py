@@ -79,6 +79,12 @@ class _BaseCommand(BaseModule):
 
         self.__command: Final[Optional[str]] = command_
 
+    @property
+    def get_command(self) -> Optional[str]:
+        """Get command specified to the module"""
+
+        return self.__command
+
     @abstractmethod
     def _execute(
             self,
