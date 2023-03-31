@@ -106,14 +106,14 @@ def check_deletable(
     ]
 
     # Returns False if empty
-    if not path or (path_posix := path_.as_posix()) == ".":
+    if (path_posix := path_.as_posix()) == ".":
         return False
 
     # If glob return True (it'll delete nothing at the end, hard to hande otherwise)
     if "*" in path_posix:
         return True
 
-    # Returns False if path startswith anything from SIP_list or in user_list
+    # Returns False if path startswith anything from SIP list or in custom list
     if any(
             path_posix.startswith(protected_path)
             for protected_path in list(map(expanduser, sip_list + user_list))
