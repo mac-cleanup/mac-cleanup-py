@@ -22,10 +22,8 @@ def system_caches():
         unit.add(
             Path("/Library/Caches/*")
             .with_prompt(
-                """\
-                    All global cache will be deleted, including Poetry, Jetbrains, Cocoa, yarn, Composer etc.
-                    Continue?\
-                """
+                "ALL GLOBAL CACHE will be DELETED, including Poetry, Jetbrains, Cocoa, yarn, Composer etc.\n"
+                "Continue?"
             )
         )
 
@@ -37,10 +35,8 @@ def system_caches():
         unit.add(
             Path("~/Library/Caches/*")
             .with_prompt(
-                """\
-                    All user cache will be deleted, including Poetry, Jetbrains, Cocoa, yarn, Composer etc.
-                    Continue?\
-                """
+                "ALL USER CACHE will be DELETED, including Poetry, Jetbrains, Cocoa, yarn, Composer etc.\n"
+                "Continue?"
             )
         )
         unit.add(
@@ -158,10 +154,8 @@ def xcode_simulators():
             unit.add(
                 Command("xcrun simctl erase all")
                 .with_prompt(
-                    """\
-                    All XCcode simulators will be pruned.
-                    Continue?\
-                    """
+                    "All Xcode simulators will be pruned.\n"
+                    "Continue?"
                 )
             )
 
@@ -362,10 +356,8 @@ def gradle():
             unit.add(
                 Path("~/.gradle/caches")
                 .with_prompt(
-                    """\
-                    Gradle cache will be removed. It is chunky and kinda long to reinstall.
-                    Continue?\
-                    """
+                    "Gradle cache will be removed. It is chunky and kinda long to reinstall.\n"
+                    "Continue?"
                 )
             )
 
@@ -441,10 +433,8 @@ def docker():
             unit.add(
                 Command("docker system prune -af")
                 .with_prompt(
-                    """\
-                    Stopped containers, dangling images, unused networks, volumes, and build cache will be deleted.
-                    Continue?\
-                    """
+                    "Stopped containers, dangling images, unused networks, volumes, and build cache will be deleted.\n"
+                    "Continue?"
                 )
             )
 
@@ -595,10 +585,8 @@ def poetry():
             unit.add(
                 Path("~/Library/Caches/pypoetry")
                 .with_prompt(
-                    """\
-                    All non-local Poetry venvs will be deleted.
-                    Continue?\
-                    """
+                    "All non-local Poetry venvs will be deleted.\n"
+                    "Continue?"
                 )
             )
 
@@ -610,10 +598,8 @@ def java_cache():
         unit.add(
             Path("~/*.hprof")
             .with_prompt(
-                """\
-                All heap dumps (.hprof) in HOME dir will be deleted.
-                Continue?\
-                """
+                "All heap dumps (.hprof) in HOME dir will be deleted.\n"
+                "Continue?"
             )
         )
 
