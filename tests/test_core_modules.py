@@ -1,11 +1,15 @@
 """All tests for mac_clean_up.config"""
-from typing import Optional, Callable
+from typing import Optional, Callable, IO, cast
 
 import pytest
 from _pytest.capture import CaptureFixture
 from _pytest.monkeypatch import MonkeyPatch
 
-from mac_cleanup.core_modules import Command
+import tempfile
+
+from pathlib import Path as Pathlib
+
+from mac_cleanup.core_modules import Command, Path
 
 
 class TestCommand:
@@ -157,3 +161,194 @@ class TestCommand:
 
         # Check if stderr wasn't captured
         assert "test" not in captured_execute
+
+
+class TestPath:
+    @staticmethod
+    @pytest.fixture
+    def with_root(monkeypatch: MonkeyPatch):
+        """Simulate user has root"""
+
+        monkeypatch.setattr("mac_cleanup.core_modules.Path._BaseCommand__has_root", True)
+
+    @pytest.mark.parametrize(
+        "is_file",
+        [True, False]
+    )
+    def test_init(
+            self,
+            is_file: bool,
+            with_root: None
+    ):
+        """Tests path and command in init of :class:`mac_cleanup.core_modules.Path`"""
+
+        # Get tmp file
+        if is_file:
+            tmp_file_object = tempfile.NamedTemporaryFile(mode="w+", delete=False)
+        else:
+            tmp_file_object = tempfile.TemporaryDirectory()
+
+        with tmp_file_object as f:
+            # Get name from file
+            if is_file:
+                f = cast(IO[str], f)
+                f_name: str = f.name
+            else:
+                f = cast(str, f)
+                f_name: str = f
+
+            # Get tmp path posix
+            tmp_path_posix = Pathlib(f_name).as_posix()
+
+            # Get Path instance
+            path = Path(tmp_path_posix)
+
+            # Check path
+            assert path.get_path.as_posix() == tmp_path_posix
+
+            # Check command
+            assert path.get_command == f"rm -rf '{tmp_path_posix}'"  # noqa
+
+    def test_init_expanduser(
+            self,
+            with_root: None
+    ):
+        """Test expand user in :class:`mac_cleanup.core_modules.Path`"""
+
+        # Get dummy path posix
+        tmp_path_posix = Pathlib("~/test")
+
+        # Get Path instance
+        path = Path(tmp_path_posix.as_posix())
+
+        # Check path
+        assert path.get_path.as_posix() == tmp_path_posix.expanduser().as_posix()
+
+        # Check command
+        assert path.get_command == f"rm -rf '{tmp_path_posix.expanduser().as_posix()}'"  # noqa
+
+    @pytest.mark.parametrize(
+        "is_file",
+        [True, False]
+    )
+    def test_dry_run_only(
+            self,
+            is_file: bool,
+            with_root: None
+    ):
+        """Test dry run only in :class:`mac_cleanup.core_modules.Path`"""
+
+        # Get tmp file
+        if is_file:
+            tmp_file_object = tempfile.NamedTemporaryFile(mode="w+", delete=False)
+        else:
+            tmp_file_object = tempfile.TemporaryDirectory()
+
+        with tmp_file_object as f:
+            # Get name from file
+            if is_file:
+                f = cast(IO[str], f)
+                f_name: str = f.name
+            else:
+                f = cast(str, f)
+                f_name: str = f
+
+            # Get tmp path
+            tmp_path = Pathlib(f_name)
+
+            # Get Path instance with flag dry_run_only
+            path = Path(tmp_path.as_posix()).dry_run_only()
+
+            # Invoke path deletion
+            path._execute()
+
+            # Check path exists
+            assert tmp_path.exists()
+
+    @pytest.mark.parametrize(
+        "is_file",
+        [True, False]
+    )
+    def test_execute(
+            self,
+            is_file: bool,
+            with_root: None
+    ):
+        """Test for path/dir deletion in :class:`mac_cleanup.core_modules.Path`"""
+
+        # Get tmp file
+        if is_file:
+            tmp_file_object = tempfile.NamedTemporaryFile(mode="w+", delete=False)
+        else:
+            tmp_file_object = tempfile.TemporaryDirectory()
+
+        with tmp_file_object as f:
+            # Get name from file
+            if is_file:
+                f = cast(IO[str], f)
+                f_name: str = f.name
+            else:
+                f = cast(str, f)
+                f_name: str = f
+
+            # Get tmp path
+            tmp_path = Pathlib(f_name)
+
+            # Get Path instance
+            path = Path(tmp_path.as_posix())
+
+            # Invoke path deletion
+            path._execute()
+
+            try:
+                # Check file doesn't exist
+                assert not tmp_path.exists()
+            except AssertionError:
+                # Remove temp file on error
+                if is_file:
+                    from os import unlink
+
+                    unlink(f_name)
+
+                # Raise error that file exists
+                raise FileExistsError
+
+    @pytest.mark.parametrize(
+        ("deletable", "exist"),
+        [
+            (False, True),
+            (True, False),
+            (False, False)
+        ]
+    )
+    def test_negative_execute(
+            self,
+            deletable: bool,
+            exist: bool,
+            with_root: None,
+            monkeypatch: MonkeyPatch
+    ):
+        """Test for negative execution in :class:`mac_cleanup.core_modules.Path`"""
+
+        # Dummy check_deletable utility
+        dummy_deletable: Callable[[str], bool] = lambda path: deletable
+
+        # Dummy check_exists utility
+        dummy_exists: Callable[[str], bool] = lambda path: exist
+
+        # Get tmp file
+        with tempfile.NamedTemporaryFile(mode="w+") as f:
+            # Get tmp path
+            tmp_path = Pathlib(f.name)
+
+            # Simulate check_deletable results
+            monkeypatch.setattr("mac_cleanup.core_modules.check_deletable", dummy_deletable)
+
+            # Simulate check_exists results
+            monkeypatch.setattr("mac_cleanup.core_modules.check_exists", dummy_exists)
+
+            # Invoke Path instance
+            Path(tmp_path.as_posix())._execute()
+
+            # Check file exists
+            assert tmp_path.exists()
