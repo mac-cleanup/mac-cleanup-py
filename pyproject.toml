@@ -7,14 +7,18 @@ authors = [ "Drugsosos" ]
 readme = "README.md"
 homepage = "https://github.com/mac-cleanup/mac-cleanup-py"
 repository = "https://github.com/mac-cleanup/mac-cleanup-py"
-keywords = [ "macos", "script", "cleanup", "cleaner" ]
+keywords = [
+    "macos",
+    "script",
+    "cleanup",
+    "cleaner"
+]
 classifiers = [
     "Environment :: Console",
     "Operating System :: MacOS",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11"
 ]
-
 
 include = [ "LICENSE" ]
 exclude = [ "mac_cleanup/__main__.py", "mac_cleanup/py.typed" ]
