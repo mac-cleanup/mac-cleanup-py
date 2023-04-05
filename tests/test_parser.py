@@ -28,7 +28,7 @@ class TestParser:
     ) -> list[str]:
         """Get filtered attribute list (without dunder methods)"""
 
-        return [attr for attr in dir(namespace) if not attr.startswith('__')]
+        return [attr for attr in dir(namespace) if not attr.startswith("__")]
 
     def test_description(self):
         from mac_cleanup.__version__ import __version__
