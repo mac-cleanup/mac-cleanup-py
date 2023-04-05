@@ -17,6 +17,9 @@ def test_prompt(
         capsys: CaptureFixture[str],
         monkeypatch: MonkeyPatch
 ):
+    """Test ProgressBar prompt call"""
+
+    # Dummy user input
     user_input_str: Callable[..., str] = lambda: "y" if user_continue else "n"
 
     # Check prompt output
@@ -24,6 +27,34 @@ def test_prompt(
     assert ProgressBar.prompt("Prompt Text", "Prompt Title") == user_continue
 
     # Check stdout
-    captured = capsys.readouterr()
-    assert "Prompt Text" in captured.out
-    assert "Prompt Title" in captured.out
+    captured = capsys.readouterr().out
+    assert "Prompt Text" in captured
+    assert "Prompt Title" in captured
+
+
+def test_wrap_iter(
+        capsys: CaptureFixture[str],
+        monkeypatch: MonkeyPatch
+):
+    """Test ProgressBar wrap_iter call"""
+
+    # Change transient attribute to be able to capture stdout
+    monkeypatch.setattr(ProgressBar.live, "transient", False)
+
+    seq = list(range(5))
+
+    for _ in ProgressBar.wrap_iter(
+            seq,
+            total=len(seq),
+            description="test_wrap_iter"
+    ):
+        pass
+
+    # Check stdout
+    captured = capsys.readouterr().out
+
+    # Check percents in output
+    assert "100%" in captured
+
+    # Check description in output
+    assert "test_wrap_iter" in captured

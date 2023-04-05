@@ -83,7 +83,7 @@ class _ProgressBar(Progress):
             :return: An iterable of the values in the sequence
         """
 
-        with self:  # pragma: no cover  # Can't read stdout in tests
+        with self:
             yield from self.track(
                 sequence,
                 total=total,
