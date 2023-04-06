@@ -11,7 +11,6 @@ import attr
 from pathlib import Path as Path_
 
 from mac_cleanup.core_modules import BaseModule, Path
-from mac_cleanup.utils import _KeyboardInterrupt
 
 
 T = TypeVar("T")

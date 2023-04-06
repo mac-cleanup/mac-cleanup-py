@@ -150,11 +150,3 @@ def bytes_to_human(
     s = round(size_bytes / p, 2)
 
     return f"{s} {size_name[i]}"
-
-
-class _KeyboardInterrupt(Exception):  # pyright: ignore [reportUnusedClass]
-    """
-    Inherited from Exception class to handle exceptions in :class:`multiprocessing.pool.Pool`
-    """
-
-    pass
