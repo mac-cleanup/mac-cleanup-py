@@ -142,8 +142,12 @@ def test_check_exists(
         (Path("*"), True),
         # test SIP
         ("/System", False),
+        (Path("/System"), False),
+        # test no expand user
+        ("~/Documents", True),
+        (Path("~/Documents").expanduser(), False),
         # test custom rules
-        ("~/Documents", False),
+        (Path("~/Documents"), True),
         # test beartype
         (123, False)
     ]

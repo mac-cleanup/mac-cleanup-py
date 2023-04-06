@@ -317,7 +317,7 @@ class TestPath:
         """Test for negative execution in :class:`mac_cleanup.core_modules.Path`"""
 
         # Dummy check_deletable utility
-        dummy_deletable: Callable[[str], bool] = lambda path: deletable
+        dummy_deletable: Callable[[Pathlib | str], bool] = lambda path: deletable
 
         # Dummy check_exists utility
         dummy_exists: Callable[[Pathlib | str, bool], bool] = lambda path, expand_user: exist

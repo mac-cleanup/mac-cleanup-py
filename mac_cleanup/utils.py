@@ -89,9 +89,9 @@ def check_deletable(
 
     # Convert path to correct type
     if not isinstance(path, Path):
-        path_: Path = Path(path).expanduser()
+        path_: Path = Path(path)
     else:
-        path_ = path.expanduser()
+        path_ = path
 
     sip_list = [
         "/System",
