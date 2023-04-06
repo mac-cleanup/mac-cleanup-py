@@ -126,25 +126,78 @@ class _Collector:
             :return: Size of specified directory
         """
 
-        path = path_.expanduser().as_posix()
+        # Get path posix
+        path_posix = path_.as_posix()
 
-        try:
-            # Searching for glob in path
-            split_path = path.split("*", 1)
-            path, glob = split_path if len(split_path) == 2 else (path, "")
+        # Set list of globs
+        globs = ["*", "[", "]"]
 
-            temp_size: float = 0
+        # Set glob list
+        glob_constructor: list[str] = list()
 
-            for p in Path_(path).rglob("*" + glob):
-                # Except SIP and symlinks
+        # Check if there is glob in path
+        if any(glob in path_posix for glob in globs):
+            # Set glob index list
+            globs_index_list: list[int] = list()
+
+            # Find glob indexes
+            for glob in globs:
                 try:
-                    temp_size += p.stat().st_size
+                    globs_index_list.append(
+                        path_posix.index(glob)
+                    )
+                except ValueError:
+                    continue
+
+            # Find first glob
+            first_wildcard_position = min(globs_index_list)
+
+            # Remove glob from path
+            path_ = Path_(path_posix[:first_wildcard_position])
+
+            # Update glob
+            glob_constructor.append(path_posix[first_wildcard_position:])
+
+            # Set is_file flag to False (globs can't be files)
+            is_file = False
+        else:
+            # Check if path is a file
+            is_file = path_.is_file()
+
+        # Return size if path is a file
+        if is_file:
+            # Except SIP, symlinks, and not non-existent path
+            try:
+                return path_.stat(follow_symlinks=False).st_size
+            except (PermissionError, FileNotFoundError):
+                return 0
+
+        # Add recursive glob
+        glob_constructor.append("**/*")
+
+        temp_size: float = 0
+
+        glob_list: list[str] = list()
+
+        # Construct glob_list
+        if len(glob_constructor) == 1:
+            # Add recursive glob on no glob in path
+            glob_list.extend(glob_constructor)
+        else:
+            # Add specified glob
+            glob_list.append(glob_constructor[0])
+            # Add recursive glob
+            glob_list.append("/".join(glob_constructor))
+
+        # Find every file and count size
+        for glob in glob_list:
+            for file in path_.glob(glob):
+                try:
+                    temp_size += file.stat(follow_symlinks=False).st_size
+                # Except SIP, symlinks, and not non-existent path
                 except (PermissionError, FileNotFoundError):
                     continue
-            return temp_size
-        except KeyboardInterrupt:
-            # Needed to handle KeyboardInterrupt in Pool
-            raise _KeyboardInterrupt()
+        return temp_size
 
     @staticmethod
     def __filter_modules(
