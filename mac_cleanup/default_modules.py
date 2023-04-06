@@ -20,19 +20,6 @@ def system_caches():
     with clc as unit:
         unit.message("Clearing System Cache Files")
         unit.add(
-            Path("/Library/Caches/*")
-            .with_prompt(
-                "ALL GLOBAL CACHE will be DELETED, including Poetry, Jetbrains, Cocoa, yarn, Composer etc.\n"
-                "Continue?"
-            )
-        )
-
-        # Can't be deleted
-        # unit.add(
-        #     Path("/System/Library/Caches/*")
-        # )
-
-        unit.add(
             Path("~/Library/Caches/*")
             .with_prompt(
                 "ALL USER CACHE will be DELETED, including Poetry, Jetbrains, Cocoa, yarn, Composer etc.\n"
@@ -165,7 +152,7 @@ def xcode_simulators():
             )
             unit.add(
                 Path(
-                    "/Users/wah/Library/Developer/CoreSimulator/Devices/*/data/Library/"
+                    "~/Library/Developer/CoreSimulator/Devices/*/data/Library/"
                     "[!PreferencesCaches|Caches|AddressBook|Trial]*"
                 )
                 .dry_run_only()
