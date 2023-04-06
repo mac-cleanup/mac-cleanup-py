@@ -100,7 +100,7 @@ def check_deletable(
         "/sbin",
         "/Applications",
         "/Library",
-        "/usr/local",
+        "/usr/local"
     ]
 
     user_list = [
@@ -108,8 +108,7 @@ def check_deletable(
         "~/Downloads",
         "~/Desktop",
         "~/Movies",
-        "~/Music",
-        "~/Pictures",
+        "~/Pictures"
     ]
 
     # Returns False if empty
