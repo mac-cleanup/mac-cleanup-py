@@ -26,7 +26,7 @@ class TestCommand:
         """Test root checking part in init of :class:`mac_cleanup.core_modules._BaseCommand`"""
 
         # Dummy cmd for checking root
-        dummy_cmd: Callable[..., str] = lambda *_, **__: "root" if has_root else ""
+        dummy_cmd: Callable[[str, bool], str] = lambda command, ignore_errors=True: "root" if has_root else ""
 
         # Simulate root checking
         monkeypatch.setattr("mac_cleanup.core_modules.cmd", dummy_cmd)
@@ -39,13 +39,13 @@ class TestCommand:
             return
 
         # Get Command instance and invoke root checking
-        command = Command("echo 'test'")
+        command_ = Command("echo 'test'")
 
         # Revert cmd mock
         monkeypatch.undo()
 
         # Get command execution output
-        captured_execute = command._execute()
+        captured_execute = command_._execute()
 
         # Check command execution output is not empty
         assert captured_execute is not None

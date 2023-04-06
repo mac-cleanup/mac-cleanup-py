@@ -8,6 +8,7 @@ from pathlib import Path
 @beartype
 def cmd(
         command: str,
+        *,
         ignore_errors: bool = True
 ) -> str:
     """
