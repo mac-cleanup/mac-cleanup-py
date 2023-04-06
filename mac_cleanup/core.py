@@ -49,6 +49,18 @@ class _Collector:
         if not hasattr(self, "_execute_list"):
             self._execute_list: Final[list[Unit]] = list()
 
+    @property
+    def get_temp_message(self) -> Optional[str]:
+        """Getter of private potentially empty attr temp_message"""
+
+        return getattr(self, "_Collector__temp_message", None)
+
+    @property
+    def get_temp_modules_list(self) -> Optional[list[BaseModule]]:
+        """Getter of private potentially empty attr temp_modules_list"""
+
+        return getattr(self, "_Collector__temp_modules_list", None)
+
     def __enter__(self) -> '_Collector':
         # Set temp stuff
         self.__temp_message = "Working..."
