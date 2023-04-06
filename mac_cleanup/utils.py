@@ -53,16 +53,22 @@ def expanduser(
 
 @beartype
 def check_exists(
-        path: Path | str
+        path: Path | str,
+        *,
+        expand_user: bool = True
 ) -> bool:
     """
     Checks if path exists
         :param path: Path to be checked
+        :param expand_user: True if path needs to be expanded
         :return: True if specified path exists
     """
 
     if not isinstance(path, Path):
         path = Path(path)
+
+    if expand_user:
+        path = path.expanduser()
 
     # If glob return True (it'll delete nothing at the end, hard to hande otherwise)
     if "*" in path.as_posix():

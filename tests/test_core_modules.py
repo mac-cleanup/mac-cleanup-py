@@ -320,7 +320,7 @@ class TestPath:
         dummy_deletable: Callable[[str], bool] = lambda path: deletable
 
         # Dummy check_exists utility
-        dummy_exists: Callable[[str], bool] = lambda path: exist
+        dummy_exists: Callable[[Pathlib | str, bool], bool] = lambda path, expand_user: exist
 
         # Get tmp file
         with tempfile.NamedTemporaryFile(mode="w+") as f:

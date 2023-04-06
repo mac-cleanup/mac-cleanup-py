@@ -176,7 +176,7 @@ class Path(_BaseCommand):
             return
 
         # Skip if path is not deletable or undefined
-        if not all([check_deletable(path=self.__path), check_exists(path=self.__path)]):
+        if not all([check_deletable(path=self.__path), check_exists(path=self.__path, expand_user=False)]):
             return
 
         return super()._execute()  # Always ignore errors

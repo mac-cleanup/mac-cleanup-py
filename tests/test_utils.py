@@ -78,27 +78,34 @@ def test_expanduser(
 
 
 @pytest.mark.parametrize(
-    ("path", "output"),
+    ("path", "output", "expand_path"),
     [
         # test existing str path
-        ("/", True),
+        ("/", True, True),
+        # test expand user
+        ("~/Documents", True, True),
+        ("~/Documents", False, False),
         # test Glob
-        ("*", True),
+        ("*", True, True),
         # test non-existing str path
-        ("/aboba", False),
+        ("/aboba", False, True),
         # test existing Path
-        (Path("/"), True),
+        (Path("/"), True, True),
+        # test expand user Path
+        (Path("~/Documents"), True, True),
+        (Path("~/Documents"), False, False),
         # test Glob in Path
-        (Path("*"), True),
+        (Path("*"), True, True),
         # test non-existing Path
-        (Path("/aboba"), False),
+        (Path("/aboba"), False, True),
         # test beartype
-        (123, False)
+        (123, False, True)
     ]
 )
 def test_check_exists(
         path: Path | str | int,
-        output: bool
+        output: bool,
+        expand_path: bool
 ):
     """Test wrapper of :meth:`pathlib.Path.exists` in :meth:`mac_cleanup.utils.check_exists`"""
 
@@ -106,10 +113,16 @@ def test_check_exists(
 
     if isinstance(path, int):
         with pytest.raises(BeartypeCallHintParamViolation):
-            check_exists(path=path)  # pyright: ignore [reportGeneralTypeIssues] # noqa
+            check_exists(
+                path=path,  # pyright: ignore [reportGeneralTypeIssues] # noqa
+                expand_user=expand_path
+            )
         return
 
-    assert check_exists(path=path) is output
+    assert check_exists(
+        path=path,
+        expand_user=expand_path
+    ) is output
 
 
 @pytest.mark.parametrize(
