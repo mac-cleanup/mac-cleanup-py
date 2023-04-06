@@ -161,8 +161,8 @@ class _Collector:
             :return: Approx amount of bytes to be removed
         """
 
+        from concurrent.futures import ThreadPoolExecutor, as_completed
         from mac_cleanup.progress import ProgressBar
-        from multiprocessing import Pool
 
         # Extract all modules
         all_modules = list(chain(*[unit.modules for unit in self._execute_list]))
@@ -181,22 +181,26 @@ class _Collector:
         # Set counter for estimated size
         estimate_size: float = 0
 
-        with Pool() as pool:
-            try:
-                for path_size in ProgressBar.wrap_iter(
-                        pool.imap_unordered(
-                            func=self._get_size,
-                            iterable=path_list
-                        ),
-                        description="Collecting dry run",
-                        total=len(path_list)
-                ):
-                    estimate_size += path_size
-            except _KeyboardInterrupt:
-                # Closing pool w/ pool.close() to wait for unfinished tasks
-                pool.close()
-                # Waits for the worker processes to terminate
-                pool.join()
+        # Get thread executor
+        executor = ThreadPoolExecutor()
+
+        try:
+            # Add tasks to executor
+            tasks = [executor.submit(self._get_size, path) for path in path_list]
+
+            # Wait for task completion and add ProgressBar
+            for future in ProgressBar.wrap_iter(
+                    as_completed(tasks),
+                    description="Collecting dry run",
+                    total=len(path_list)
+            ):
+                estimate_size += future.result(timeout=10)
+        except KeyboardInterrupt:
+            # Shutdown executor without waiting for tasks
+            executor.shutdown(wait=False)
+        else:
+            # Cleanup executor
+            executor.shutdown(wait=True)
         return estimate_size
 
 
