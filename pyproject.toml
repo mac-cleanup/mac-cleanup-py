@@ -47,9 +47,6 @@ pyright = "^1.1.300"
 ruff = "^0.0.259"
 py = "^1.11.0"
 
-[options.package_data]
-mac_cleanup = "py.typed"
-
 [build-system]
 requires = [ "poetry-core>=1.0.0" ]
 build-backend = "poetry.core.masonry.api"
