@@ -374,7 +374,7 @@ class TestConfig:
         from inspect import getsource
 
         # Clear default modules list
-        dummy_load_default: Callable[[Config], None] = lambda clf_self: None
+        dummy_load_default: Callable[[Config], None] = lambda cfg_self: None
 
         # Dummy module with output to stdout
         def dummy_module() -> None:
@@ -396,7 +396,7 @@ class TestConfig:
             ) -> ConfigFile:
                 return ConfigFile(
                     enabled=[dummy_module_name],
-                    custom_path=tmp_module_path.parent.expanduser().as_posix()
+                    custom_path=tmp_module_path.parent.as_posix()
                 )
 
             # Simulate dummy module in enabled
@@ -426,7 +426,7 @@ class TestConfig:
         assert (
                 config.get_config_data.get("custom_path")
                 == config.get_custom_path
-                == tmp_module_path.parent.expanduser().as_posix()
+                == tmp_module_path.parent.as_posix()
         )
 
         # Check enabled modules
