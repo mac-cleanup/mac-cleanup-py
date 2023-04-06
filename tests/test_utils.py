@@ -27,6 +27,8 @@ def test_cmd(
         ignore_errors: bool,
         output: str,
 ):
+    """Test :class:`subprocess.Popen` command execution in :meth:`mac_cleanup.utils.cmd`"""
+
     from mac_cleanup.utils import cmd
 
     if isinstance(command, int):
@@ -59,6 +61,8 @@ def test_expanduser(
         output: Optional[str],
         get_current_os: str
 ):
+    """Test wrapper of :meth:`pathlib.Path.expanduser` in :meth:`mac_cleanup.utils.expanduser`"""
+
     from mac_cleanup.utils import expanduser
 
     if isinstance(str_path, int):
@@ -96,6 +100,8 @@ def test_check_exists(
         path: Path | str | int,
         output: bool
 ):
+    """Test wrapper of :meth:`pathlib.Path.exists` in :meth:`mac_cleanup.utils.check_exists`"""
+
     from mac_cleanup.utils import check_exists
 
     if isinstance(path, int):
@@ -133,6 +139,8 @@ def test_check_deletable(
         path: Path | str | int,
         output: bool
 ):
+    """Test :meth:`mac_cleanup.utils.check_deletable` with SIP and custom restriction list"""
+
     from mac_cleanup.utils import check_deletable
 
     if isinstance(path, int):
@@ -167,6 +175,8 @@ def test_bytes_to_human(
         in_power: int,
         output: str
 ):
+    """Test bytes to human conversion in :meth:`mac_cleanup.utils.bytes_to_human`"""
+
     from mac_cleanup.utils import bytes_to_human
 
     if isinstance(byte, str):

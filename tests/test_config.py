@@ -67,6 +67,8 @@ class TestConfig:
             self,
             enabled: int
     ):
+        """Test loading list of enabled modules in :class:`mac_cleanup.config.Config`"""
+
         # Set list of dummy modules
         enabled_modules = [f"test{num}" for num in range(enabled)]
 
@@ -98,6 +100,8 @@ class TestConfig:
             self,
             custom_path: Optional[str]
     ):
+        """Test custom path being set in :class:`mac_cleanup.config.Config`"""
+
         # Create dummy ConfigFile
         test_config = ConfigFile(enabled=["test"], custom_path=custom_path)
 
@@ -130,6 +134,9 @@ class TestConfig:
             dummy_prompt: Callable[..., None],
             dummy_key: Callable[..., str]
     ):
+        """Final tests for :class:`mac_cleanup.config.Config`
+        launching configuration on being empty or user prompted configuration"""
+
         # Simulate dummy modules are legit
         for out in user_output:
             monkeypatch.setitem(config.get_modules, out, dummy_module)
@@ -186,6 +193,8 @@ class TestConfig:
             capsys: CaptureFixture[str],
             monkeypatch: MonkeyPatch
     ):
+        """Test for configuration being prompted by user in :class:`mac_cleanup.config.Config`"""
+
         # Create dummy ConfigFile
         test_config = ConfigFile(enabled=["test"], custom_path=None)
 
@@ -232,6 +241,8 @@ class TestConfig:
             capsys: CaptureFixture[str],
             monkeypatch: MonkeyPatch
     ):
+        """Test :class:`mac_cleanup.config.Config` being called with an empty configuration"""
+
         # Create empty config
         test_config: dict[str, list[str] | Optional[str]] = dict()
 
@@ -278,6 +289,8 @@ class TestConfig:
             custom_path: Optional[str],
             monkeypatch: MonkeyPatch
     ):
+        """Test custom path being set by user prompt in :class:`mac_cleanup.config.Config`"""
+
         # Set default custom modules path
         default_path = "~/Documents/mac-cleanup/"
 
@@ -321,6 +334,8 @@ class TestConfig:
             capsys: CaptureFixture[str],
             monkeypatch: MonkeyPatch
     ):
+        """Test toml decode error on init of :class:`mac_cleanup.config.Config`"""
+
         # Simulate writing config without writing it
         dummy_write: Callable[[Config], None] = lambda cfg_self: None
 
@@ -354,6 +369,8 @@ class TestConfig:
             capsys: CaptureFixture[str],
             monkeypatch: MonkeyPatch
     ):
+        """Test loading of custom modules in :class:`mac_cleanup.config.Config`"""
+
         from inspect import getsource
 
         # Clear default modules list
@@ -419,6 +436,8 @@ class TestConfig:
             self,
             monkeypatch: MonkeyPatch
     ):
+        """Test faulty (deleted) modules in configuration of :class:`mac_cleanup.config.Config`"""
+
         # Create dummy modules list
         modules_list = {"test": lambda: None}
 
@@ -466,6 +485,8 @@ class TestConfig:
             capsys: CaptureFixture[str],
             monkeypatch: MonkeyPatch
     ):
+        """Test modules configuration with none being selected in :class:`mac_cleanup.config.Config`"""
+
         # Dummy Config read with error
         def dummy_read(self: Config):  # noqa
             raise FileNotFoundError
