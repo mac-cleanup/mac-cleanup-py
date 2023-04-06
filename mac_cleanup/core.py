@@ -274,8 +274,4 @@ class ProxyCollector:
             exc_value: Optional[BaseException],
             traceback: Optional[TracebackType]
     ) -> None:
-        # Raise errors if any
-        if exc_type:
-            raise exc_type(exc_value)
-
         return self.__base.__exit__(exc_type, exc_value, traceback)
