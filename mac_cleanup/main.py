@@ -6,12 +6,14 @@ from mac_cleanup.parser import args
 from mac_cleanup.console import console, print_panel
 from mac_cleanup.config import Config
 from mac_cleanup.utils import cmd, bytes_to_human
+from mac_cleanup.error_handling import catch_exception
 
 
 config_path = Path.home().joinpath(".mac_cleanup_py")
 base_collector = _Collector()
 
 
+@catch_exception
 def main() -> None:
     # Clear console at the start
     console.clear()
