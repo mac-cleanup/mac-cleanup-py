@@ -1,5 +1,6 @@
 """Wrapper for handling all errors in entry point"""
 from typing import TypeVar, Callable, Type, Optional, overload, Iterable, Any
+from functools import wraps
 
 T = TypeVar("T", bound=Callable[..., Any])
 
@@ -31,6 +32,7 @@ class ErrorHandler:
             self,
             func: T
     ) -> Callable[..., Optional[T]]:
+        @wraps(func)
         def wrapper(
                 *args: Any,
                 **kwargs: Any
