@@ -39,13 +39,15 @@ beartype = "^0.12.0"
 [tool.poetry.scripts]
 mac-cleanup = "mac_cleanup:main"
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.group.test.dependencies]
 tox = "^4.4.7"
 pytest = "^7.2.2"
 pytest-cov = "^4.0.0"
 pyright = "^1.1.300"
 ruff = "^0.0.259"
 py = "^1.11.0"
+
+[tool.poetry.group.dev.dependencies]
 
 [build-system]
 requires = [ "poetry-core>=1.0.0" ]
