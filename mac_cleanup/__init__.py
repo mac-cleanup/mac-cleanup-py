@@ -1,12 +1,14 @@
 from mac_cleanup.core import ProxyCollector as Collector
 from mac_cleanup.core_modules import Path, Command
 from mac_cleanup.parser import args
-from mac_cleanup.main import main
+from mac_cleanup.main import EntryPoint
 
 try:
     from mac_cleanup.__version__ import __version__
 except ImportError:  # pragma: no cover
     __version__ = "source"
+
+main = EntryPoint().start
 
 __title__ = "mac-cleanup-py"
 __all__ = [
