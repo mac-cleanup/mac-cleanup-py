@@ -62,11 +62,19 @@ class TestEntryPoint:
     ):
         """Test cleanup in :class:`mac_cleanup.main.EntryPoint`"""
 
-        # Dummy Config with no init and empty call
-        def dummy_config(
+        # Dummy Config with empty init
+        def dummy_config_init(
+                cfg_self: Config,  # noqa
                 config_path_: Pathlib  # noqa
-        ) -> Callable[[bool], None]:
-            return lambda configuration_prompted: None
+        ) -> None:
+            return
+
+        # Dummy Config with empty call
+        def dummy_config_call(
+                config_path_: Pathlib,  # noqa
+                configuration_prompted: bool  # noqa
+        ) -> None:
+            return
 
         # Dummy count_free_space for simulating cleaned half of free space
         def dummy_count_free_space(
@@ -87,7 +95,8 @@ class TestEntryPoint:
         monkeypatch.setattr("mac_cleanup.core_modules.Path._execute", dummy_module_execute)
 
         # Simulate Config with empty one
-        monkeypatch.setattr("mac_cleanup.config.Config", dummy_config)
+        monkeypatch.setattr("mac_cleanup.config.Config.__init__", dummy_config_init)
+        monkeypatch.setattr("mac_cleanup.config.Config.__call__", dummy_config_call)
 
         # Simulate count_free_space results
         monkeypatch.setattr(EntryPoint, "count_free_space", dummy_count_free_space)
@@ -129,11 +138,19 @@ class TestEntryPoint:
         # Dummy count_dry returning 1 GB
         dummy_count_dry: Callable[..., float] = lambda: float(1024**3)
 
-        # Dummy Config with no init and empty call
-        def dummy_config(
+        # Dummy Config with empty init
+        def dummy_config_init(
+                cfg_self: Config,  # noqa
                 config_path_: Pathlib  # noqa
-        ) -> Callable[[bool], None]:
-            return lambda configuration_prompted: None
+        ) -> None:
+            return
+
+        # Dummy Config with empty call
+        def dummy_config_call(
+                config_path_: Pathlib,  # noqa
+                configuration_prompted: bool  # noqa
+        ) -> None:
+            return
 
         # Dummy user input in prompt for optional cleanup
         dummy_input: Callable[..., str] = lambda *_, **__: "y" if cleanup_prompted else "n"
@@ -144,8 +161,9 @@ class TestEntryPoint:
         # Simulate user input in prompt for optional cleanup
         monkeypatch.setattr("rich.prompt.PromptBase.get_input", dummy_input)
 
-        # Simulate empty Config
-        monkeypatch.setattr("mac_cleanup.config.Config", dummy_config)
+        # Simulate Config with empty one
+        monkeypatch.setattr("mac_cleanup.config.Config.__init__", dummy_config_init)
+        monkeypatch.setattr("mac_cleanup.config.Config.__call__", dummy_config_call)
 
         # Simulate count_dry with predefined result
         monkeypatch.setattr(EntryPoint.base_collector, "_count_dry", dummy_count_dry)
@@ -181,10 +199,19 @@ class TestEntryPoint:
         dummy_count_dry: Callable[..., float] = lambda: float(1024**3)
 
         # Dummy Config with no init and empty call
-        def dummy_config(
+        # Dummy Config with empty init
+        def dummy_config_init(
+                cfg_self: Config,  # noqa
                 config_path_: Pathlib  # noqa
-        ) -> Callable[[bool], None]:
-            return lambda configuration_prompted: None
+        ) -> None:
+            return
+
+        # Dummy Config with empty call
+        def dummy_config_call(
+                config_path_: Pathlib,  # noqa
+                configuration_prompted: bool  # noqa
+        ) -> None:
+            return
 
         # Dummy user input in prompt raising random decode error
         def dummy_input(*args: Any, **kwargs: Any) -> None:  # noqa
@@ -193,8 +220,9 @@ class TestEntryPoint:
         # Simulate user input in prompt with decode error
         monkeypatch.setattr("rich.prompt.PromptBase.get_input", dummy_input)
 
-        # Simulate empty Config
-        monkeypatch.setattr("mac_cleanup.config.Config", dummy_config)
+        # Simulate Config with empty one
+        monkeypatch.setattr("mac_cleanup.config.Config.__init__", dummy_config_init)
+        monkeypatch.setattr("mac_cleanup.config.Config.__call__", dummy_config_call)
 
         # Simulate count_dry with predefined result
         monkeypatch.setattr(EntryPoint.base_collector, "_count_dry", dummy_count_dry)
