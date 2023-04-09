@@ -254,6 +254,8 @@ class Config:
             return
 
         from importlib.machinery import SourceFileLoader
+        from importlib.util import module_from_spec, spec_from_loader
+
         from pathlib import Path
 
         tmp_modules: dict[str, Callable[..., None]] = dict()
@@ -263,11 +265,24 @@ class Config:
             # Get filename
             filename = module.name.split(".py")[0]
 
-            # Get all modules from file
-            modules = SourceFileLoader(
+            # Set module loader
+            loader = SourceFileLoader(
                 fullname=filename,
                 path=module.as_posix(),
-            ).load_module()
+            )
+
+            # Get module spec
+            spec = spec_from_loader(loader.name, loader)
+
+            # Check next file if spec is empty
+            if spec is None:
+                continue
+
+            # Get all modules from file
+            modules = module_from_spec(spec)
+
+            # Execute module
+            loader.exec_module(modules)
 
             # Add modules to the list
             # Duplicates will be overwritten
@@ -275,7 +290,7 @@ class Config:
                 dict(
                     getmembers(
                         object=modules,
-                        predicate=isfunction,
+                        predicate=isfunction
                     )
                 )
             )
