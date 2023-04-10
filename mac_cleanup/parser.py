@@ -19,8 +19,8 @@ class Args:
 
 parser = ArgumentParser(
     description=f"""\
-    A Mac Cleanup Utility in Python
-    {__version__}
+    Python cleanup script for macOS
+    Version: {__version__}
     https://github.com/mac-cleanup/mac-cleanup-py\
     """,
     formatter_class=RawTextHelpFormatter,
