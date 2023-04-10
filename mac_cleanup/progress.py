@@ -1,4 +1,4 @@
-"""Modified rich progress bar"""
+"""Modified rich progress bar."""
 from typing import Iterable, Optional, Sequence
 
 from rich.progress import Progress, ProgressType, SpinnerColumn, TimeElapsedColumn
@@ -8,7 +8,7 @@ from mac_cleanup.console import console, print_panel
 
 
 class _ProgressBar(Progress):
-    """Modified rich progress bar with blocking prompt"""
+    """Modified rich progress bar with blocking prompt."""
 
     def __init__(self):
         # Call parent init w/ default stuff
@@ -26,14 +26,16 @@ class _ProgressBar(Progress):
         show_choices: bool = True,
     ) -> bool:
         """
-        Stops progress bar to show prompt to user
-            :param prompt_text: Text to be shown in panel
-            :param prompt_title: Title of panel to be shown
-            :param password: Enable password input. Defaults to False.
-            :param choices: A list of valid choices. Defaults to None.
-            :param show_default: Show default in prompt. Defaults to True.
-            :param show_choices: Show choices in prompt. Defaults to True.
-            :return: True on successful prompt
+        Stops progress bar to show prompt to user.
+
+        :param prompt_text: Text to be shown in panel
+        :param prompt_title: Title of panel to be shown
+        :param password: Enable password input. Defaults to False.
+        :param choices: A list of valid choices. Defaults to None.
+        :param show_default: Show default in prompt. Defaults to True.
+        :param show_choices: Show choices in prompt. Defaults to True.
+        :return: True on successful prompt
+
         """
 
         # Stop refreshing progress bar
@@ -70,10 +72,12 @@ class _ProgressBar(Progress):
     ) -> Iterable[ProgressType]:
         """
         Wrapper other :func:`rich.progress.track`
-            :param sequence: Sequence (must support "len") you wish to iterate over.
-            :param total: Total number of steps. Default is len(sequence).
-            :param description: Description of task show next to progress bar. Defaults to "Working".
-            :return: An iterable of the values in the sequence
+
+        :param sequence: Sequence (must support "len") you wish to iterate over.
+        :param total: Total number of steps. Default is len(sequence).
+        :param description: Description of task show next to progress bar. Defaults to "Working".
+        :return: An iterable of the values in the sequence
+
         """
 
         with self:

@@ -1,4 +1,4 @@
-"""All tests for mac_cleanup_py.config"""
+"""All tests for mac_cleanup_py.config."""
 import tempfile
 from pathlib import Path
 from typing import IO, Callable, Optional
@@ -15,7 +15,7 @@ from mac_cleanup.config import Config, ConfigFile
 
 @pytest.fixture(scope="session")
 def user_output() -> list[str]:
-    """Set dummy user output"""
+    """Set dummy user output."""
 
     return [f"test{num}" for num in range(2)]
 
@@ -39,7 +39,7 @@ def dummy_prompt(user_output: list[str]) -> Callable[[list[str]], None]:
 
 @pytest.fixture(scope="session")
 def dummy_key() -> Callable[..., str]:
-    """Dummy key press for inquirer"""
+    """Dummy key press for inquirer."""
 
     return lambda: key.ENTER
 
@@ -108,8 +108,9 @@ class TestConfig:
         dummy_prompt: Callable[..., None],
         dummy_key: Callable[..., str],
     ):
-        """Final tests for :class:`mac_cleanup.config.Config`
-        launching configuration on being empty or user prompted configuration"""
+        """Final tests for :class:`mac_cleanup.config.Config` launching configuration on being empty
+        or user prompted configuration.
+        """
 
         # Simulate dummy modules are legit
         for out in user_output:
@@ -207,7 +208,7 @@ class TestConfig:
         capsys: CaptureFixture[str],
         monkeypatch: MonkeyPatch,
     ):
-        """Test :class:`mac_cleanup.config.Config` being called with an empty configuration"""
+        """Test :class:`mac_cleanup.config.Config` being called with an empty configuration."""
 
         # Create empty config
         test_config: dict[str, list[str] | Optional[str]] = dict()
@@ -416,7 +417,9 @@ class TestConfig:
     def test_none_modules_selected(
         self, dummy_key: Callable[..., str], capsys: CaptureFixture[str], monkeypatch: MonkeyPatch
     ):
-        """Test modules configuration with none being selected in :class:`mac_cleanup.config.Config`"""
+        """Test modules configuration with none being selected in
+        :class:`mac_cleanup.config.Config`
+        """
 
         # Dummy Config read with error
         def dummy_read(self: Config):  # noqa

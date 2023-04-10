@@ -1,4 +1,4 @@
-"""Configuration of Rich console"""
+"""Configuration of Rich console."""
 from typing import Optional
 
 from rich.console import Console
@@ -11,11 +11,12 @@ console = Console(
 
 def print_panel(text: str, title: Optional[str] = None) -> None:
     """
-    Prints a rich panel with the given text
+    Prints a rich panel with the given text.
 
     Args:
         text: Text to print in the panel
         title: Title of the panel
+
     """
     from rich.panel import Panel
     from rich.text import Text

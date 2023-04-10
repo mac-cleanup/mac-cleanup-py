@@ -1,4 +1,4 @@
-"""Test global error handler"""
+"""Test global error handler."""
 from typing import Iterable, Type
 
 import pytest
@@ -14,7 +14,7 @@ class TestErrorHandler:
     def test_with_func(
         self, raised_exception: Type[BaseException], capsys: CaptureFixture[str], caplog: LogCaptureFixture
     ):
-        """Test wrapping functions without calling wrapper"""
+        """Test wrapping functions without calling wrapper."""
 
         # Dummy callable wrapped in handler raised exception
         @catch_exception
@@ -44,7 +44,7 @@ class TestErrorHandler:
     def test_no_func(
         self, raised_exception: Type[BaseException], capsys: CaptureFixture[str], caplog: LogCaptureFixture
     ):
-        """Test wrapping functions with calling wrapper"""
+        """Test wrapping functions with calling wrapper."""
 
         # Dummy callable wrapped in handler raised exception
         @catch_exception()
@@ -74,7 +74,7 @@ class TestErrorHandler:
     def test_no_exit_on_exception(
         self, raised_exception: Type[BaseException], capsys: CaptureFixture[str], caplog: LogCaptureFixture
     ):
-        """Test wrapping functions without exiting on caught stuff"""
+        """Test wrapping functions without exiting on caught stuff."""
 
         # Dummy callable wrapped in handler raised exception
         @catch_exception(exit_on_exception=False)
@@ -103,7 +103,7 @@ class TestErrorHandler:
     def test_custom_exceptions(
         self, custom_exception: _exception, capsys: CaptureFixture[str], caplog: LogCaptureFixture
     ):
-        """Test wrapping functions with providing expected exceptions"""
+        """Test wrapping functions with providing expected exceptions."""
 
         # Dummy callable wrapped in handler raised exception
         @catch_exception(exception=custom_exception)
@@ -127,7 +127,7 @@ class TestErrorHandler:
 
     @pytest.mark.parametrize("exit_code", [0, 1])
     def test_exit_raised(self, exit_code: int, capsys: CaptureFixture[str], caplog: LogCaptureFixture):
-        """Test wrapping functions raising SystemExit"""
+        """Test wrapping functions raising SystemExit."""
 
         # Dummy callable wrapped in handler raised SystemExit
         @catch_exception

@@ -1,4 +1,4 @@
-"""Wrapper for handling all errors in entry point"""
+"""Wrapper for handling all errors in entry point."""
 from functools import wraps
 from typing import Any, Callable, Iterable, Optional, Type, TypeVar, overload
 
@@ -9,7 +9,7 @@ _exception = Type[BaseException] | _iterable_exception
 
 
 class ErrorHandler:
-    """Decorator for catching exceptions and printing logs"""
+    """Decorator for catching exceptions and printing logs."""
 
     def __init__(self, exception: Optional[_exception] = None, exit_on_exception: bool = False):
         # Sets default exception (empty tuple) if none was provided
@@ -91,11 +91,13 @@ def catch_exception(
     func: Optional[T] = None, exception: Optional[_exception] = None, exit_on_exception: bool = True
 ) -> ErrorHandler | Callable[..., Optional[T]]:
     """
-    Decorator for catching exceptions and printing logs
-        :param func: Function to be decorated
-        :param exception: Expected exception(s)
-        :param exit_on_exception: If True, exit after unexpected exception was handled
-        :return: Decorated function
+    Decorator for catching exceptions and printing logs.
+
+    :param func: Function to be decorated
+    :param exception: Expected exception(s)
+    :param exit_on_exception: If True, exit after unexpected exception was handled
+    :return: Decorated function
+
     """
 
     err_handler_instance: ErrorHandler = ErrorHandler(exception=exception, exit_on_exception=exit_on_exception)

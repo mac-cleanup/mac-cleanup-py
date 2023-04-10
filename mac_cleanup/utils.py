@@ -7,10 +7,12 @@ from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
 @beartype
 def cmd(command: str, *, ignore_errors: bool = True) -> str:
     """
-    Executes command in Popen
-        :param command: Bash command
-        :param ignore_errors: If True, no stderr in return
-        :return: stdout of executed command
+    Executes command in Popen.
+
+    :param command: Bash command
+    :param ignore_errors: If True, no stderr in return
+    :return: stdout of executed command
+
     """
 
     from subprocess import DEVNULL, PIPE, Popen
@@ -30,9 +32,11 @@ def cmd(command: str, *, ignore_errors: bool = True) -> str:
 @beartype
 def expanduser(str_path: str) -> str:
     """
-    Expands user
-        :param str_path: Path to be expanded
-        :return: Path with extended user path as a posix
+    Expands user.
+
+    :param str_path: Path to be expanded
+    :return: Path with extended user path as a posix
+
     """
 
     from pathlib import Path
@@ -43,10 +47,12 @@ def expanduser(str_path: str) -> str:
 @beartype
 def check_exists(path: Path | str, *, expand_user: bool = True) -> bool:
     """
-    Checks if path exists
-        :param path: Path to be checked
-        :param expand_user: True if path needs to be expanded
-        :return: True if specified path exists
+    Checks if path exists.
+
+    :param path: Path to be checked
+    :param expand_user: True if path needs to be expanded
+    :return: True if specified path exists
+
     """
 
     if not isinstance(path, Path):
@@ -65,9 +71,11 @@ def check_exists(path: Path | str, *, expand_user: bool = True) -> bool:
 @beartype
 def check_deletable(path: Path | str) -> bool:
     """
-    Checks if path is deletable
-        :param path: Path to be deleted
-        :return: True if specified path is deletable
+    Checks if path is deletable.
+
+    :param path: Path to be deleted
+    :return: True if specified path is deletable
+
     """
 
     # Convert path to correct type
@@ -97,9 +105,11 @@ def check_deletable(path: Path | str) -> bool:
 @beartype
 def bytes_to_human(size_bytes: int | float) -> str:
     """
-    Converts bytes to human-readable format
-        :param size_bytes: Bytes
-        :return: Human readable size
+    Converts bytes to human-readable format.
+
+    :param size_bytes: Bytes
+    :return: Human readable size
+
     """
 
     from math import floor, log, pow

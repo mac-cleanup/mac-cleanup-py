@@ -1,4 +1,4 @@
-"""All tests for mac_cleanup_py.progress"""
+"""All tests for mac_cleanup_py.progress."""
 from typing import Callable
 
 import pytest
@@ -10,7 +10,7 @@ from mac_cleanup.progress import ProgressBar
 
 @pytest.mark.parametrize("user_continue", [True, False])
 def test_prompt(user_continue: bool, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
-    """Test ProgressBar prompt call"""
+    """Test ProgressBar prompt call."""
 
     # Dummy user input
     user_input_str: Callable[..., str] = lambda: "y" if user_continue else "n"
@@ -26,7 +26,7 @@ def test_prompt(user_continue: bool, capsys: CaptureFixture[str], monkeypatch: M
 
 
 def test_wrap_iter(capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
-    """Test ProgressBar wrap_iter call"""
+    """Test ProgressBar wrap_iter call."""
 
     # Change transient attribute to be able to capture stdout
     monkeypatch.setattr(ProgressBar.live, "transient", False)

@@ -1,4 +1,4 @@
-"""All tests for mac_cleanup_py.utils"""
+"""All tests for mac_cleanup_py.utils."""
 from pathlib import Path
 from typing import Optional
 
@@ -128,7 +128,7 @@ def test_check_exists(path: Path | str | int, output: bool, expand_path: bool):
     ],
 )
 def test_check_deletable(path: Path | str | int, output: bool):
-    """Test :meth:`mac_cleanup.utils.check_deletable` with SIP and custom restriction list"""
+    """Test :meth:`mac_cleanup.utils.check_deletable` with SIP and custom restriction list."""
 
     from mac_cleanup.utils import check_deletable
 

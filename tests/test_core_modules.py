@@ -1,4 +1,4 @@
-"""All tests for mac_cleanup_py.config"""
+"""All tests for mac_cleanup_py.config."""
 import tempfile
 from pathlib import Path as Pathlib
 from typing import IO, Callable, Optional, cast

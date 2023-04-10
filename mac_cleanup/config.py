@@ -1,4 +1,4 @@
-"""Config handler"""
+"""Config handler."""
 from inspect import getmembers, isfunction
 from pathlib import Path
 from typing import Callable, Final, Optional, TypedDict, final
@@ -9,7 +9,7 @@ from mac_cleanup.console import console
 
 @final
 class ConfigFile(TypedDict):
-    """Config file structure"""
+    """Config file structure."""
 
     enabled: list[str]
     custom_path: Optional[str]
@@ -18,8 +18,10 @@ class ConfigFile(TypedDict):
 @final
 class Config:
     """
-    Class for config initialization and validation
-        :param config_path_: Path to config location
+    Class for config initialization and validation.
+
+    :param config_path_: Path to config location
+
     """
 
     def __init__(self, config_path_: Path):
@@ -52,7 +54,7 @@ class Config:
         self.__load_custom()
 
     def __call__(self, *, configuration_prompted: bool):
-        """Checks config and launches additional configuration if needed"""
+        """Checks config and launches additional configuration if needed."""
 
         # Configure and exit on prompt
         if configuration_prompted:
@@ -116,7 +118,7 @@ class Config:
         return config
 
     def __write(self) -> None:
-        """Updates and writes config as toml"""
+        """Updates and writes config as toml."""
 
         from toml import dump
 
@@ -126,15 +128,17 @@ class Config:
     @staticmethod
     def full_exit(failed: bool) -> None:
         """
-        Gracefully exits from cleaner
-            :param failed: Status code of exit
+        Gracefully exits from cleaner.
+
+        :param failed: Status code of exit
+
         """
 
         console.print("Config saved, exiting...")
         exit(failed)
 
     def set_custom_path(self) -> None:
-        """Sets path for custom modules in config"""
+        """Sets path for custom modules in config."""
 
         from rich.prompt import Prompt
 
@@ -158,10 +162,12 @@ class Config:
 
     def __configure(self, *, all_modules: list[str], enabled_modules: list[str]) -> None:
         """
-        Opens modules configuration screen
-            :param all_modules: List w/ all modules
-            :param enabled_modules: List w/ all enabled modules
-            :return: List w/ all modules user enabled
+        Opens modules configuration screen.
+
+        :param all_modules: List w/ all modules
+        :param enabled_modules: List w/ all enabled modules
+        :return: List w/ all modules user enabled
+
         """
 
         import inquirer  # pyright: ignore [reportMissingTypeStubs]
@@ -199,12 +205,12 @@ class Config:
         self.__write()
 
     def __load_default(self) -> None:
-        """Loads default modules"""
+        """Loads default modules."""
 
         self.__modules.update(dict(getmembers(object=default_modules, predicate=isfunction)))
 
     def __load_custom(self) -> None:
-        """Loads custom modules and"""
+        """Loads custom modules and."""
 
         # Empty dict if no custom path
         if not self.__custom_modules_path:
@@ -245,18 +251,18 @@ class Config:
 
     @property
     def get_modules(self) -> dict[str, Callable[..., None]]:
-        """Getter for private attr modules"""
+        """Getter for private attr modules."""
 
         return self.__modules
 
     @property
     def get_config_data(self) -> ConfigFile:
-        """Getter for private attr config data"""
+        """Getter for private attr config data."""
 
         return self.__config_data
 
     @property
     def get_custom_path(self) -> Optional[str]:
-        """Getter for private attr custom modules path"""
+        """Getter for private attr custom modules path."""
 
         return self.__custom_modules_path

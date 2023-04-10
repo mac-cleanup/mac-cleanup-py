@@ -1,4 +1,4 @@
-"""Core for collecting all unit modules"""
+"""Core for collecting all unit modules."""
 from functools import partial
 from itertools import chain
 from pathlib import Path as Path_
@@ -16,7 +16,7 @@ T = TypeVar("T")
 @final
 @attr.s(slots=True)
 class Unit:
-    """Unit containing message and the modules list"""
+    """Unit containing message and the modules list."""
 
     message: str = attr.ib()
     modules: list[BaseModule] = attr.ib(
@@ -30,7 +30,7 @@ class Unit:
 
 @final
 class _Collector:
-    """Class for collecting all modules"""
+    """Class for collecting all modules."""
 
     _shared_instance: dict[str, Any] = dict()
 
@@ -48,13 +48,13 @@ class _Collector:
 
     @property
     def get_temp_message(self) -> Optional[str]:
-        """Getter of private potentially empty attr temp_message"""
+        """Getter of private potentially empty attr temp_message."""
 
         return getattr(self, "_Collector__temp_message", None)
 
     @property
     def get_temp_modules_list(self) -> Optional[list[BaseModule]]:
-        """Getter of private potentially empty attr temp_modules_list"""
+        """Getter of private potentially empty attr temp_modules_list."""
 
         return getattr(self, "_Collector__temp_modules_list", None)
 
@@ -88,7 +88,9 @@ class _Collector:
     def message(self, message_: str) -> None:
         """
         Add message to instance of :class:`Unit`
-            :param message_: Message to be printed in progress bar
+
+        :param message_: Message to be printed in progress bar
+
         """
 
         self.__temp_message = message_
@@ -97,7 +99,9 @@ class _Collector:
     def add(self, module_: BaseModule) -> None:
         """
         Add module to the list of modules to instance of :class:`Unit`
-            :param module_: Module based on :class:`BaseModule`
+
+        :param module_: Module based on :class:`BaseModule`
+
         """
 
         self.__temp_modules_list.append(module_)
@@ -105,9 +109,11 @@ class _Collector:
     @staticmethod
     def _get_size(path_: Path_) -> float:
         """
-        Counts size of directory
-            :param path_: Path to the directory
-            :return: Size of specified directory
+        Counts size of directory.
+
+        :param path_: Path to the directory
+        :return: Size of specified directory
+
         """
 
         # Get path posix
@@ -231,7 +237,7 @@ class _Collector:
 
 
 class ProxyCollector:
-    """Proxy for accessing :class:`Collector` in a context manager"""
+    """Proxy for accessing :class:`Collector` in a context manager."""
 
     def __init__(self):
         # Build a Collector object

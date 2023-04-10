@@ -1,4 +1,4 @@
-"""All core modules"""
+"""All core modules."""
 from abc import ABC, abstractmethod
 from pathlib import Path as Path_
 from typing import Final, Optional, TypeVar, final
@@ -12,7 +12,7 @@ T = TypeVar("T")
 
 
 class BaseModule(ABC):
-    """Base abstract module"""
+    """Base abstract module."""
 
     __prompt: bool = False
     __prompt_message: str = "Do you want to proceed?"
@@ -20,9 +20,11 @@ class BaseModule(ABC):
     @beartype
     def with_prompt(self: T, message_: Optional[str] = None) -> T:
         """
-        Execute command with user prompt
-            :param message_: Message to be shown on prompt
-            :return: :class:`BaseModule`
+        Execute command with user prompt.
+
+        :param message_: Message to be shown on prompt
+        :return: :class:`BaseModule`
+
         """
 
         # Can't be solved without typing.Self
@@ -50,7 +52,7 @@ class BaseModule(ABC):
 
 
 class _BaseCommand(BaseModule):
-    """Base Command with basic command methods"""
+    """Base Command with basic command methods."""
 
     __has_root: bool = False
 
@@ -69,16 +71,18 @@ class _BaseCommand(BaseModule):
 
     @property
     def get_command(self) -> Optional[str]:
-        """Get command specified to the module"""
+        """Get command specified to the module."""
 
         return self.__command
 
     @abstractmethod
     def _execute(self, **kwargs: bool) -> Optional[str]:
         """
-        Execute the command specified
-            :param ignore_errors_: Ignore errors during execution
-            :return: Command execution results based on specified parameters
+        Execute the command specified.
+
+        :param ignore_errors_: Ignore errors during execution
+        :return: Command execution results based on specified parameters
+
         """
 
         # Skip if there is no command
@@ -95,7 +99,7 @@ class _BaseCommand(BaseModule):
 
 @final
 class Command(_BaseCommand):
-    """Collector list unit for command execution"""
+    """Collector list unit for command execution."""
 
     __ignore_errors: bool = True
 
@@ -115,7 +119,7 @@ class Command(_BaseCommand):
 
 @final
 class Path(_BaseCommand):
-    """Collector list unit for cleaning paths"""
+    """Collector list unit for cleaning paths."""
 
     __dry_run_only: bool = False
 
@@ -129,7 +133,7 @@ class Path(_BaseCommand):
 
     @property
     def get_path(self) -> Path_:
-        """Get path specified to the module"""
+        """Get path specified to the module."""
 
         return self.__path
 

@@ -1,4 +1,4 @@
-"""All tests for mac_cleanup_py.core"""
+"""All tests for mac_cleanup_py.core."""
 import os
 import tempfile
 from pathlib import Path as Pathlib
@@ -16,7 +16,7 @@ from mac_cleanup.core_modules import BaseModule, Command, Path
 
 class TestUnit:
     def test_create_unit(self, command_with_root: None, path_with_root: None):
-        """Check :class:`mac_cleanup.core.Unit` creation"""
+        """Check :class:`mac_cleanup.core.Unit` creation."""
 
         # message, module list, validators
         message = "Test message"
@@ -41,14 +41,16 @@ class TestUnit:
 
 class TestCollector:
     def test_proxy_collector(self):
-        """Test :class:`mac_cleanup.core.Collector` is proxy of :class:`mac_cleanup.core._Collector`"""
+        """Test :class:`mac_cleanup.core.Collector` is proxy of
+        :class:`mac_cleanup.core._Collector`
+        """
 
         with Collector() as t:
             assert isinstance(t, _Collector)
 
     @pytest.mark.parametrize("raised_error", [IndexError, KeyError, ValueError])
     def test_errors_on_exit(self, raised_error: Type[BaseException]):
-        """Test errors being raised from :class:`mac_cleanup.core._Collector` and it's proxy"""
+        """Test errors being raised from :class:`mac_cleanup.core._Collector` and it's proxy."""
 
         with pytest.raises(raised_error):
             with Collector() as _:
@@ -65,7 +67,9 @@ class TestCollector:
     def test_message_and_add(
         self, message_text: Optional[str], base_collector: _Collector, command_with_root: None, path_with_root: None
     ):
-        """Test messages (or default ones) and modules being added to :class:`mac_cleanup.core._Collector`"""
+        """Test messages (or default ones) and modules being added to
+        :class:`mac_cleanup.core._Collector`
+        """
 
         # Set modules list
         module_list = [Path(""), Command("")]
@@ -98,7 +102,9 @@ class TestCollector:
         assert base_collector._execute_list[-1].modules == module_list
 
     def test_add_no_module(self, base_collector: _Collector):
-        """Test nothing being added without specifying modules in :class:`mac_cleanup.core._Collector`"""
+        """Test nothing being added without specifying modules in
+        :class:`mac_cleanup.core._Collector`
+        """
 
         with Collector() as t:
             t.message("test_add_no_module")
@@ -112,7 +118,7 @@ class TestCollector:
 
     @pytest.mark.parametrize("size_multiplier", [0, 1, 1024])
     def test_get_size(self, size_multiplier: int, base_collector: _Collector):
-        """Test :meth:`mac_cleanup.core._Collector._get_size` works correctly"""
+        """Test :meth:`mac_cleanup.core._Collector._get_size` works correctly."""
 
         # Get size in bytes
         size = 1024 * size_multiplier

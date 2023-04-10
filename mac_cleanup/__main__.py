@@ -1,4 +1,4 @@
-"""Mocking HomeBrew entrypoint"""
+"""Mocking HomeBrew entrypoint."""
 # -*- coding: utf-8 -*-
 import re
 import sys

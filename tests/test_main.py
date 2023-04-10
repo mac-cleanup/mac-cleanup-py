@@ -1,4 +1,4 @@
-"""Test main script in mac_cleanup_py.main"""
+"""Test main script in mac_cleanup_py.main."""
 from pathlib import Path as Pathlib
 from typing import Any, Callable
 

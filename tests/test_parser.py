@@ -1,4 +1,4 @@
-"""All tests for mac_cleanup_py.parser"""
+"""All tests for mac_cleanup_py.parser."""
 from argparse import Action
 
 import pytest
@@ -8,14 +8,14 @@ from mac_cleanup.parser import Args, parser
 
 @pytest.fixture
 def get_namespace() -> Args:
-    """Get empty args"""
+    """Get empty args."""
 
     return Args()
 
 
 @pytest.fixture(scope="session")
 def get_parser_actions() -> list[Action]:
-    """Get parser actions"""
+    """Get parser actions."""
 
     action_list = parser._actions  # noqa
 
@@ -31,7 +31,7 @@ class TestParser:
         return [attr for attr in dir(namespace) if not attr.startswith("__")]
 
     def test_description(self):
-        """Test parser description"""
+        """Test parser description."""
 
         from mac_cleanup.__version__ import __version__
 
@@ -39,7 +39,7 @@ class TestParser:
         assert parser.description is not None and f"Version: {__version__}" in parser.description
 
     def test_actions_empty(self, get_namespace: Args):
-        """Test parser without args"""
+        """Test parser without args."""
 
         # Set empty args to parser
         parser.parse_args(namespace=get_namespace)
@@ -53,7 +53,7 @@ class TestParser:
         [True, False],
     )
     def test_actions(self, is_short_name: bool, get_namespace: Args, get_parser_actions: list[Action]):
-        """Test parser actions"""
+        """Test parser actions."""
 
         # Select actions name (short or long)
         action_index = 0 if is_short_name else 1

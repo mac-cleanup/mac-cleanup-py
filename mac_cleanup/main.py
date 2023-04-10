@@ -14,12 +14,12 @@ class EntryPoint:
 
     @staticmethod
     def count_free_space() -> float:
-        """Get current free space"""
+        """Get current free space."""
 
         return float(cmd("df / | tail -1 | awk '{print $4}'"))
 
     def cleanup(self) -> None:
-        """Launch cleanup and print results"""
+        """Launch cleanup and print results."""
 
         from mac_cleanup.progress import ProgressBar
 
@@ -42,7 +42,7 @@ class EntryPoint:
 
     @catch_exception
     def start(self) -> None:
-        """Start mac_cleanup_py by cleaning console, loading config and parsing argument"""
+        """Start mac_cleanup_py by cleaning console, loading config and parsing argument."""
 
         # Clear console at the start
         console.clear()
