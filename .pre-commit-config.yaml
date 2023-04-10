@@ -2,16 +2,39 @@ repos:
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v2.42.1
     hooks:
-    - id: commitizen
-      stages:
-        - commit-msg
+      - id: commitizen
+        name: Check Convenient Commits
+        stages: [ commit-msg ]
+
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        name: Run black
+        stages: [ push ]
+        types: [ python ]
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        name: Run isort
+        stages: [ push ]
+        types: [ python ]
+
+  - repo: https://github.com/PyCQA/docformatter
+    rev: v1.5.1
+    hooks:
+      - id: docformatter
+        name: Run docformatter
+        stages: [ push ]
+        types: [ python ]
 
   - repo: local
     hooks:
       - id: pytest
         name: Run pytest
-        stages:
-          - push
+        stages: [ push ]
         language: system
         pass_filenames: false
         types: [ python ]
@@ -19,8 +42,7 @@ repos:
 
       - id: pyright
         name: Run pyright
-        stages:
-          - push
+        stages: [ push ]
         language: system
         pass_filenames: false
         types: [ python ]
@@ -28,8 +50,7 @@ repos:
 
       - id: ruff
         name: Run ruff
-        stages:
-          - push
+        stages: [ push ]
         language: system
         pass_filenames: false
         types: [ python ]
