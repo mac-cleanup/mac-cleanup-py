@@ -1,7 +1,7 @@
 """All tests for mac_cleanup_py.parser"""
-import pytest
-
 from argparse import Action
+
+import pytest
 
 from mac_cleanup.parser import Args, parser
 

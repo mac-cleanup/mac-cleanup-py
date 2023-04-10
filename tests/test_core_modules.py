@@ -1,13 +1,11 @@
 """All tests for mac_cleanup_py.config"""
-from typing import Optional, Callable, IO, cast
+import tempfile
+from pathlib import Path as Pathlib
+from typing import IO, Callable, Optional, cast
 
 import pytest
 from _pytest.capture import CaptureFixture
 from _pytest.monkeypatch import MonkeyPatch
-
-import tempfile
-
-from pathlib import Path as Pathlib
 
 from mac_cleanup.core_modules import Command, Path
 

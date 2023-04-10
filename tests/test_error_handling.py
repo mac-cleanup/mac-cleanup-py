@@ -1,12 +1,12 @@
 """Test global error handler"""
-from typing import Type, Iterable
+from typing import Iterable, Type
 
 import pytest
 from _pytest.capture import CaptureFixture
 from _pytest.logging import LogCaptureFixture
 
-from mac_cleanup.error_handling import catch_exception
 from mac_cleanup.error_handling import _exception  # noqa
+from mac_cleanup.error_handling import catch_exception
 
 
 class TestErrorHandler:

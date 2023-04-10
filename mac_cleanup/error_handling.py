@@ -1,6 +1,6 @@
 """Wrapper for handling all errors in entry point"""
-from typing import TypeVar, Callable, Type, Optional, overload, Iterable, Any
 from functools import wraps
+from typing import Any, Callable, Iterable, Optional, Type, TypeVar, overload
 
 T = TypeVar("T", bound=Callable[..., Any])
 
@@ -46,7 +46,9 @@ class ErrorHandler:
                 # Clause for not expected error
                 if type(err) not in self.exception:
                     from logging import basicConfig, getLogger
+
                     from rich.logging import RichHandler
+
                     from mac_cleanup.console import console
 
                     # Set logger config

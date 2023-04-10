@@ -1,19 +1,16 @@
 """Test main script in mac_cleanup_py.main"""
-from typing import Callable, Any
+from pathlib import Path as Pathlib
+from typing import Any, Callable
 
 import pytest
 from _pytest.capture import CaptureFixture
 from _pytest.monkeypatch import MonkeyPatch
 
-from pathlib import Path as Pathlib
-
-from mac_cleanup import main
-from mac_cleanup.main import EntryPoint
-from mac_cleanup.core import Unit
-
-from mac_cleanup import Path, Command
-from mac_cleanup.core_modules import BaseModule
+from mac_cleanup import Command, Path, main
 from mac_cleanup.config import Config
+from mac_cleanup.core import Unit
+from mac_cleanup.core_modules import BaseModule
+from mac_cleanup.main import EntryPoint
 
 
 class TestEntryPoint:

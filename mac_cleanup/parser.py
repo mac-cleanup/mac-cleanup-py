@@ -1,7 +1,6 @@
 """Console argument parser configuration"""
-from typing import final
-
 from argparse import ArgumentParser, RawTextHelpFormatter
+from typing import final
 
 import attr
 

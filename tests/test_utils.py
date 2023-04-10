@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Optional
 
 import pytest
-
 from beartype.roar import BeartypeCallHintParamViolation
 
 

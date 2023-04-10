@@ -1,17 +1,14 @@
 """Core for collecting all unit modules"""
-from typing import final, Final, TypeVar, TypeGuard, Type, Optional, Any
-from types import TracebackType
-
-from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
-
-from itertools import chain
 from functools import partial
+from itertools import chain
+from pathlib import Path as Path_
+from types import TracebackType
+from typing import Any, Final, Optional, Type, TypeGuard, TypeVar, final
 
 import attr
-from pathlib import Path as Path_
+from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
 
 from mac_cleanup.core_modules import BaseModule, Path
-
 
 T = TypeVar("T")
 
@@ -197,6 +194,7 @@ class _Collector:
         """
 
         from concurrent.futures import ThreadPoolExecutor, as_completed
+
         from mac_cleanup.progress import ProgressBar
 
         # Extract all modules

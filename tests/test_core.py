@@ -1,17 +1,16 @@
 """All tests for mac_cleanup_py.core"""
-from typing import Optional, Callable, Type
+import os
+import tempfile
+from pathlib import Path as Pathlib
+from random import choice, randint
+from typing import Callable, Optional, Type
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
-import os
-import tempfile
-from pathlib import Path as Pathlib
-from random import randint, choice
-
-from mac_cleanup.core import Unit
-from mac_cleanup.core import _Collector  # noqa
 from mac_cleanup.core import ProxyCollector as Collector
+from mac_cleanup.core import _Collector  # noqa
+from mac_cleanup.core import Unit
 from mac_cleanup.core_modules import BaseModule, Command, Path
 
 

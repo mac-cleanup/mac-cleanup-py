@@ -1,11 +1,11 @@
 from pathlib import Path
 
-from mac_cleanup.core import _Collector
-from mac_cleanup.parser import args
-from mac_cleanup.console import console, print_panel
 from mac_cleanup.config import Config
-from mac_cleanup.utils import cmd, bytes_to_human
+from mac_cleanup.console import console, print_panel
+from mac_cleanup.core import _Collector
 from mac_cleanup.error_handling import catch_exception
+from mac_cleanup.parser import args
+from mac_cleanup.utils import bytes_to_human, cmd
 
 
 class EntryPoint:

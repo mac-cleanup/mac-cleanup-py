@@ -1,10 +1,7 @@
 """Config handler"""
-from typing import Optional, Callable
-from typing import final, Final, TypedDict
-
 from inspect import getmembers, isfunction
-
 from pathlib import Path
+from typing import Callable, Final, Optional, TypedDict, final
 
 from mac_cleanup import default_modules
 from mac_cleanup.console import console
@@ -104,7 +101,7 @@ class Config:
             :return: Config as a dict
         """
 
-        from toml import load, TomlDecodeError
+        from toml import TomlDecodeError, load
 
         # Creates config if it's not already created
         self.__path.parent.mkdir(exist_ok=True, parents=True)
@@ -215,7 +212,6 @@ class Config:
 
         from importlib.machinery import SourceFileLoader
         from importlib.util import module_from_spec, spec_from_loader
-
         from pathlib import Path
 
         tmp_modules: dict[str, Callable[..., None]] = dict()

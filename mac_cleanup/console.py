@@ -4,7 +4,6 @@ from typing import Optional
 from rich.console import Console
 from rich.theme import Theme
 
-
 console = Console(
     theme=Theme({"info": "cyan", "warning": "magenta", "danger": "bold red", "success": "bold green"}), record=True
 )

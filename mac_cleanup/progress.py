@@ -1,7 +1,7 @@
 """Modified rich progress bar"""
-from typing import Iterable, Sequence, Optional
+from typing import Iterable, Optional, Sequence
 
-from rich.progress import Progress, SpinnerColumn, TimeElapsedColumn, ProgressType
+from rich.progress import Progress, ProgressType, SpinnerColumn, TimeElapsedColumn
 from rich.prompt import Confirm
 
 from mac_cleanup.console import console, print_panel

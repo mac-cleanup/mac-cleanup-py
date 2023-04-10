@@ -1,8 +1,7 @@
+from pathlib import Path
 from typing import Optional, cast
 
 from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
-
-from pathlib import Path
 
 
 @beartype
@@ -14,7 +13,7 @@ def cmd(command: str, *, ignore_errors: bool = True) -> str:
         :return: stdout of executed command
     """
 
-    from subprocess import Popen, PIPE, DEVNULL
+    from subprocess import DEVNULL, PIPE, Popen
 
     # Get stdout and stderr from PIPE
     out_tuple = Popen(command, shell=True, stdout=PIPE, stderr=(DEVNULL if ignore_errors else PIPE)).communicate()

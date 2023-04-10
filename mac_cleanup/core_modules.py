@@ -1,15 +1,12 @@
 """All core modules"""
-from typing import final, Final, Optional, TypeVar
+from abc import ABC, abstractmethod
+from pathlib import Path as Path_
+from typing import Final, Optional, TypeVar, final
 
 from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
 
-from abc import ABC, abstractmethod
-
-from pathlib import Path as Path_
-
 from mac_cleanup.progress import ProgressBar
-from mac_cleanup.utils import cmd, check_deletable, check_exists
-
+from mac_cleanup.utils import check_deletable, check_exists, cmd
 
 T = TypeVar("T")
 

@@ -1,16 +1,12 @@
 """All tests for mac_cleanup_py.config"""
-from typing import Optional, Callable, IO
+import tempfile
+from pathlib import Path
+from typing import IO, Callable, Optional
 
 import pytest
+import toml
 from _pytest.capture import CaptureFixture
 from _pytest.monkeypatch import MonkeyPatch
-
-import tempfile
-
-import toml
-
-from pathlib import Path
-
 from inquirer.errors import EndOfInput  # pyright: ignore [reportMissingTypeStubs, reportUnknownVariableType]
 from readchar import key
 

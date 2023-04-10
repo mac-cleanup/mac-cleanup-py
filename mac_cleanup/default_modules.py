@@ -1,5 +1,5 @@
 from mac_cleanup.core import ProxyCollector as Collector
-from mac_cleanup.core_modules import Path, Command
+from mac_cleanup.core_modules import Command, Path
 from mac_cleanup.parser import args
 
 clc = Collector()
@@ -377,7 +377,7 @@ def microsoft_teams():
 
 # Deletes Poetry cache
 def poetry():
-    from mac_cleanup.utils import cmd, check_exists
+    from mac_cleanup.utils import check_exists, cmd
 
     if cmd("type 'poetry'") or check_exists("~/Library/Caches/pypoetry"):
         with clc as unit:
