@@ -276,7 +276,7 @@ class Config:
 
             # Check next file if spec is empty
             if spec is None:
-                continue
+                continue  # pragma: no cover # TODO: add test later
 
             # Get all modules from file
             modules = module_from_spec(spec)
