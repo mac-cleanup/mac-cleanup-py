@@ -6,22 +6,11 @@ from rich.theme import Theme
 
 
 console = Console(
-    theme=Theme(
-        {
-            "info": "cyan",
-            "warning": "magenta",
-            "danger": "bold red",
-            "success": "bold green",
-        }
-    ),
-    record=True
+    theme=Theme({"info": "cyan", "warning": "magenta", "danger": "bold red", "success": "bold green"}), record=True
 )
 
 
-def print_panel(
-        text: str,
-        title: Optional[str] = None
-) -> None:
+def print_panel(text: str, title: Optional[str] = None) -> None:
     """
     Prints a rich panel with the given text
 
@@ -32,13 +21,4 @@ def print_panel(
     from rich.panel import Panel
     from rich.text import Text
 
-    console.print(
-        Panel(
-            Text.from_markup(
-                text,
-                justify="center"
-            ),
-            subtitle=title,
-            subtitle_align="right",
-        )
-    )
+    console.print(Panel(Text.from_markup(text, justify="center"), subtitle=title, subtitle_align="right"))

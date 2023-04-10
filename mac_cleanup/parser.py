@@ -26,29 +26,13 @@ parser = ArgumentParser(
     formatter_class=RawTextHelpFormatter,
 )
 
-parser.add_argument(
-    "-n", "--dry-run",
-    help="Dry run without deleting stuff",
-    action="store_true"
-)
+parser.add_argument("-n", "--dry-run", help="Dry run without deleting stuff", action="store_true")
 
-parser.add_argument(
-    "-u", "--update",
-    help="Update HomeBrew on cleanup",
-    action="store_true"
-)
+parser.add_argument("-u", "--update", help="Update HomeBrew on cleanup", action="store_true")
 
-parser.add_argument(
-    "-c", "--configure",
-    help="Configure default and custom modules",
-    action="store_true"
-)
+parser.add_argument("-c", "--configure", help="Configure default and custom modules", action="store_true")
 
-parser.add_argument(
-    "-p", "--custom-path",
-    help="Specify path for custom modules",
-    action="store_true"
-)
+parser.add_argument("-p", "--custom-path", help="Specify path for custom modules", action="store_true")
 
 args = Args()
 parser.parse_args(namespace=args)

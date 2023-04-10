@@ -13,16 +13,8 @@ from mac_cleanup.core_modules import Command, Path
 
 
 class TestCommand:
-    @pytest.mark.parametrize(
-        "has_root",
-        [False, True]
-    )
-    def test_base_command_init(
-            self,
-            has_root: bool,
-            capsys: CaptureFixture[str],
-            monkeypatch: MonkeyPatch
-    ):
+    @pytest.mark.parametrize("has_root", [False, True])
+    def test_base_command_init(self, has_root: bool, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
         """Test root checking part in init of :class:`mac_cleanup.core_modules._BaseCommand`"""
 
         # Dummy cmd for checking root
@@ -54,21 +46,15 @@ class TestCommand:
         assert "test" in captured_execute
 
     @pytest.mark.parametrize(
-        ("prompt_succeeded", "prompt"),
-        [
-            (True, "prompt"),
-            (True, None),
-            (False, "prompt"),
-            (False, None)
-        ]
+        ("prompt_succeeded", "prompt"), [(True, "prompt"), (True, None), (False, "prompt"), (False, None)]
     )
     def test_base_module_execute(
-            self,
-            prompt_succeeded: bool,
-            prompt: Optional[str],
-            command_with_root: None,
-            capsys: CaptureFixture[str],
-            monkeypatch: MonkeyPatch
+        self,
+        prompt_succeeded: bool,
+        prompt: Optional[str],
+        command_with_root: None,
+        capsys: CaptureFixture[str],
+        monkeypatch: MonkeyPatch,
     ):
         """Test prompt functionality in :class:`mac_cleanup.core_modules.BaseModule`"""
 
@@ -107,13 +93,9 @@ class TestCommand:
     @pytest.mark.parametrize(
         "executed_command",
         # Empty command or None
-        ["", None]
+        ["", None],
     )
-    def test_base_command_execute(
-            self,
-            executed_command: Optional[str],
-            command_with_root: None
-    ):
+    def test_base_command_execute(self, executed_command: Optional[str], command_with_root: None):
         """Test no command being passed to :class:`mac_cleanup.core_modules._BaseCommand`"""
 
         # Get command instance without command
@@ -125,15 +107,8 @@ class TestCommand:
         # Check there is no output and no errors
         assert captured_stdout is None
 
-    @pytest.mark.parametrize(
-        "redirect_errors",
-        [True, False]
-    )
-    def test_with_errors(
-            self,
-            redirect_errors: bool,
-            command_with_root: None
-    ):
+    @pytest.mark.parametrize("redirect_errors", [True, False])
+    def test_with_errors(self, redirect_errors: bool, command_with_root: None):
         # Get command with stderr
         command = Command("echo 'test' >&2")
 
@@ -157,15 +132,8 @@ class TestCommand:
 
 
 class TestPath:
-    @pytest.mark.parametrize(
-        "is_file",
-        [True, False]
-    )
-    def test_init(
-            self,
-            is_file: bool,
-            path_with_root: None
-    ):
+    @pytest.mark.parametrize("is_file", [True, False])
+    def test_init(self, is_file: bool, path_with_root: None):
         """Tests path and command in init of :class:`mac_cleanup.core_modules.Path`"""
 
         # Get tmp file
@@ -195,10 +163,7 @@ class TestPath:
             # Check command
             assert path.get_command == f"rm -rf '{tmp_path_posix}'"  # noqa
 
-    def test_init_expanduser(
-            self,
-            path_with_root: None
-    ):
+    def test_init_expanduser(self, path_with_root: None):
         """Test expand user in :class:`mac_cleanup.core_modules.Path`"""
 
         # Get dummy path posix
@@ -213,15 +178,8 @@ class TestPath:
         # Check command
         assert path.get_command == f"rm -rf '{tmp_path_posix.expanduser().as_posix()}'"  # noqa
 
-    @pytest.mark.parametrize(
-        "is_file",
-        [True, False]
-    )
-    def test_dry_run_only(
-            self,
-            is_file: bool,
-            path_with_root: None
-    ):
+    @pytest.mark.parametrize("is_file", [True, False])
+    def test_dry_run_only(self, is_file: bool, path_with_root: None):
         """Test dry run only in :class:`mac_cleanup.core_modules.Path`"""
 
         # Get tmp file
@@ -251,15 +209,8 @@ class TestPath:
             # Check path exists
             assert tmp_path.exists()
 
-    @pytest.mark.parametrize(
-        "is_file",
-        [True, False]
-    )
-    def test_execute(
-            self,
-            is_file: bool,
-            path_with_root: None
-    ):
+    @pytest.mark.parametrize("is_file", [True, False])
+    def test_execute(self, is_file: bool, path_with_root: None):
         """Test for path/dir deletion in :class:`mac_cleanup.core_modules.Path`"""
 
         # Get tmp file
@@ -299,21 +250,8 @@ class TestPath:
                 # Raise error that file exists
                 raise FileExistsError
 
-    @pytest.mark.parametrize(
-        ("deletable", "exist"),
-        [
-            (False, True),
-            (True, False),
-            (False, False)
-        ]
-    )
-    def test_negative_execute(
-            self,
-            deletable: bool,
-            exist: bool,
-            path_with_root: None,
-            monkeypatch: MonkeyPatch
-    ):
+    @pytest.mark.parametrize(("deletable", "exist"), [(False, True), (True, False), (False, False)])
+    def test_negative_execute(self, deletable: bool, exist: bool, path_with_root: None, monkeypatch: MonkeyPatch):
         """Test for negative execution in :class:`mac_cleanup.core_modules.Path`"""
 
         # Dummy check_deletable utility

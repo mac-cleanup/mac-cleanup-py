@@ -8,15 +8,8 @@ from _pytest.monkeypatch import MonkeyPatch
 from mac_cleanup.progress import ProgressBar
 
 
-@pytest.mark.parametrize(
-    "user_continue",
-    [True, False]
-)
-def test_prompt(
-        user_continue: bool,
-        capsys: CaptureFixture[str],
-        monkeypatch: MonkeyPatch
-):
+@pytest.mark.parametrize("user_continue", [True, False])
+def test_prompt(user_continue: bool, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
     """Test ProgressBar prompt call"""
 
     # Dummy user input
@@ -32,10 +25,7 @@ def test_prompt(
     assert "Prompt Title" in captured
 
 
-def test_wrap_iter(
-        capsys: CaptureFixture[str],
-        monkeypatch: MonkeyPatch
-):
+def test_wrap_iter(capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
     """Test ProgressBar wrap_iter call"""
 
     # Change transient attribute to be able to capture stdout
@@ -43,11 +33,7 @@ def test_wrap_iter(
 
     seq = list(range(5))
 
-    for _ in ProgressBar.wrap_iter(
-            seq,
-            total=len(seq),
-            description="test_wrap_iter"
-    ):
+    for _ in ProgressBar.wrap_iter(seq, total=len(seq), description="test_wrap_iter"):
         pass
 
     # Check stdout

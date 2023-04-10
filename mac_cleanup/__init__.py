@@ -11,6 +11,4 @@ except ImportError:  # pragma: no cover
 main = EntryPoint().start
 
 __title__ = "mac-cleanup-py"
-__all__ = [
-    "Collector", "Path", "Command", "args", "main"
-]
+__all__ = ["Collector", "Path", "Command", "args", "main"]

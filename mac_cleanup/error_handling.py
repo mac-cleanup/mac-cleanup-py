@@ -11,32 +11,22 @@ _exception = Type[BaseException] | _iterable_exception
 class ErrorHandler:
     """Decorator for catching exceptions and printing logs"""
 
-    def __init__(
-            self,
-            exception: Optional[_exception] = None,
-            exit_on_exception: bool = False
-    ):
+    def __init__(self, exception: Optional[_exception] = None, exit_on_exception: bool = False):
         # Sets default exception (empty tuple) if none was provided
         if exception is None:
             self.exception: _iterable_exception = tuple[Type[BaseException]]()
         # Changes exception class to tuple if it's class
         elif not isinstance(exception, Iterable):
-            self.exception = exception,
+            self.exception = (exception,)
         else:
             self.exception = exception
 
         # Sets exit_on_exception
         self.exit_on_exception = exit_on_exception
 
-    def __call__(
-            self,
-            func: T
-    ) -> Callable[..., Optional[T]]:
+    def __call__(self, func: T) -> Callable[..., Optional[T]]:
         @wraps(func)
-        def wrapper(
-                *args: Any,
-                **kwargs: Any
-        ) -> Optional[T]:
+        def wrapper(*args: Any, **kwargs: Any) -> Optional[T]:
             try:
                 return func(*args, **kwargs)
             except KeyboardInterrupt:
@@ -64,11 +54,7 @@ class ErrorHandler:
                         level="ERROR",
                         format="%(message)s",
                         datefmt="[%X]",
-                        handlers=[
-                            RichHandler(
-                                rich_tracebacks=True
-                            )
-                        ]
+                        handlers=[RichHandler(rich_tracebacks=True)],
                     )
 
                     # Get logger
@@ -83,31 +69,24 @@ class ErrorHandler:
                     # Exit if prompted
                     if self.exit_on_exception:
                         exit(1)
+
         return wrapper
 
 
 @overload
-def catch_exception(
-        func: T,
-        exception: Optional[_exception] = ...,
-        exit_on_exception: bool = ...
-) -> T:
+def catch_exception(func: T, exception: Optional[_exception] = ..., exit_on_exception: bool = ...) -> T:
     ...  # pragma: no cover (coverage marks line as untested)
 
 
 @overload
 def catch_exception(
-        func: None = ...,
-        exception: Optional[_exception] = ...,
-        exit_on_exception: bool = ...
+    func: None = ..., exception: Optional[_exception] = ..., exit_on_exception: bool = ...
 ) -> ErrorHandler:
     ...  # pragma: no cover (coverage marks line as untested)
 
 
 def catch_exception(
-        func: Optional[T] = None,
-        exception: Optional[_exception] = None,
-        exit_on_exception: bool = True
+    func: Optional[T] = None, exception: Optional[_exception] = None, exit_on_exception: bool = True
 ) -> ErrorHandler | Callable[..., Optional[T]]:
     """
     Decorator for catching exceptions and printing logs
@@ -117,10 +96,7 @@ def catch_exception(
         :return: Decorated function
     """
 
-    err_handler_instance: ErrorHandler = ErrorHandler(
-        exception=exception,
-        exit_on_exception=exit_on_exception
-    )
+    err_handler_instance: ErrorHandler = ErrorHandler(exception=exception, exit_on_exception=exit_on_exception)
 
     if func:
         err_handler_call: Callable[..., Optional[T]] = err_handler_instance(func)

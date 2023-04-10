@@ -21,10 +21,7 @@ class BaseModule(ABC):
     __prompt_message: str = "Do you want to proceed?"
 
     @beartype
-    def with_prompt(
-            self: T,
-            message_: Optional[str] = None
-    ) -> T:
+    def with_prompt(self: T, message_: Optional[str] = None) -> T:
         """
         Execute command with user prompt
             :param message_: Message to be shown on prompt
@@ -50,10 +47,7 @@ class BaseModule(ABC):
         # Call prompt if needed
         if self.__prompt:
             # Skip on negative prompt
-            return ProgressBar.prompt(
-                prompt_text=self.__prompt_message,
-                prompt_title="Module requires attention"
-            )
+            return ProgressBar.prompt(prompt_text=self.__prompt_message, prompt_title="Module requires attention")
 
         return True
 
@@ -64,10 +58,7 @@ class _BaseCommand(BaseModule):
     __has_root: bool = False
 
     @beartype
-    def __init__(
-            self,
-            command_: Optional[str]
-    ):
+    def __init__(self, command_: Optional[str]):
         # Ask for password input in terminal (sudo -E)
         # Raises AssertionError if prompt fails
         if not self.__has_root:
@@ -86,10 +77,7 @@ class _BaseCommand(BaseModule):
         return self.__command
 
     @abstractmethod
-    def _execute(
-            self,
-            **kwargs: bool
-    ) -> Optional[str]:
+    def _execute(self, **kwargs: bool) -> Optional[str]:
         """
         Execute the command specified
             :param ignore_errors_: Ignore errors during execution
@@ -105,10 +93,7 @@ class _BaseCommand(BaseModule):
             return
 
         # Execute command
-        return cmd(
-            command=self.__command,
-            ignore_errors=kwargs.get("ignore_errors", True)
-        )
+        return cmd(command=self.__command, ignore_errors=kwargs.get("ignore_errors", True))
 
 
 @final
@@ -117,7 +102,7 @@ class Command(_BaseCommand):
 
     __ignore_errors: bool = True
 
-    def with_errors(self) -> 'Command':
+    def with_errors(self) -> "Command":
         """
         Return errors in exec output
             :return: :class:`Command`
@@ -138,15 +123,10 @@ class Path(_BaseCommand):
     __dry_run_only: bool = False
 
     @beartype
-    def __init__(
-            self,
-            path: str
-    ):
+    def __init__(self, path: str):
         self.__path: Final[Path_] = Path_(path).expanduser()
 
-        tmp_command = "rm -rf '{path}'".format(
-            path=self.__path.as_posix()
-        )
+        tmp_command = "rm -rf '{path}'".format(path=self.__path.as_posix())
 
         super().__init__(command_=tmp_command)
 
@@ -156,7 +136,7 @@ class Path(_BaseCommand):
 
         return self.__path
 
-    def dry_run_only(self) -> 'Path':
+    def dry_run_only(self) -> "Path":
         """
         Set module to only count size in dry runs
             :return: :class:`Path`

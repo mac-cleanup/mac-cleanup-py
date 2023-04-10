@@ -29,10 +29,7 @@ class TestEntryPoint:
         # Check result is not empty
         assert res > 0
 
-    def test_custom_path_set_prompt(
-            self,
-            monkeypatch: MonkeyPatch
-    ):
+    def test_custom_path_set_prompt(self, monkeypatch: MonkeyPatch):
         """Test configuration for custom path prompted in :class:`mac_cleanup.main.EntryPoint`"""
 
         # Dummy custom path setter raising SystemExit
@@ -48,38 +45,27 @@ class TestEntryPoint:
         with pytest.raises(SystemExit):
             main()
 
-    @pytest.mark.parametrize(
-        "size_multiplier",
-        [3.0, 2.0]
-    )
+    @pytest.mark.parametrize("size_multiplier", [3.0, 2.0])
     def test_cleanup(
-            self,
-            size_multiplier: float,
-            path_with_root: None,
-            command_with_root: None,
-            capsys: CaptureFixture[str],
-            monkeypatch: MonkeyPatch
+        self,
+        size_multiplier: float,
+        path_with_root: None,
+        command_with_root: None,
+        capsys: CaptureFixture[str],
+        monkeypatch: MonkeyPatch,
     ):
         """Test cleanup in :class:`mac_cleanup.main.EntryPoint`"""
 
         # Dummy Config with empty init
-        def dummy_config_init(
-                cfg_self: Config,  # noqa
-                config_path_: Pathlib  # noqa
-        ) -> None:
+        def dummy_config_init(cfg_self: Config, config_path_: Pathlib) -> None:  # noqa  # noqa
             return
 
         # Dummy Config with empty call
-        def dummy_config_call(
-                config_path_: Pathlib,  # noqa
-                configuration_prompted: bool  # noqa
-        ) -> None:
+        def dummy_config_call(config_path_: Pathlib, configuration_prompted: bool) -> None:  # noqa  # noqa
             return
 
         # Dummy count_free_space for simulating cleaned half of free space
-        def dummy_count_free_space(
-                entry_self: EntryPoint  # noqa
-        ) -> float:
+        def dummy_count_free_space(entry_self: EntryPoint) -> float:  # noqa
             if not hasattr(dummy_count_free_space, "called"):
                 dummy_count_free_space.called = True  # pyright: ignore [reportFunctionMemberAccess]
 
@@ -105,7 +91,7 @@ class TestEntryPoint:
         dummy_execute_list: list[Unit] = [
             Unit(message="test_1", modules=[Path("test"), Command("test")]),
             Unit(message="test_2", modules=[Path("test")]),
-            Unit(message="test_3", modules=[Command("test")])
+            Unit(message="test_3", modules=[Command("test")]),
         ]
 
         # Simulate execution list in BaseCollector
@@ -123,33 +109,19 @@ class TestEntryPoint:
         # Check correct size in stdout
         assert f"Removed - {size_multiplier / 2} GB" in captured_stdout
 
-    @pytest.mark.parametrize(
-        "cleanup_prompted",
-        [True, False]
-    )
-    def test_dry_run_prompt(
-            self,
-            cleanup_prompted: bool,
-            capsys: CaptureFixture[str],
-            monkeypatch: MonkeyPatch
-    ):
+    @pytest.mark.parametrize("cleanup_prompted", [True, False])
+    def test_dry_run_prompt(self, cleanup_prompted: bool, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
         """Test dry_run with optional cleanup in :class:`mac_cleanup.main.EntryPoint`"""
 
         # Dummy count_dry returning 1 GB
         dummy_count_dry: Callable[..., float] = lambda: float(1024**3)
 
         # Dummy Config with empty init
-        def dummy_config_init(
-                cfg_self: Config,  # noqa
-                config_path_: Pathlib  # noqa
-        ) -> None:
+        def dummy_config_init(cfg_self: Config, config_path_: Pathlib) -> None:  # noqa  # noqa
             return
 
         # Dummy Config with empty call
-        def dummy_config_call(
-                config_path_: Pathlib,  # noqa
-                configuration_prompted: bool  # noqa
-        ) -> None:
+        def dummy_config_call(config_path_: Pathlib, configuration_prompted: bool) -> None:  # noqa  # noqa
             return
 
         # Dummy user input in prompt for optional cleanup
@@ -188,11 +160,7 @@ class TestEntryPoint:
         if not cleanup_prompted:
             assert "Exiting..." in captured_stdout
 
-    def test_test_dry_run_prompt_error(
-            self,
-            capsys: CaptureFixture[str],
-            monkeypatch: MonkeyPatch
-    ):
+    def test_test_dry_run_prompt_error(self, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
         """Test errors in dry_run in :class:`mac_cleanup.main.EntryPoint`"""
 
         # Dummy count_dry returning 1 GB
@@ -200,17 +168,11 @@ class TestEntryPoint:
 
         # Dummy Config with no init and empty call
         # Dummy Config with empty init
-        def dummy_config_init(
-                cfg_self: Config,  # noqa
-                config_path_: Pathlib  # noqa
-        ) -> None:
+        def dummy_config_init(cfg_self: Config, config_path_: Pathlib) -> None:  # noqa  # noqa
             return
 
         # Dummy Config with empty call
-        def dummy_config_call(
-                config_path_: Pathlib,  # noqa
-                configuration_prompted: bool  # noqa
-        ) -> None:
+        def dummy_config_call(config_path_: Pathlib, configuration_prompted: bool) -> None:  # noqa  # noqa
             return
 
         # Dummy user input in prompt raising random decode error

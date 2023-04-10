@@ -13,9 +13,7 @@ def get_namespace() -> Args:
     return Args()
 
 
-@pytest.fixture(
-    scope="session"
-)
+@pytest.fixture(scope="session")
 def get_parser_actions() -> list[Action]:
     """Get parser actions"""
 
@@ -27,9 +25,7 @@ def get_parser_actions() -> list[Action]:
 
 class TestParser:
     @staticmethod
-    def get_all_args_from_namespace(
-            namespace: Args
-    ) -> list[str]:
+    def get_all_args_from_namespace(namespace: Args) -> list[str]:
         """Get filtered attribute list (without dunder methods)"""
 
         return [attr for attr in dir(namespace) if not attr.startswith("__")]
@@ -42,16 +38,11 @@ class TestParser:
         # Check current version in description
         assert parser.description is not None and f"Version: {__version__}" in parser.description
 
-    def test_actions_empty(
-            self,
-            get_namespace: Args
-    ):
+    def test_actions_empty(self, get_namespace: Args):
         """Test parser without args"""
 
         # Set empty args to parser
-        parser.parse_args(
-            namespace=get_namespace
-        )
+        parser.parse_args(namespace=get_namespace)
 
         # Check there is no attrs
         assert not any([getattr(get_namespace, attr) for attr in self.get_all_args_from_namespace(get_namespace)])
@@ -59,14 +50,9 @@ class TestParser:
     @pytest.mark.parametrize(
         "is_short_name",
         # test invoking actions by short and long names
-        [True, False]
+        [True, False],
     )
-    def test_actions(
-            self,
-            is_short_name: bool,
-            get_namespace: Args,
-            get_parser_actions: list[Action]
-    ):
+    def test_actions(self, is_short_name: bool, get_namespace: Args, get_parser_actions: list[Action]):
         """Test parser actions"""
 
         # Select actions name (short or long)
@@ -76,10 +62,7 @@ class TestParser:
         action_list = [action.option_strings[action_index] for action in get_parser_actions]
 
         # Add actions to parser
-        parser.parse_args(
-            args=action_list,
-            namespace=get_namespace
-        )
+        parser.parse_args(args=action_list, namespace=get_namespace)
 
         # Check all attrs are set
         assert all([getattr(get_namespace, attr) for attr in self.get_all_args_from_namespace(get_namespace)])

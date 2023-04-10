@@ -1,5 +1,6 @@
 """Custom module template example"""
 from mac_cleanup import *
+
 # Do not import any functions at the top level
 
 # Get an instance of Collector
@@ -38,8 +39,7 @@ def module_example_1():
             if cmd("echo 1") == "1":
                 unit.add(
                     # Command - used for executing any command with :func:`mac_cleanup.utils.cmd`
-                    Command("whoami")
-                    .with_prompt("You will see your username. Proceed?")
+                    Command("whoami").with_prompt("You will see your username. Proceed?")
                     # with_errors - adds stderr to return of command execution
                     .with_errors()
                 )

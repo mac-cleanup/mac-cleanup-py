@@ -19,30 +19,20 @@ from beartype.roar import BeartypeCallHintParamViolation
         # test redirect stderr
         ("echo 'test' >&2", False, "test"),
         # test beartype
-        (123, True, "")
-    ]
+        (123, True, ""),
+    ],
 )
-def test_cmd(
-        command: str | int,
-        ignore_errors: bool,
-        output: str,
-):
+def test_cmd(command: str | int, ignore_errors: bool, output: str):
     """Test :class:`subprocess.Popen` command execution in :meth:`mac_cleanup.utils.cmd`"""
 
     from mac_cleanup.utils import cmd
 
     if isinstance(command, int):
         with pytest.raises(BeartypeCallHintParamViolation):
-            cmd(
-                command=command,  # pyright: ignore [reportGeneralTypeIssues] # noqa
-                ignore_errors=ignore_errors
-            )
+            cmd(command=command, ignore_errors=ignore_errors)  # pyright: ignore [reportGeneralTypeIssues] # noqa
         return
 
-    assert cmd(
-        command=command,
-        ignore_errors=ignore_errors
-    ) == output
+    assert cmd(command=command, ignore_errors=ignore_errors) == output
 
 
 @pytest.mark.parametrize(
@@ -53,14 +43,10 @@ def test_cmd(
         # test expand home
         ("~/", None),
         # test beartype
-        (123, None)
-    ]
+        (123, None),
+    ],
 )
-def test_expanduser(
-        str_path: str | int,
-        output: Optional[str],
-        get_current_os: str
-):
+def test_expanduser(str_path: str | int, output: Optional[str], get_current_os: str):
     """Test wrapper of :meth:`pathlib.Path.expanduser` in :meth:`mac_cleanup.utils.expanduser`"""
 
     from mac_cleanup.utils import expanduser
@@ -99,30 +85,20 @@ def test_expanduser(
         # test non-existing Path
         (Path("/aboba"), False, True),
         # test beartype
-        (123, False, True)
-    ]
+        (123, False, True),
+    ],
 )
-def test_check_exists(
-        path: Path | str | int,
-        output: bool,
-        expand_path: bool
-):
+def test_check_exists(path: Path | str | int, output: bool, expand_path: bool):
     """Test wrapper of :meth:`pathlib.Path.exists` in :meth:`mac_cleanup.utils.check_exists`"""
 
     from mac_cleanup.utils import check_exists
 
     if isinstance(path, int):
         with pytest.raises(BeartypeCallHintParamViolation):
-            check_exists(
-                path=path,  # pyright: ignore [reportGeneralTypeIssues] # noqa
-                expand_user=expand_path
-            )
+            check_exists(path=path, expand_user=expand_path)  # pyright: ignore [reportGeneralTypeIssues] # noqa
         return
 
-    assert check_exists(
-        path=path,
-        expand_user=expand_path
-    ) is output
+    assert check_exists(path=path, expand_user=expand_path) is output
 
 
 @pytest.mark.parametrize(
@@ -149,13 +125,10 @@ def test_check_exists(
         # test custom rules
         (Path("~/Documents"), True),
         # test beartype
-        (123, False)
-    ]
+        (123, False),
+    ],
 )
-def test_check_deletable(
-        path: Path | str | int,
-        output: bool
-):
+def test_check_deletable(path: Path | str | int, output: bool):
     """Test :meth:`mac_cleanup.utils.check_deletable` with SIP and custom restriction list"""
 
     from mac_cleanup.utils import check_deletable
@@ -184,14 +157,10 @@ def test_check_deletable(
         # test TB
         (1024, 4, "1.0 TB"),
         # test beartype
-        ("", 0, "")
-    ]
+        ("", 0, ""),
+    ],
 )
-def test_bytes_to_human(
-        byte: int | str,
-        in_power: int,
-        output: str
-):
+def test_bytes_to_human(byte: int | str, in_power: int, output: str):
     """Test bytes to human conversion in :meth:`mac_cleanup.utils.bytes_to_human`"""
 
     from mac_cleanup.utils import bytes_to_human

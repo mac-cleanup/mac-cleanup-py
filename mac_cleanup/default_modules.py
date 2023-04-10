@@ -8,53 +8,31 @@ clc = Collector()
 def trash():
     with clc as unit:
         unit.message("Emptying the Trash 🗑 on all mounted volumes and the main HDD")
-        unit.add(
-            Path("/Volumes/*/.Trashes/*")
-        )
-        unit.add(
-            Path("~/.Trash/*")
-        )
+        unit.add(Path("/Volumes/*/.Trashes/*"))
+        unit.add(Path("~/.Trash/*"))
 
 
 def system_caches():
     with clc as unit:
         unit.message("Clearing System Cache Files")
         unit.add(
-            Path("~/Library/Caches/*")
-            .with_prompt(
-                "ALL USER CACHE will be DELETED, including Poetry, Jetbrains, Cocoa, yarn, Composer etc.\n"
-                "Continue?"
+            Path("~/Library/Caches/*").with_prompt(
+                "ALL USER CACHE will be DELETED, including Poetry, Jetbrains, Cocoa, yarn, Composer etc.\n" "Continue?"
             )
         )
-        unit.add(
-            Path("/private/var/folders/bh/*/*/*/*")
-        )
+        unit.add(Path("/private/var/folders/bh/*/*/*/*"))
 
 
 def system_log():
     with clc as unit:
         unit.message("Clearing System Log Files")
-        unit.add(
-            Path("/private/var/log/asl/*.asl")
-        )
-        unit.add(
-            Path("/Library/Logs/DiagnosticReports/*")
-        )
-        unit.add(
-            Path("/Library/Logs/CreativeCloud/*")
-        )
-        unit.add(
-            Path("/Library/Logs/Adobe/*")
-        )
-        unit.add(
-            Path("/Library/Logs/adobegc.log")
-        )
-        unit.add(
-            Path("~/Library/Containers/com.apple.mail/Data/Library/Logs/Mail/*")
-        )
-        unit.add(
-            Path("~/Library/Logs/CoreSimulator/*")
-        )
+        unit.add(Path("/private/var/log/asl/*.asl"))
+        unit.add(Path("/Library/Logs/DiagnosticReports/*"))
+        unit.add(Path("/Library/Logs/CreativeCloud/*"))
+        unit.add(Path("/Library/Logs/Adobe/*"))
+        unit.add(Path("/Library/Logs/adobegc.log"))
+        unit.add(Path("~/Library/Containers/com.apple.mail/Data/Library/Logs/Mail/*"))
+        unit.add(Path("~/Library/Logs/CoreSimulator/*"))
 
 
 def jetbrains():
@@ -63,9 +41,7 @@ def jetbrains():
     if check_exists("~/Library/Logs/JetBrains/"):
         with clc as unit:
             unit.message("Clearing all application log files from JetBrains")
-            unit.add(
-                Path("~/Library/Logs/JetBrains/*/")
-            )
+            unit.add(Path("~/Library/Logs/JetBrains/*/"))
 
 
 def adobe():
@@ -74,9 +50,7 @@ def adobe():
     if check_exists("~/Library/Application Support/Adobe/"):
         with clc as unit:
             unit.message("Clearing Adobe Cache Files")
-            unit.add(
-                Path("~/Library/Application Support/Adobe/Common/Media Cache Files/*")
-            )
+            unit.add(Path("~/Library/Application Support/Adobe/Common/Media Cache Files/*"))
 
 
 def chrome():
@@ -85,39 +59,27 @@ def chrome():
     if check_exists("~/Library/Application Support/Google/Chrome/"):
         with clc as unit:
             unit.message("Clearing Google Chrome Cache Files")
-            unit.add(
-                Path("~/Library/Application Support/Google/Chrome/Default/Application Cache/*")
-            )
+            unit.add(Path("~/Library/Application Support/Google/Chrome/Default/Application Cache/*"))
 
 
 def ios_apps():
     with clc as unit:
         unit.message("Cleaning up iOS Applications")
-        unit.add(
-            Path("~/Music/iTunes/iTunes Media/Mobile Applications/*")
-        )
+        unit.add(Path("~/Music/iTunes/iTunes Media/Mobile Applications/*"))
 
 
 def ios_backups():
     with clc as unit:
         unit.message("Removing iOS Device Backups")
-        unit.add(
-            Path("~/Library/Application Support/MobileSync/Backup/*")
-        )
+        unit.add(Path("~/Library/Application Support/MobileSync/Backup/*"))
 
 
 def xcode():
     with clc as unit:
         unit.message("Cleaning up XCode Derived Data and Archives")
-        unit.add(
-            Path("~/Library/Developer/Xcode/DerivedData/*")
-        )
-        unit.add(
-            Path("~/Library/Developer/Xcode/Archives/*")
-        )
-        unit.add(
-            Path("~/Library/Developer/Xcode/iOS Device Logs/*")
-        )
+        unit.add(Path("~/Library/Developer/Xcode/DerivedData/*"))
+        unit.add(Path("~/Library/Developer/Xcode/Archives/*"))
+        unit.add(Path("~/Library/Developer/Xcode/iOS Device Logs/*"))
 
 
 def xcode_simulators():
@@ -126,44 +88,24 @@ def xcode_simulators():
     if cmd("type 'xcrun'"):
         with clc as unit:
             unit.message("Cleaning up iOS Simulators")
+            unit.add(Command("osascript -e 'tell application 'com.apple.CoreSimulator.CoreSimulatorService' to quit'"))
+            unit.add(Command("osascript -e 'tell application 'iOS Simulator' to quit'"))
+            unit.add(Command("osascript -e 'tell application 'Simulator' to quit'"))
+            unit.add(Command("xcrun simctl shutdown all"))
             unit.add(
-                Command("osascript -e 'tell application 'com.apple.CoreSimulator.CoreSimulatorService' to quit'")
-            )
-            unit.add(
-                Command("osascript -e 'tell application 'iOS Simulator' to quit'")
-            )
-            unit.add(
-                Command("osascript -e 'tell application 'Simulator' to quit'")
-            )
-            unit.add(
-                Command("xcrun simctl shutdown all")
-            )
-            unit.add(
-                Command("xcrun simctl erase all")
-                .with_prompt(
-                    "All Xcode simulators will be pruned.\n"
-                    "Continue?"
-                )
+                Command("xcrun simctl erase all").with_prompt("All Xcode simulators will be pruned.\n" "Continue?")
             )
 
-            unit.add(
-                Path("~/Library/Developer/CoreSimulator/Devices/*/data/[!Library|var|tmp|Media]*")
-                .dry_run_only()
-            )
+            unit.add(Path("~/Library/Developer/CoreSimulator/Devices/*/data/[!Library|var|tmp|Media]*").dry_run_only())
             unit.add(
                 Path(
                     "~/Library/Developer/CoreSimulator/Devices/*/data/Library/"
                     "[!PreferencesCaches|Caches|AddressBook|Trial]*"
-                )
-                .dry_run_only()
+                ).dry_run_only()
             )
+            unit.add(Path("~/Library/Developer/CoreSimulator/Devices/*/data/Library/Caches/*").dry_run_only())
             unit.add(
-                Path("~/Library/Developer/CoreSimulator/Devices/*/data/Library/Caches/*")
-                .dry_run_only()
-            )
-            unit.add(
-                Path("~/Library/Developer/CoreSimulator/Devices/*/data/Library/AddressBook/AddressBook*")
-                .dry_run_only()
+                Path("~/Library/Developer/CoreSimulator/Devices/*/data/Library/AddressBook/AddressBook*").dry_run_only()
             )
 
 
@@ -174,9 +116,7 @@ def dropbox():
     if check_exists("~/Dropbox"):
         with clc as unit:
             unit.message("Clearing Dropbox 📦 Cache Files")
-            unit.add(
-                Path("~/Dropbox/.dropbox.cache/*")
-            )
+            unit.add(Path("~/Dropbox/.dropbox.cache/*"))
 
 
 def google_drive():
@@ -185,12 +125,8 @@ def google_drive():
     if check_exists("~/Library/Application Support/Google/DriveFS/"):
         with clc as unit:
             unit.message("Clearing Google Drive File Stream Cache Files")
-            unit.add(
-                Command("killall 'Google Drive File Stream'")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Google/DriveFS/[0-9a-zA-Z]*/content_cache")
-            )
+            unit.add(Command("killall 'Google Drive File Stream'"))
+            unit.add(Path("~/Library/Application Support/Google/DriveFS/[0-9a-zA-Z]*/content_cache"))
 
 
 def composer():
@@ -199,13 +135,8 @@ def composer():
     if cmd("type 'composer'"):
         with clc as unit:
             unit.message("Cleaning up composer")
-            unit.add(
-                Command("composer clearcache --no-interaction")
-            )
-            unit.add(
-                Path("~/Library/Caches/composer")
-                .dry_run_only()
-            )
+            unit.add(Command("composer clearcache --no-interaction"))
+            unit.add(Path("~/Library/Caches/composer").dry_run_only())
 
 
 # Deletes Steam caches, logs, and temp files
@@ -215,24 +146,12 @@ def steam():
     if check_exists("~/Library/Application Support/Steam/"):
         with clc as unit:
             unit.message("Clearing Steam Cache, Log, and Temp Files")
-            unit.add(
-                Path("~/Library/Application Support/Steam/appcache")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Steam/depotcache")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Steam/logs")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Steam/steamapps/shadercache")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Steam/steamapps/temp")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Steam/steamapps/download")
-            )
+            unit.add(Path("~/Library/Application Support/Steam/appcache"))
+            unit.add(Path("~/Library/Application Support/Steam/depotcache"))
+            unit.add(Path("~/Library/Application Support/Steam/logs"))
+            unit.add(Path("~/Library/Application Support/Steam/steamapps/shadercache"))
+            unit.add(Path("~/Library/Application Support/Steam/steamapps/temp"))
+            unit.add(Path("~/Library/Application Support/Steam/steamapps/download"))
 
 
 # Deletes Minecraft logs
@@ -242,32 +161,16 @@ def minecraft():
     if check_exists("~/Library/Application Support/minecraft"):
         with clc as unit:
             unit.message("Clearing Minecraft Cache and Log Files")
-            unit.add(
-                Path("~/Library/Application Support/minecraft/logs")
-            )
-            unit.add(
-                Path("~/Library/Application Support/minecraft/crash-reports")
-            )
-            unit.add(
-                Path("~/Library/Application Support/minecraft/webcache")
-            )
-            unit.add(
-                Path("~/Library/Application Support/minecraft/webcache2")
-            )
-            unit.add(
-                Path("~/Library/Application Support/minecraft/crash-reports")
-            )
-            unit.add(
-                Path("~/Library/Application Support/minecraft/*.log")
-            )
-            unit.add(
-                Path("~/Library/Application Support/minecraft/launcher_cef_log.txt")
-            )
+            unit.add(Path("~/Library/Application Support/minecraft/logs"))
+            unit.add(Path("~/Library/Application Support/minecraft/crash-reports"))
+            unit.add(Path("~/Library/Application Support/minecraft/webcache"))
+            unit.add(Path("~/Library/Application Support/minecraft/webcache2"))
+            unit.add(Path("~/Library/Application Support/minecraft/crash-reports"))
+            unit.add(Path("~/Library/Application Support/minecraft/*.log"))
+            unit.add(Path("~/Library/Application Support/minecraft/launcher_cef_log.txt"))
 
             if check_exists("~/Library/Application Support/minecraft/.mixin.out"):
-                unit.add(
-                    Path("~/Library/Application Support/minecraft/.mixin.out")
-                )
+                unit.add(Path("~/Library/Application Support/minecraft/.mixin.out"))
 
 
 # Deletes Lunar Client logs (Minecraft alternate client)
@@ -277,21 +180,11 @@ def lunarclient():  # noqa
     if check_exists("~/.lunarclient"):
         with clc as unit:
             unit.message("Deleting Lunar Client logs and caches")
-            unit.add(
-                Path("~/.lunarclient/game-cache")
-            )
-            unit.add(
-                Path("~/.lunarclient/launcher-cache")
-            )
-            unit.add(
-                Path("~/.lunarclient/logs")
-            )
-            unit.add(
-                Path("~/.lunarclient/offline/*/logs")
-            )
-            unit.add(
-                Path("~/.lunarclient/offline/files/*/logs")
-            )
+            unit.add(Path("~/.lunarclient/game-cache"))
+            unit.add(Path("~/.lunarclient/launcher-cache"))
+            unit.add(Path("~/.lunarclient/logs"))
+            unit.add(Path("~/.lunarclient/offline/*/logs"))
+            unit.add(Path("~/.lunarclient/offline/files/*/logs"))
 
 
 # Deletes Wget logs
@@ -301,12 +194,8 @@ def wget_logs():
     if check_exists("~/wget-log"):
         with clc as unit:
             unit.message("Deleting Wget log and hosts file")
-            unit.add(
-                Path("~/wget-log")
-            )
-            unit.add(
-                Path("~/.wget-hsts")
-            )
+            unit.add(Path("~/wget-log"))
+            unit.add(Path("~/.wget-hsts"))
 
 
 # Deletes Cacher logs / I dunno either
@@ -316,9 +205,7 @@ def cacher():
     if check_exists("~/.cacher"):
         with clc as unit:
             unit.message("Deleting Cacher logs")
-            unit.add(
-                Path("~/.cacher/logs")
-            )
+            unit.add(Path("~/.cacher/logs"))
 
 
 # Deletes Android cache
@@ -328,9 +215,7 @@ def android():
     if check_exists("~/.android"):
         with clc as unit:
             unit.message("Deleting Android cache")
-            unit.add(
-                Path("~/.android/cache")
-            )
+            unit.add(Path("~/.android/cache"))
 
 
 # Clears Gradle caches
@@ -341,10 +226,8 @@ def gradle():
         with clc as unit:
             unit.message("Clearing Gradle caches")
             unit.add(
-                Path("~/.gradle/caches")
-                .with_prompt(
-                    "Gradle cache will be removed. It is chunky and kinda long to reinstall.\n"
-                    "Continue?"
+                Path("~/.gradle/caches").with_prompt(
+                    "Gradle cache will be removed. It is chunky and kinda long to reinstall.\n" "Continue?"
                 )
             )
 
@@ -356,9 +239,7 @@ def kite():
     if check_exists("~/.kite"):
         with clc as unit:
             unit.message("Deleting Kite logs")
-            unit.add(
-                Path("~/.kite/logs")
-            )
+            unit.add(Path("~/.kite/logs"))
 
 
 def brew():
@@ -371,22 +252,14 @@ def brew():
             # Get brew path
             brew_cache_path = cmd("brew --cache")
 
-            unit.add(
-                Command("brew cleanup -s")
-            )
-            unit.add(
-                Path(brew_cache_path)
-            )
-            unit.add(
-                Command("brew tap --repair")
-            )
+            unit.add(Command("brew cleanup -s"))
+            unit.add(Path(brew_cache_path))
+            unit.add(Command("brew tap --repair"))
 
         if args.update:
             with clc as unit:
                 unit.message("Updating Homebrew Recipes and upgrading")
-                unit.add(
-                    Command("brew update && brew upgrade")
-                )
+                unit.add(Command("brew update && brew upgrade"))
 
 
 def gem():
@@ -395,9 +268,7 @@ def gem():
     if cmd("type 'gem'"):  # TODO add count_dry
         with clc as unit:
             unit.message("Cleaning up any old versions of gems")
-            unit.add(
-                Command("gem cleanup")
-            )
+            unit.add(Command("gem cleanup"))
 
 
 def docker():
@@ -411,15 +282,12 @@ def docker():
             close_docker = False
 
             if not cmd("docker ps >/dev/null 2>&1"):
-                unit.add(
-                    Command("open -jga Docker")
-                )
+                unit.add(Command("open -jga Docker"))
 
                 close_docker = True
 
             unit.add(
-                Command("docker system prune -af")
-                .with_prompt(
+                Command("docker system prune -af").with_prompt(
                     "Stopped containers, dangling images, unused networks, volumes, and build cache will be deleted.\n"
                     "Continue?"
                 )
@@ -427,9 +295,7 @@ def docker():
 
             # Close Docker if it was opened by cleaner
             if close_docker:
-                unit.add(
-                    Command("killall Docker")
-                )
+                unit.add(Command("killall Docker"))
 
 
 def pyenv():
@@ -438,9 +304,7 @@ def pyenv():
     if pyenv_path := getenv("PYENV_VIRTUALENV_CACHE_PATH"):
         with clc as unit:
             unit.message("Removing Pyenv-VirtualEnv Cache")
-            unit.add(
-                Path(pyenv_path)
-            )
+            unit.add(Path(pyenv_path))
 
 
 def npm():
@@ -449,13 +313,8 @@ def npm():
     if cmd("type 'npm'"):
         with clc as unit:
             unit.message("Cleaning up npm cache")
-            unit.add(
-                Command("npm cache clean --force")
-            )
-            unit.add(
-                Path("~/.npm/*")
-                .dry_run_only()
-            )
+            unit.add(Command("npm cache clean --force"))
+            unit.add(Path("~/.npm/*").dry_run_only())
 
 
 def yarn():
@@ -464,14 +323,8 @@ def yarn():
     if cmd("type 'yarn'"):
         with clc as unit:
             unit.message("Cleaning up Yarn Cache")
-            unit.add(
-                Command("yarn cache clean --force")
-            )
-            unit.add(
-                Path("~/Library/Caches/yarn")
-
-                .dry_run_only()
-            )
+            unit.add(Command("yarn cache clean --force"))
+            unit.add(Path("~/Library/Caches/yarn").dry_run_only())
 
 
 def pod():
@@ -480,14 +333,9 @@ def pod():
     if cmd("type 'pod'"):
         with clc as unit:
             unit.message("Cleaning up Pod Cache")
-            unit.add(
-                Command("pod cache clean --all")
-            )
+            unit.add(Command("pod cache clean --all"))
 
-            unit.add(
-                Path("~/Library/Caches/CocoaPods")
-                .dry_run_only()
-            )
+            unit.add(Path("~/Library/Caches/CocoaPods").dry_run_only())
 
 
 def go():
@@ -498,20 +346,12 @@ def go():
 
         with clc as unit:
             unit.message("Clearing Go module cache")
-            unit.add(
-                Command("go clean -modcache")
-            )
+            unit.add(Command("go clean -modcache"))
 
             if go_path := getenv("GOPATH"):
-                unit.add(
-                    Path(go_path + "/pkg/mod")
-                    .dry_run_only()
-                )
+                unit.add(Path(go_path + "/pkg/mod").dry_run_only())
             else:
-                unit.add(
-                    Path("~/go/pkg/mod")
-                    .dry_run_only()
-                )
+                unit.add(Path("~/go/pkg/mod").dry_run_only())
 
 
 # Deletes all Microsoft Teams Caches and resets it to default - can fix also some performance issues
@@ -521,59 +361,30 @@ def microsoft_teams():
     if check_exists("~/Library/Application Support/Microsoft/Teams"):
         with clc as unit:
             unit.message("Deleting Microsoft Teams logs and caches")
-            unit.add(
-                Path("~/Library/Application Support/Microsoft/Teams/IndexedDB")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Microsoft/Teams/Cache")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Microsoft/Teams/Application Cache")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Microsoft/Teams/Code Cache")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Microsoft/Teams/blob_storage")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Microsoft/Teams/databases")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Microsoft/Teams/gpucache")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Microsoft/Teams/Local Storage")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Microsoft/Teams/tmp")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Microsoft/Teams/*logs*.txt")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Microsoft/Teams/watchdog")
-            )
-            unit.add(
-                Path("~/Library/Application Support/Microsoft/Teams/*watchdog*.json")
-            )
+            unit.add(Path("~/Library/Application Support/Microsoft/Teams/IndexedDB"))
+            unit.add(Path("~/Library/Application Support/Microsoft/Teams/Cache"))
+            unit.add(Path("~/Library/Application Support/Microsoft/Teams/Application Cache"))
+            unit.add(Path("~/Library/Application Support/Microsoft/Teams/Code Cache"))
+            unit.add(Path("~/Library/Application Support/Microsoft/Teams/blob_storage"))
+            unit.add(Path("~/Library/Application Support/Microsoft/Teams/databases"))
+            unit.add(Path("~/Library/Application Support/Microsoft/Teams/gpucache"))
+            unit.add(Path("~/Library/Application Support/Microsoft/Teams/Local Storage"))
+            unit.add(Path("~/Library/Application Support/Microsoft/Teams/tmp"))
+            unit.add(Path("~/Library/Application Support/Microsoft/Teams/*logs*.txt"))
+            unit.add(Path("~/Library/Application Support/Microsoft/Teams/watchdog"))
+            unit.add(Path("~/Library/Application Support/Microsoft/Teams/*watchdog*.json"))
 
 
 # Deletes Poetry cache
 def poetry():
     from mac_cleanup.utils import cmd, check_exists
 
-    if (
-            cmd("type 'poetry'")
-            or check_exists("~/Library/Caches/pypoetry")
-    ):
+    if cmd("type 'poetry'") or check_exists("~/Library/Caches/pypoetry"):
         with clc as unit:
             unit.message("Deleting Poetry cache")
             unit.add(
-                Path("~/Library/Caches/pypoetry")
-                .with_prompt(
-                    "All non-local Poetry venvs will be deleted.\n"
-                    "Continue?"
+                Path("~/Library/Caches/pypoetry").with_prompt(
+                    "All non-local Poetry venvs will be deleted.\n" "Continue?"
                 )
             )
 
@@ -582,29 +393,17 @@ def poetry():
 def java_cache():
     with clc as unit:
         unit.message("Deleting Java heap dumps")
-        unit.add(
-            Path("~/*.hprof")
-            .with_prompt(
-                "All heap dumps (.hprof) in HOME dir will be deleted.\n"
-                "Continue?"
-            )
-        )
+        unit.add(Path("~/*.hprof").with_prompt("All heap dumps (.hprof) in HOME dir will be deleted.\n" "Continue?"))
 
 
 def dns_cache():
     with clc as unit:
         unit.message("Cleaning up DNS cache")
-        unit.add(
-            Command("sudo dscacheutil -flushcache")
-        )
-        unit.add(
-            Command("sudo killall -HUP mDNSResponder")
-        )
+        unit.add(Command("sudo dscacheutil -flushcache"))
+        unit.add(Command("sudo killall -HUP mDNSResponder"))
 
 
 def inactive_memory():
     with clc as unit:
         unit.message("Purging inactive memory")
-        unit.add(
-            Command("sudo purge")
-        )
+        unit.add(Command("sudo purge"))

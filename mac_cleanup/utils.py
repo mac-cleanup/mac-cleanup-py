@@ -6,11 +6,7 @@ from pathlib import Path
 
 
 @beartype
-def cmd(
-        command: str,
-        *,
-        ignore_errors: bool = True
-) -> str:
+def cmd(command: str, *, ignore_errors: bool = True) -> str:
     """
     Executes command in Popen
         :param command: Bash command
@@ -21,12 +17,7 @@ def cmd(
     from subprocess import Popen, PIPE, DEVNULL
 
     # Get stdout and stderr from PIPE
-    out_tuple = Popen(
-        command,
-        shell=True,
-        stdout=PIPE,
-        stderr=(DEVNULL if ignore_errors else PIPE),
-    ).communicate()
+    out_tuple = Popen(command, shell=True, stdout=PIPE, stderr=(DEVNULL if ignore_errors else PIPE)).communicate()
 
     # Cast correct type on out_tuple
     out_tuple = cast(tuple[Optional[bytes], Optional[bytes]], out_tuple)
@@ -38,9 +29,7 @@ def cmd(
 
 
 @beartype
-def expanduser(
-        str_path: str
-) -> str:
+def expanduser(str_path: str) -> str:
     """
     Expands user
         :param str_path: Path to be expanded
@@ -53,11 +42,7 @@ def expanduser(
 
 
 @beartype
-def check_exists(
-        path: Path | str,
-        *,
-        expand_user: bool = True
-) -> bool:
+def check_exists(path: Path | str, *, expand_user: bool = True) -> bool:
     """
     Checks if path exists
         :param path: Path to be checked
@@ -79,9 +64,7 @@ def check_exists(
 
 
 @beartype
-def check_deletable(
-        path: Path | str
-) -> bool:
+def check_deletable(path: Path | str) -> bool:
     """
     Checks if path is deletable
         :param path: Path to be deleted
@@ -94,22 +77,9 @@ def check_deletable(
     else:
         path_ = path
 
-    sip_list = [
-        "/System",
-        "/usr",
-        "/sbin",
-        "/Applications",
-        "/Library",
-        "/usr/local"
-    ]
+    sip_list = ["/System", "/usr", "/sbin", "/Applications", "/Library", "/usr/local"]
 
-    user_list = [
-        "~/Documents",
-        "~/Downloads",
-        "~/Desktop",
-        "~/Movies",
-        "~/Pictures"
-    ]
+    user_list = ["~/Documents", "~/Downloads", "~/Desktop", "~/Movies", "~/Pictures"]
 
     # Returns False if empty
     if (path_posix := path_.as_posix()) == ".":
@@ -120,18 +90,13 @@ def check_deletable(
         return True
 
     # Returns False if path startswith anything from SIP list or in custom list
-    if any(
-            path_posix.startswith(protected_path)
-            for protected_path in list(map(expanduser, sip_list + user_list))
-    ):
+    if any(path_posix.startswith(protected_path) for protected_path in list(map(expanduser, sip_list + user_list))):
         return False
     return "restricted" not in cmd(f"ls -lo {path_posix} | awk '{{print $3, $4}}'")
 
 
 @beartype
-def bytes_to_human(
-        size_bytes: int | float
-) -> str:
+def bytes_to_human(size_bytes: int | float) -> str:
     """
     Converts bytes to human-readable format
         :param size_bytes: Bytes

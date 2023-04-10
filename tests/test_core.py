@@ -16,11 +16,7 @@ from mac_cleanup.core_modules import BaseModule, Command, Path
 
 
 class TestUnit:
-    def test_create_unit(
-            self,
-            command_with_root: None,
-            path_with_root: None
-    ):
+    def test_create_unit(self, command_with_root: None, path_with_root: None):
         """Check :class:`mac_cleanup.core.Unit` creation"""
 
         # message, module list, validators
@@ -51,14 +47,8 @@ class TestCollector:
         with Collector() as t:
             assert isinstance(t, _Collector)
 
-    @pytest.mark.parametrize(
-        "raised_error",
-        [IndexError, KeyError, ValueError]
-    )
-    def test_errors_on_exit(
-            self,
-            raised_error: Type[BaseException]
-    ):
+    @pytest.mark.parametrize("raised_error", [IndexError, KeyError, ValueError])
+    def test_errors_on_exit(self, raised_error: Type[BaseException]):
         """Test errors being raised from :class:`mac_cleanup.core._Collector` and it's proxy"""
 
         with pytest.raises(raised_error):
@@ -72,16 +62,9 @@ class TestCollector:
 
         return _Collector()
 
-    @pytest.mark.parametrize(
-        "message_text",
-        ["Test message", None]
-    )
+    @pytest.mark.parametrize("message_text", ["Test message", None])
     def test_message_and_add(
-            self,
-            message_text: Optional[str],
-            base_collector: _Collector,
-            command_with_root: None,
-            path_with_root: None
+        self, message_text: Optional[str], base_collector: _Collector, command_with_root: None, path_with_root: None
     ):
         """Test messages (or default ones) and modules being added to :class:`mac_cleanup.core._Collector`"""
 
@@ -115,10 +98,7 @@ class TestCollector:
         assert base_collector._execute_list[-1].message == message_text
         assert base_collector._execute_list[-1].modules == module_list
 
-    def test_add_no_module(
-            self,
-            base_collector: _Collector
-    ):
+    def test_add_no_module(self, base_collector: _Collector):
         """Test nothing being added without specifying modules in :class:`mac_cleanup.core._Collector`"""
 
         with Collector() as t:
@@ -131,31 +111,18 @@ class TestCollector:
         # Check no module with specified message
         assert not len([unit for unit in base_collector._execute_list if unit.message == "test_add_no_module"])
 
-    @pytest.mark.parametrize(
-        "size_multiplier",
-        [0, 1, 1024]
-    )
-    def test_get_size(
-            self,
-            size_multiplier: int,
-            base_collector: _Collector
-    ):
+    @pytest.mark.parametrize("size_multiplier", [0, 1, 1024])
+    def test_get_size(self, size_multiplier: int, base_collector: _Collector):
         """Test :meth:`mac_cleanup.core._Collector._get_size` works correctly"""
 
         # Get size in bytes
         size = 1024 * size_multiplier
 
-        with tempfile.TemporaryDirectory() as dir_name, \
-                tempfile.NamedTemporaryFile(
-                    mode="w+b",
-                    dir=dir_name,
-                    prefix="test_get_size",
-                    suffix=".test"
-                ) as f:
+        with tempfile.TemporaryDirectory() as dir_name, tempfile.NamedTemporaryFile(
+            mode="w+b", dir=dir_name, prefix="test_get_size", suffix=".test"
+        ) as f:
             # Write random bytes with specified size
-            f.write(
-                os.urandom(size)
-            )
+            f.write(os.urandom(size))
 
             # Flush from buffer
             f.flush()
@@ -163,35 +130,27 @@ class TestCollector:
             f.seek(0)
 
             assert (
-                    size
-                    # Check on a file
-                    == base_collector._get_size(Pathlib(f.name))
-                    # Check on dir
-                    == base_collector._get_size(Pathlib(dir_name))
-                    # Check in glob with star
-                    # == base_collector._get_size(Pathlib(dir_name + "/*"))
-                    # Check in glob with brackets
-                    # == base_collector._get_size(Pathlib(dir_name + "/[!mac]*"))
+                size
+                # Check on a file
+                == base_collector._get_size(Pathlib(f.name))
+                # Check on dir
+                == base_collector._get_size(Pathlib(dir_name))
+                # Check in glob with star
+                # == base_collector._get_size(Pathlib(dir_name + "/*"))
+                # Check in glob with brackets
+                # == base_collector._get_size(Pathlib(dir_name + "/[!mac]*"))
             )
 
             assert (
-                    0
-                    # Check in glob with star
-                    == base_collector._get_size(Pathlib(f.name + "/*"))
-                    # Negative check in glob with brackets
-                    == base_collector._get_size(Pathlib(dir_name + "/[!test]*"))
+                0
+                # Check in glob with star
+                == base_collector._get_size(Pathlib(f.name + "/*"))
+                # Negative check in glob with brackets
+                == base_collector._get_size(Pathlib(dir_name + "/[!test]*"))
             )
 
-    @pytest.mark.parametrize(
-        "is_file",
-        [True, False]
-    )
-    def test_get_size_errors(
-            self,
-            is_file: bool,
-            base_collector: _Collector,
-            monkeypatch: MonkeyPatch
-    ):
+    @pytest.mark.parametrize("is_file", [True, False])
+    def test_get_size_errors(self, is_file: bool, base_collector: _Collector, monkeypatch: MonkeyPatch):
         """Test errors in :meth:`mac_cleanup.core._Collector._get_size`"""
 
         # Check path doesn't exist in glob
@@ -200,10 +159,7 @@ class TestCollector:
         error = PermissionError
 
         # Dummy path raising error
-        def dummy_path_stat(
-                console_self: Pathlib,  # noqa
-                follow_symlinks: bool  # noqa
-        ) -> None:  # noqa
+        def dummy_path_stat(console_self: Pathlib, follow_symlinks: bool) -> None:  # noqa  # noqa  # noqa
             raise error
 
         # Dummy Pathlib.is_file
@@ -232,16 +188,9 @@ class TestCollector:
         error = FileNotFoundError
         base_collector._get_size(Pathlib("/"))
 
-    @pytest.mark.parametrize(
-        "size_multiplier",
-        [0, 1, 1024]
-    )
+    @pytest.mark.parametrize("size_multiplier", [0, 1, 1024])
     def test_count_dry(
-            self,
-            size_multiplier: int,
-            base_collector: _Collector,
-            path_with_root: None,
-            monkeypatch: MonkeyPatch
+        self, size_multiplier: int, base_collector: _Collector, path_with_root: None, monkeypatch: MonkeyPatch
     ):
         """Test :meth:`mac_cleanup.core._Collector._count_dry`"""
 
@@ -260,19 +209,11 @@ class TestCollector:
         # Check results
         assert base_collector._count_dry() == size
 
-    def test_count_dry_error(
-            self,
-            base_collector: _Collector,
-            path_with_root: None,
-            monkeypatch: MonkeyPatch
-    ):
+    def test_count_dry_error(self, base_collector: _Collector, path_with_root: None, monkeypatch: MonkeyPatch):
         """Test errors in :meth:`mac_cleanup.core._Collector._count_dry`"""
 
         # Dummy get size raising KeyboardInterrupt
-        def dummy_get_size(
-                clc_self: _Collector,  # noqa
-                path: Pathlib  # noqa
-        ) -> float:
+        def dummy_get_size(clc_self: _Collector, path: Pathlib) -> float:  # noqa  # noqa
             raise KeyboardInterrupt
 
         # Simulate get_size with error

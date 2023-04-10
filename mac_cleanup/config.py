@@ -25,10 +25,7 @@ class Config:
         :param config_path_: Path to config location
     """
 
-    def __init__(
-            self,
-            config_path_: Path
-    ):
+    def __init__(self, config_path_: Path):
         # Set config path
         self.__path: Final = config_path_
 
@@ -49,10 +46,7 @@ class Config:
             self.__config_data = ConfigFile(enabled=list(), custom_path=None)
 
             # Launch configuration
-            self.__configure(
-                all_modules=list(self.__modules.keys()),
-                enabled_modules=list()
-            )
+            self.__configure(all_modules=list(self.__modules.keys()), enabled_modules=list())
 
         # Get custom modules path
         self.__custom_modules_path: Optional[str] = self.__config_data.get("custom_path")
@@ -60,19 +54,14 @@ class Config:
         # Load custom modules
         self.__load_custom()
 
-    def __call__(
-            self,
-            *,
-            configuration_prompted: bool
-    ):
+    def __call__(self, *, configuration_prompted: bool):
         """Checks config and launches additional configuration if needed"""
 
         # Configure and exit on prompt
         if configuration_prompted:
             # Configure modules
             self.__configure(
-                all_modules=list(self.__modules.keys()),
-                enabled_modules=self.__config_data.get("enabled", list[str]())
+                all_modules=list(self.__modules.keys()), enabled_modules=self.__config_data.get("enabled", list[str]())
             )
 
             # Exit
@@ -84,10 +73,7 @@ class Config:
             console.print("[danger]Modules not configured, opening configuration screen...[/danger]")
 
             # Configure modules
-            self.__configure(
-                all_modules=list(self.__modules.keys()),
-                enabled_modules=list()
-            )
+            self.__configure(all_modules=list(self.__modules.keys()), enabled_modules=list())
 
         # Create list with faulty modules
         remove_list: list[str] = list()
@@ -141,9 +127,7 @@ class Config:
             dump(self.__config_data, f)
 
     @staticmethod
-    def full_exit(
-            failed: bool
-    ) -> None:
+    def full_exit(failed: bool) -> None:
         """
         Gracefully exits from cleaner
             :param failed: Status code of exit
@@ -158,11 +142,7 @@ class Config:
         from rich.prompt import Prompt
 
         # Ask for user input
-        custom_path = Prompt.ask(
-            "Enter path to custom modules",
-            default="~/Documents/mac-cleanup/",
-            show_default=True
-        )
+        custom_path = Prompt.ask("Enter path to custom modules", default="~/Documents/mac-cleanup/", show_default=True)
 
         # Get temps path
         tmp_custom_path = Path(custom_path).expanduser()
@@ -179,12 +159,7 @@ class Config:
         # Exit
         self.full_exit(failed=False)
 
-    def __configure(
-            self,
-            *,
-            all_modules: list[str],
-            enabled_modules: list[str]
-    ) -> None:
+    def __configure(self, *, all_modules: list[str], enabled_modules: list[str]) -> None:
         """
         Opens modules configuration screen
             :param all_modules: List w/ all modules
@@ -199,22 +174,17 @@ class Config:
         # Prints the legend
         print_panel(
             text="[success]Enable: [yellow][warning]<space>[/warning] | [warning]<--[/warning] | [warning]-->[/warning]"
-                 "\t[success]Confirm: [warning]<enter>[/warning]",
-            title="[info]Controls"
+            "\t[success]Confirm: [warning]<enter>[/warning]",
+            title="[info]Controls",
         )
 
         questions = inquirer.Checkbox(  # pyright: ignore [reportUnknownVariableType, reportUnknownMemberType]
-            "modules",
-            message="Active modules",
-            choices=all_modules,
-            default=enabled_modules,
-            carousel=True,
+            "modules", message="Active modules", choices=all_modules, default=enabled_modules, carousel=True
         )
 
         # Get user answers
         answers = inquirer.prompt(  # pyright: ignore [reportUnknownVariableType, reportUnknownMemberType]
-            questions=[questions],
-            raise_keyboard_interrupt=True
+            questions=[questions], raise_keyboard_interrupt=True
         )
 
         # Clear console after checkbox
@@ -223,10 +193,7 @@ class Config:
         if not answers["modules"]:
             console.print("Config cannot be empty. Enable some modules")
 
-            return self.__configure(
-                all_modules=all_modules,
-                enabled_modules=enabled_modules,
-            )
+            return self.__configure(all_modules=all_modules, enabled_modules=enabled_modules)
 
         # Update config
         self.__config_data["enabled"] = answers["modules"]
@@ -237,14 +204,7 @@ class Config:
     def __load_default(self) -> None:
         """Loads default modules"""
 
-        self.__modules.update(
-            dict(
-                getmembers(
-                    object=default_modules,
-                    predicate=isfunction
-                )
-            )
-        )
+        self.__modules.update(dict(getmembers(object=default_modules, predicate=isfunction)))
 
     def __load_custom(self) -> None:
         """Loads custom modules and"""
@@ -266,10 +226,7 @@ class Config:
             filename = module.name.split(".py")[0]
 
             # Set module loader
-            loader = SourceFileLoader(
-                fullname=filename,
-                path=module.as_posix(),
-            )
+            loader = SourceFileLoader(fullname=filename, path=module.as_posix())
 
             # Get module spec
             spec = spec_from_loader(loader.name, loader)
@@ -286,14 +243,7 @@ class Config:
 
             # Add modules to the list
             # Duplicates will be overwritten
-            tmp_modules.update(
-                dict(
-                    getmembers(
-                        object=modules,
-                        predicate=isfunction
-                    )
-                )
-            )
+            tmp_modules.update(dict(getmembers(object=modules, predicate=isfunction)))
 
         self.__modules.update(tmp_modules)
 

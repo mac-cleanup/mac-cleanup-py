@@ -27,11 +27,7 @@ class EntryPoint:
         free_space_before = self.count_free_space()
 
         for unit in self.base_collector._execute_list:  # noqa
-            for module in ProgressBar.wrap_iter(
-                    unit.modules,
-                    description=unit.message,
-                    total=len(unit.modules)
-            ):
+            for module in ProgressBar.wrap_iter(unit.modules, description=unit.message, total=len(unit.modules)):
                 # Call for module execution
                 module._execute()  # noqa
 
@@ -66,24 +62,16 @@ class EntryPoint:
         if args.dry_run:
             from rich.prompt import Confirm
 
-            freed_space = bytes_to_human(
-                self.base_collector._count_dry()  # noqa
-            )
+            freed_space = bytes_to_human(self.base_collector._count_dry())  # noqa
 
-            print_panel(
-                text=f"Approx [success]{freed_space}[/success] will be cleaned",
-                title="[info]Dry run results",
-            )
+            print_panel(text=f"Approx [success]{freed_space}[/success] will be cleaned", title="[info]Dry run results")
 
             try:
                 continue_cleanup = Confirm.ask("Continue?", show_default=False, default="y")
             # Cyrillic symbols may crash rich.Confirm
             except UnicodeDecodeError:
                 console.clear()
-                console.print(
-                    "Do not enter symbols that can't be decoded to UTF-8",
-                    style="danger",
-                )
+                console.print("Do not enter symbols that can't be decoded to UTF-8", style="danger")
                 console.print("Exiting...")
                 return
 

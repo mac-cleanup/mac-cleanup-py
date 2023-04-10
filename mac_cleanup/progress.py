@@ -13,21 +13,17 @@ class _ProgressBar(Progress):
     def __init__(self):
         # Call parent init w/ default stuff
         super().__init__(
-            SpinnerColumn(),
-            *Progress.get_default_columns(),
-            TimeElapsedColumn(),
-            console=console,
-            transient=True
+            SpinnerColumn(), *Progress.get_default_columns(), TimeElapsedColumn(), console=console, transient=True
         )
 
     def prompt(
-            self,
-            prompt_text: str,
-            prompt_title: str,
-            password: bool = False,
-            choices: Optional[list[str]] = None,
-            show_default: bool = True,
-            show_choices: bool = True
+        self,
+        prompt_text: str,
+        prompt_title: str,
+        password: bool = False,
+        choices: Optional[list[str]] = None,
+        show_default: bool = True,
+        show_choices: bool = True,
     ) -> bool:
         """
         Stops progress bar to show prompt to user
@@ -44,10 +40,7 @@ class _ProgressBar(Progress):
         self.stop()
 
         # Print prompt to user
-        print_panel(
-            text=prompt_text,
-            title=prompt_title
-        )
+        print_panel(text=prompt_text, title=prompt_title)
 
         # Get user input
         answer = Confirm.ask(
@@ -70,10 +63,10 @@ class _ProgressBar(Progress):
         return answer
 
     def wrap_iter(
-            self,
-            sequence: Iterable[ProgressType] | Sequence[ProgressType],
-            total: Optional[float] = None,
-            description: str = "Working..."
+        self,
+        sequence: Iterable[ProgressType] | Sequence[ProgressType],
+        total: Optional[float] = None,
+        description: str = "Working...",
     ) -> Iterable[ProgressType]:
         """
         Wrapper other :func:`rich.progress.track`
@@ -84,11 +77,7 @@ class _ProgressBar(Progress):
         """
 
         with self:
-            yield from self.track(
-                sequence,
-                total=total,
-                description=description
-            )
+            yield from self.track(sequence, total=total, description=description)
 
 
 # ProgressBar instance for all project

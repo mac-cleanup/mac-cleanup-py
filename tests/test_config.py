@@ -17,30 +17,22 @@ from readchar import key
 from mac_cleanup.config import Config, ConfigFile
 
 
-@pytest.fixture(
-    scope="session"
-)
+@pytest.fixture(scope="session")
 def user_output() -> list[str]:
     """Set dummy user output"""
 
     return [f"test{num}" for num in range(2)]
 
 
-@pytest.fixture(
-    scope="session"
-)
+@pytest.fixture(scope="session")
 def dummy_module() -> Callable[..., None]:
     """Dummy module for calling modules in __call__"""
 
     return lambda: None
 
 
-@pytest.fixture(
-    scope="session"
-)
-def dummy_prompt(
-        user_output: list[str]
-) -> Callable[[list[str]], None]:
+@pytest.fixture(scope="session")
+def dummy_prompt(user_output: list[str]) -> Callable[[list[str]], None]:
     """Dummy prompt for inquirer (args are needed for params being provided to inquirer)"""
 
     def inner(*args: list[str] | bool) -> None:  # noqa
@@ -49,9 +41,7 @@ def dummy_prompt(
     return inner
 
 
-@pytest.fixture(
-    scope="session"
-)
+@pytest.fixture(scope="session")
 def dummy_key() -> Callable[..., str]:
     """Dummy key press for inquirer"""
 
@@ -59,14 +49,8 @@ def dummy_key() -> Callable[..., str]:
 
 
 class TestConfig:
-    @pytest.mark.parametrize(
-        "enabled",
-        [1, 2]
-    )
-    def test_init_enabled_modules(
-            self,
-            enabled: int
-    ):
+    @pytest.mark.parametrize("enabled", [1, 2])
+    def test_init_enabled_modules(self, enabled: int):
         """Test loading list of enabled modules in :class:`mac_cleanup.config.Config`"""
 
         # Set list of dummy modules
@@ -92,14 +76,8 @@ class TestConfig:
         # Assert that dummy modules loaded
         assert len(config.get_config_data.get("enabled")) == len(enabled_modules)
 
-    @pytest.mark.parametrize(
-        "custom_path",
-        [None, "/test"]
-    )
-    def test_init_custom_path(
-            self,
-            custom_path: Optional[str]
-    ):
+    @pytest.mark.parametrize("custom_path", [None, "/test"])
+    def test_init_custom_path(self, custom_path: Optional[str]):
         """Test custom path being set in :class:`mac_cleanup.config.Config`"""
 
         # Create dummy ConfigFile
@@ -124,15 +102,15 @@ class TestConfig:
 
     @staticmethod
     def config_call_final_checks(
-            config: Config,
-            configuration_prompted: bool,
-            file_context: IO[str],
-            capsys: CaptureFixture[str],
-            monkeypatch: MonkeyPatch,
-            user_output: list[str],
-            dummy_module: Callable[..., None],
-            dummy_prompt: Callable[..., None],
-            dummy_key: Callable[..., str]
+        config: Config,
+        configuration_prompted: bool,
+        file_context: IO[str],
+        capsys: CaptureFixture[str],
+        monkeypatch: MonkeyPatch,
+        user_output: list[str],
+        dummy_module: Callable[..., None],
+        dummy_prompt: Callable[..., None],
+        dummy_key: Callable[..., str],
     ):
         """Final tests for :class:`mac_cleanup.config.Config`
         launching configuration on being empty or user prompted configuration"""
@@ -178,20 +156,16 @@ class TestConfig:
         config_data = ConfigFile(**toml.load(file_context))
 
         # Check new config is correct
-        assert (
-                config.get_config_data.get("enabled")
-                == config_data.get("enabled")
-                == user_output
-        )
+        assert config.get_config_data.get("enabled") == config_data.get("enabled") == user_output
 
     def test_call_configuration_prompted(
-            self,
-            user_output: list[str],
-            dummy_module: Callable[..., None],
-            dummy_prompt: Callable[[list[str]], None],
-            dummy_key: Callable[..., str],
-            capsys: CaptureFixture[str],
-            monkeypatch: MonkeyPatch
+        self,
+        user_output: list[str],
+        dummy_module: Callable[..., None],
+        dummy_prompt: Callable[[list[str]], None],
+        dummy_key: Callable[..., str],
+        capsys: CaptureFixture[str],
+        monkeypatch: MonkeyPatch,
     ):
         """Test for configuration being prompted by user in :class:`mac_cleanup.config.Config`"""
 
@@ -213,11 +187,7 @@ class TestConfig:
             config = Config(config_path_=config_path)
 
             # Check default state
-            assert (
-                    config.get_config_data.get("enabled")
-                    == ConfigFile(**toml.load(f)).get("enabled")
-                    == ["test"]
-            )
+            assert config.get_config_data.get("enabled") == ConfigFile(**toml.load(f)).get("enabled") == ["test"]
 
             # Launch final check
             self.config_call_final_checks(
@@ -229,17 +199,17 @@ class TestConfig:
                 user_output=user_output,
                 dummy_module=dummy_module,
                 dummy_prompt=dummy_prompt,
-                dummy_key=dummy_key
+                dummy_key=dummy_key,
             )
 
     def test_call_with_no_config(
-            self,
-            user_output: list[str],
-            dummy_module: Callable[..., None],
-            dummy_prompt: Callable[[list[str]], None],
-            dummy_key: Callable[..., str],
-            capsys: CaptureFixture[str],
-            monkeypatch: MonkeyPatch
+        self,
+        user_output: list[str],
+        dummy_module: Callable[..., None],
+        dummy_prompt: Callable[[list[str]], None],
+        dummy_key: Callable[..., str],
+        capsys: CaptureFixture[str],
+        monkeypatch: MonkeyPatch,
     ):
         """Test :class:`mac_cleanup.config.Config` being called with an empty configuration"""
 
@@ -261,11 +231,7 @@ class TestConfig:
             config = Config(config_path_=config_path)
 
             # Check default state
-            assert (
-                    config.get_config_data.get("enabled")
-                    is ConfigFile(**toml.load(f)).get("enabled")
-                    is None
-            )
+            assert config.get_config_data.get("enabled") is ConfigFile(**toml.load(f)).get("enabled") is None
 
             # Launch final check
             self.config_call_final_checks(
@@ -277,18 +243,11 @@ class TestConfig:
                 user_output=user_output,
                 dummy_module=dummy_module,
                 dummy_prompt=dummy_prompt,
-                dummy_key=dummy_key
+                dummy_key=dummy_key,
             )
 
-    @pytest.mark.parametrize(
-        "custom_path",
-        ["~/Documents/my-custom-modules", None]
-    )
-    def test_configure_custom_path(
-            self,
-            custom_path: Optional[str],
-            monkeypatch: MonkeyPatch
-    ):
+    @pytest.mark.parametrize("custom_path", ["~/Documents/my-custom-modules", None])
+    def test_configure_custom_path(self, custom_path: Optional[str], monkeypatch: MonkeyPatch):
         """Test custom path being set by user prompt in :class:`mac_cleanup.config.Config`"""
 
         # Set default custom modules path
@@ -327,12 +286,12 @@ class TestConfig:
         assert config_data.get("custom_path") == custom_path
 
     def test_init_decode_error(
-            self,
-            user_output: list[str],
-            dummy_prompt: Callable[[list[str]], None],
-            dummy_key: Callable[..., str],
-            capsys: CaptureFixture[str],
-            monkeypatch: MonkeyPatch
+        self,
+        user_output: list[str],
+        dummy_prompt: Callable[[list[str]], None],
+        dummy_key: Callable[..., str],
+        capsys: CaptureFixture[str],
+        monkeypatch: MonkeyPatch,
     ):
         """Test toml decode error on init of :class:`mac_cleanup.config.Config`"""
 
@@ -364,11 +323,7 @@ class TestConfig:
         # Check message on empty config or decode error
         assert "Modules not configured" in captured_stdout
 
-    def test_call_with_custom_modules(
-            self,
-            capsys: CaptureFixture[str],
-            monkeypatch: MonkeyPatch
-    ):
+    def test_call_with_custom_modules(self, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
         """Test loading of custom modules in :class:`mac_cleanup.config.Config`"""
 
         from inspect import getsource
@@ -391,13 +346,8 @@ class TestConfig:
             monkeypatch.setattr("mac_cleanup.config.Config._Config__load_default", dummy_load_default)
 
             # Simulate config read
-            def dummy_read(
-                    self: Config  # noqa
-            ) -> ConfigFile:
-                return ConfigFile(
-                    enabled=[dummy_module_name],
-                    custom_path=tmp_module_path.parent.as_posix()
-                )
+            def dummy_read(self: Config) -> ConfigFile:  # noqa
+                return ConfigFile(enabled=[dummy_module_name], custom_path=tmp_module_path.parent.as_posix())
 
             # Simulate dummy module in enabled
             monkeypatch.setattr("mac_cleanup.config.Config._Config__read", dummy_read)
@@ -423,38 +373,26 @@ class TestConfig:
         assert "dummy_module_output" in captured_stdout
 
         # Check custom_path is correct
-        assert (
-                config.get_config_data.get("custom_path")
-                == config.get_custom_path
-                == tmp_module_path.parent.as_posix()
-        )
+        assert config.get_config_data.get("custom_path") == config.get_custom_path == tmp_module_path.parent.as_posix()
 
         # Check enabled modules
         assert config.get_config_data.get("enabled") == [dummy_module_name]
 
-    def test_call_faulty_modules(
-            self,
-            monkeypatch: MonkeyPatch
-    ):
+    def test_call_faulty_modules(self, monkeypatch: MonkeyPatch):
         """Test faulty (deleted) modules in configuration of :class:`mac_cleanup.config.Config`"""
 
         # Create dummy modules list
         modules_list = {"test": lambda: None}
 
         # Simulate modules list
-        def dummy_load_default(
-                cfg_self: Config
-        ) -> None:
+        def dummy_load_default(cfg_self: Config) -> None:
             cfg_self.get_modules.update(modules_list)
 
         # Simulate loading of default modules
         monkeypatch.setattr("mac_cleanup.config.Config._Config__load_default", dummy_load_default)
 
         # Create config
-        test_config = ConfigFile(
-            enabled=["test2"],
-            custom_path=None
-        )
+        test_config = ConfigFile(enabled=["test2"], custom_path=None)
 
         with tempfile.NamedTemporaryFile(mode="w+") as f:
             # Write config to tmp file
@@ -480,10 +418,7 @@ class TestConfig:
         assert len(config.get_config_data.get("enabled")) == 0
 
     def test_none_modules_selected(
-            self,
-            dummy_key: Callable[..., str],
-            capsys: CaptureFixture[str],
-            monkeypatch: MonkeyPatch
+        self, dummy_key: Callable[..., str], capsys: CaptureFixture[str], monkeypatch: MonkeyPatch
     ):
         """Test modules configuration with none being selected in :class:`mac_cleanup.config.Config`"""
 
