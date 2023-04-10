@@ -48,10 +48,17 @@ ruff = "^0.0.259"
 py = "^1.11.0"
 
 [tool.poetry.group.dev.dependencies]
+commitizen = "^2.42.1"
+pre-commit = "^3.2.2"
 
 [build-system]
 requires = [ "poetry-core>=1.0.0" ]
 build-backend = "poetry.core.masonry.api"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version_files = [ "pyproject.toml:version" ]
+tag_format = "v$version"
 
 [tool.coverage.run]
 omit = [
