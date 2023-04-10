@@ -40,7 +40,7 @@ class TestParser:
         from mac_cleanup.__version__ import __version__
 
         # Check current version in description
-        assert parser.description is not None and __version__ in parser.description
+        assert parser.description is not None and f"Version: {__version__}" in parser.description
 
     def test_actions_empty(
             self,
