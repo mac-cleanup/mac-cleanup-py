@@ -18,7 +18,7 @@ This project is a rewrite of the original [mac-cleanup-sh](https://github.com/ma
 2. Delete unnecessary logs & files 
 3. Clear cache
 
-![mac-cleanup-demo](https://user-images.githubusercontent.com/44712637/184389183-449cae99-4d40-4ca1-9523-1fb3dcf809dd.gif)
+![mac-cleanup-demo](https://user-images.githubusercontent.com/44712637/231780851-d2197255-e24e-46ba-8355-42bcf588376d.gif)
 
 <details>
    <summary>
