@@ -39,3 +39,6 @@ mac_cleanup/modules.toml
 
 # ruff
 .ruff_cache/
+
+# macOS stuff
+.DS_Store
