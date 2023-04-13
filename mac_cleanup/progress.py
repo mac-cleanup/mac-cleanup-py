@@ -1,19 +1,35 @@
 """Modified rich progress bar."""
 from typing import Iterable, Optional, Sequence
 
-from rich.progress import Progress, ProgressType, SpinnerColumn, TimeElapsedColumn
+from rich.progress import (
+    BarColumn,
+    Progress,
+    ProgressType,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+)
 from rich.prompt import Confirm
 
 from mac_cleanup.console import console, print_panel
 
 
-class _ProgressBar(Progress):
-    """Modified rich progress bar with blocking prompt."""
+class _ProgressBar:
+    """Proxy rich progress bar with blocking prompt."""
 
     def __init__(self):
         # Call parent init w/ default stuff
-        super().__init__(
-            SpinnerColumn(), *Progress.get_default_columns(), TimeElapsedColumn(), console=console, transient=True
+        self.current_progress = Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TaskProgressColumn(show_speed=True),
+            TimeRemainingColumn(elapsed_when_finished=True),
+            TimeElapsedColumn(),
+            console=console,
+            transient=True,
         )
 
     def prompt(
@@ -39,7 +55,7 @@ class _ProgressBar(Progress):
         """
 
         # Stop refreshing progress bar
-        self.stop()
+        self.current_progress.stop()
 
         # Print prompt to user
         print_panel(text=prompt_text, title=prompt_title)
@@ -47,7 +63,7 @@ class _ProgressBar(Progress):
         # Get user input
         answer = Confirm.ask(
             prompt="Do you want to continue?",
-            console=self.console,
+            console=self.current_progress.console,
             password=password,
             choices=choices,
             show_default=show_default,
@@ -55,11 +71,11 @@ class _ProgressBar(Progress):
         )
 
         # Clear printed stuff
-        self.console.clear()
-        self.console.clear_live()
+        self.current_progress.console.clear()
+        self.current_progress.console.clear_live()
 
         # Resume refreshing progress bar
-        self.start()
+        self.current_progress.start()
 
         # Return user answer
         return answer
@@ -80,8 +96,15 @@ class _ProgressBar(Progress):
 
         """
 
-        with self:
-            yield from self.track(sequence, total=total, description=description)
+        # Clear previous Live instance
+        self.current_progress.console.clear_live()
+
+        # Get new progress instance with default stuff
+        self.__init__()
+
+        # Call context manager and yield from it
+        with self.current_progress:
+            yield from self.current_progress.track(sequence, total=total, description=description)
 
 
 # ProgressBar instance for all project

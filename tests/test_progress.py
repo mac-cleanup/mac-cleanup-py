@@ -28,13 +28,11 @@ def test_prompt(user_continue: bool, capsys: CaptureFixture[str], monkeypatch: M
 def test_wrap_iter(capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
     """Test ProgressBar wrap_iter call."""
 
-    # Change transient attribute to be able to capture stdout
-    monkeypatch.setattr(ProgressBar.live, "transient", False)
-
     seq = list(range(5))
 
     for _ in ProgressBar.wrap_iter(seq, total=len(seq), description="test_wrap_iter"):
-        pass
+        # Change transient attribute to be able to capture stdout
+        monkeypatch.setattr(ProgressBar.current_progress.live, "transient", False)
 
     # Check stdout
     captured = capsys.readouterr().out
