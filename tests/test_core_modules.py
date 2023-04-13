@@ -43,16 +43,12 @@ class TestCommand:
         # Check command execution output is correct
         assert "test" in captured_execute
 
+    @pytest.mark.usefixtures("_command_with_root")
     @pytest.mark.parametrize(
         ("prompt_succeeded", "prompt"), [(True, "prompt"), (True, None), (False, "prompt"), (False, None)]
     )
     def test_base_module_execute(
-        self,
-        prompt_succeeded: bool,
-        prompt: Optional[str],
-        command_with_root: None,
-        capsys: CaptureFixture[str],
-        monkeypatch: MonkeyPatch,
+        self, prompt_succeeded: bool, prompt: Optional[str], capsys: CaptureFixture[str], monkeypatch: MonkeyPatch
     ):
         """Test prompt functionality in :class:`mac_cleanup.core_modules.BaseModule`"""
 
@@ -88,12 +84,13 @@ class TestCommand:
         # Check prompt title
         assert "Module requires attention" in captured_stdout
 
+    @pytest.mark.usefixtures("_command_with_root")
     @pytest.mark.parametrize(
         "executed_command",
         # Empty command or None
         ["", None],
     )
-    def test_base_command_execute(self, executed_command: Optional[str], command_with_root: None):
+    def test_base_command_execute(self, executed_command: Optional[str]):
         """Test no command being passed to :class:`mac_cleanup.core_modules._BaseCommand`"""
 
         # Get command instance without command
@@ -105,8 +102,9 @@ class TestCommand:
         # Check there is no output and no errors
         assert captured_stdout is None
 
+    @pytest.mark.usefixtures("_command_with_root")
     @pytest.mark.parametrize("redirect_errors", [True, False])
-    def test_with_errors(self, redirect_errors: bool, command_with_root: None):
+    def test_with_errors(self, redirect_errors: bool):
         # Get command with stderr
         command = Command("echo 'test' >&2")
 
@@ -130,8 +128,9 @@ class TestCommand:
 
 
 class TestPath:
+    @pytest.mark.usefixtures("_path_with_root")
     @pytest.mark.parametrize("is_file", [True, False])
-    def test_init(self, is_file: bool, path_with_root: None):
+    def test_init(self, is_file: bool):
         """Tests path and command in init of :class:`mac_cleanup.core_modules.Path`"""
 
         # Get tmp file
@@ -161,7 +160,8 @@ class TestPath:
             # Check command
             assert path.get_command == f"rm -rf '{tmp_path_posix}'"  # noqa
 
-    def test_init_expanduser(self, path_with_root: None):
+    @pytest.mark.usefixtures("_path_with_root")
+    def test_init_expanduser(self):
         """Test expand user in :class:`mac_cleanup.core_modules.Path`"""
 
         # Get dummy path posix
@@ -176,8 +176,9 @@ class TestPath:
         # Check command
         assert path.get_command == f"rm -rf '{tmp_path_posix.expanduser().as_posix()}'"  # noqa
 
+    @pytest.mark.usefixtures("_path_with_root")
     @pytest.mark.parametrize("is_file", [True, False])
-    def test_dry_run_only(self, is_file: bool, path_with_root: None):
+    def test_dry_run_only(self, is_file: bool):
         """Test dry run only in :class:`mac_cleanup.core_modules.Path`"""
 
         # Get tmp file
@@ -207,8 +208,9 @@ class TestPath:
             # Check path exists
             assert tmp_path.exists()
 
+    @pytest.mark.usefixtures("_path_with_root")
     @pytest.mark.parametrize("is_file", [True, False])
-    def test_execute(self, is_file: bool, path_with_root: None):
+    def test_execute(self, is_file: bool):
         """Test for path/dir deletion in :class:`mac_cleanup.core_modules.Path`"""
 
         # Get tmp file
@@ -238,7 +240,7 @@ class TestPath:
             try:
                 # Check file doesn't exist
                 assert not tmp_path.exists()
-            except AssertionError:
+            except AssertionError as err:
                 # Remove temp file on error
                 if is_file:
                     from os import unlink
@@ -246,10 +248,11 @@ class TestPath:
                     unlink(f_name)
 
                 # Raise error that file exists
-                raise FileExistsError
+                raise FileExistsError from err
 
+    @pytest.mark.usefixtures("_path_with_root")
     @pytest.mark.parametrize(("deletable", "exist"), [(False, True), (True, False), (False, False)])
-    def test_negative_execute(self, deletable: bool, exist: bool, path_with_root: None, monkeypatch: MonkeyPatch):
+    def test_negative_execute(self, deletable: bool, exist: bool, monkeypatch: MonkeyPatch):
         """Test for negative execution in :class:`mac_cleanup.core_modules.Path`"""
 
         # Dummy check_deletable utility

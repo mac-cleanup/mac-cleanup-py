@@ -113,8 +113,8 @@ class Config:
         # If something got wrong there is try -> except
         try:
             config = ConfigFile(**load(self.__path))
-        except TomlDecodeError:
-            raise FileNotFoundError
+        except TomlDecodeError as err:
+            raise FileNotFoundError from err
         return config
 
     def __write(self) -> None:

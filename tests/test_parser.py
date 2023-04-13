@@ -6,7 +6,7 @@ import pytest
 from mac_cleanup.parser import Args, parser
 
 
-@pytest.fixture
+@pytest.fixture()
 def get_namespace() -> Args:
     """Get empty args."""
 
@@ -36,7 +36,8 @@ class TestParser:
         from mac_cleanup.__version__ import __version__
 
         # Check current version in description
-        assert parser.description is not None and f"Version: {__version__}" in parser.description
+        assert parser.description is not None
+        assert f"Version: {__version__}" in parser.description
 
     def test_actions_empty(self, get_namespace: Args):
         """Test parser without args."""

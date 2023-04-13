@@ -330,7 +330,7 @@ class TestConfig:
 
         # Dummy module with output to stdout
         def dummy_module() -> None:
-            print("dummy_module_output")
+            print("dummy_module_output")  # noqa: T201  # print in tests is ok
 
         # Get dummy module name
         dummy_module_name = dummy_module.__code__.co_name

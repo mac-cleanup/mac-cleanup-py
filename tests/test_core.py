@@ -14,8 +14,9 @@ from mac_cleanup.core import Unit
 from mac_cleanup.core_modules import BaseModule, Command, Path
 
 
+@pytest.mark.usefixtures("_command_with_root", "_path_with_root")
 class TestUnit:
-    def test_create_unit(self, command_with_root: None, path_with_root: None):
+    def test_create_unit(self):
         """Check :class:`mac_cleanup.core.Unit` creation."""
 
         # message, module list, validators
@@ -52,21 +53,19 @@ class TestCollector:
     def test_errors_on_exit(self, raised_error: Type[BaseException]):
         """Test errors being raised from :class:`mac_cleanup.core._Collector` and it's proxy."""
 
-        with pytest.raises(raised_error):
-            with Collector() as _:
-                raise raised_error
+        with pytest.raises(raised_error), Collector() as _:  # noqa: PT012
+            raise raised_error
 
     @staticmethod
-    @pytest.fixture
+    @pytest.fixture()
     def base_collector() -> _Collector:
         """Get main collector instance - :class:`mac_cleanup.core._Collector`"""
 
         return _Collector()
 
+    @pytest.mark.usefixtures("_command_with_root", "_path_with_root")
     @pytest.mark.parametrize("message_text", ["Test message", None])
-    def test_message_and_add(
-        self, message_text: Optional[str], base_collector: _Collector, command_with_root: None, path_with_root: None
-    ):
+    def test_message_and_add(self, message_text: Optional[str], base_collector: _Collector):
         """Test messages (or default ones) and modules being added to
         :class:`mac_cleanup.core._Collector`
         """
@@ -111,7 +110,8 @@ class TestCollector:
 
             # Check temp stuff
             assert t.get_temp_message == "test_add_no_module"
-            assert t.get_temp_modules_list is not None and len(t.get_temp_modules_list) == 0
+            assert t.get_temp_modules_list is not None
+            assert len(t.get_temp_modules_list) == 0
 
         # Check no module with specified message
         assert not len([unit for unit in base_collector._execute_list if unit.message == "test_add_no_module"])
@@ -193,10 +193,9 @@ class TestCollector:
         error = FileNotFoundError
         base_collector._get_size(Pathlib("/"))
 
+    @pytest.mark.usefixtures("_path_with_root")
     @pytest.mark.parametrize("size_multiplier", [0, 1, 1024])
-    def test_count_dry(
-        self, size_multiplier: int, base_collector: _Collector, path_with_root: None, monkeypatch: MonkeyPatch
-    ):
+    def test_count_dry(self, size_multiplier: int, base_collector: _Collector, monkeypatch: MonkeyPatch):
         """Test :meth:`mac_cleanup.core._Collector._count_dry`"""
 
         # Get size in bytes
@@ -214,7 +213,8 @@ class TestCollector:
         # Check results
         assert base_collector._count_dry() == size
 
-    def test_count_dry_error(self, base_collector: _Collector, path_with_root: None, monkeypatch: MonkeyPatch):
+    @pytest.mark.usefixtures("_path_with_root")
+    def test_count_dry_error(self, base_collector: _Collector, monkeypatch: MonkeyPatch):
         """Test errors in :meth:`mac_cleanup.core._Collector._count_dry`"""
 
         # Dummy get size raising KeyboardInterrupt

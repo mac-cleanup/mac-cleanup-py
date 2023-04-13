@@ -210,7 +210,7 @@ class _Collector:
         path_modules: list[Path] = list(filter(partial(self.__filter_modules, filter_type=Path), all_modules))
 
         # Extracts paths from path_modules list
-        path_list: list[Path_] = list(map(lambda path: path.get_path, path_modules))
+        path_list: list[Path_] = [path.get_path for path in path_modules]
 
         # Set counter for estimated size
         estimate_size: float = 0

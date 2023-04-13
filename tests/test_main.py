@@ -42,15 +42,9 @@ class TestEntryPoint:
         with pytest.raises(SystemExit):
             main()
 
+    @pytest.mark.usefixtures("_path_with_root", "_command_with_root")
     @pytest.mark.parametrize("size_multiplier", [3.0, 2.0])
-    def test_cleanup(
-        self,
-        size_multiplier: float,
-        path_with_root: None,
-        command_with_root: None,
-        capsys: CaptureFixture[str],
-        monkeypatch: MonkeyPatch,
-    ):
+    def test_cleanup(self, size_multiplier: float, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
         """Test cleanup in :class:`mac_cleanup.main.EntryPoint`"""
 
         # Dummy Config with empty init
