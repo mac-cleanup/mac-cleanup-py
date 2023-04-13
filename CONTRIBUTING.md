@@ -9,7 +9,7 @@ Read repo's [Code of Conduct](./CODE_OF_CONDUCT.md) to keep community respectabl
 > #### 1. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo#fork-an-example-repository) the repo
 > #### 2. [Checkout](https://www.atlassian.com/git/tutorials/using-branches/git-checkout) from `develop` branch
 > #### 3. Install dependencies: `pip install poetry && poetry install`
-> #### 3. Setup `pre-commit` hooks: `pre-commit install`
+> #### 3. Setup `pre-commit` hooks: `pre-commit install --hook-type pre-commit --hook-type pre-push`
 > #### 4. [Commit](https://www.atlassian.com/git/tutorials/saving-changes/git-commit) your changes with [Conventional Commits](https://www.conventionalcommits.org)
 > #### 5. Run tests: `poetry run tox`
 > #### 6. [Push the changes](https://docs.github.com/en/get-started/using-git/pushing-commits-to-a-remote-repository#about-git-push) to your fork 
@@ -53,7 +53,7 @@ If you find an issue to work on, just post a comment on the issue's page and you
    ```
 4. Setup pre-commit hooks
     ```bash
-   pre-commit install
+   pre-commit install --hook-type pre-commit --hook-type pre-push
     ```
 5. Run tests before pushing
     ```bash

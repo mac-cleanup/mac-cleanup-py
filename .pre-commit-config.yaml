@@ -1,3 +1,6 @@
+default_stages:
+  - push
+
 repos:
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v2.42.1
@@ -11,7 +14,6 @@ repos:
     hooks:
       - id: black
         name: Run black
-        stages: [ push ]
         types: [ python ]
 
   - repo: https://github.com/pycqa/isort
@@ -19,7 +21,6 @@ repos:
     hooks:
       - id: isort
         name: Run isort
-        stages: [ push ]
         types: [ python ]
 
   - repo: https://github.com/PyCQA/docformatter
@@ -27,14 +28,12 @@ repos:
     hooks:
       - id: docformatter
         name: Run docformatter
-        stages: [ push ]
         types: [ python ]
 
   - repo: local
     hooks:
       - id: pytest
         name: Run pytest
-        stages: [ push ]
         language: system
         pass_filenames: false
         types: [ python ]
@@ -42,7 +41,6 @@ repos:
 
       - id: pyright
         name: Run pyright
-        stages: [ push ]
         language: system
         pass_filenames: false
         types: [ python ]
@@ -50,7 +48,6 @@ repos:
 
       - id: ruff
         name: Run ruff
-        stages: [ push ]
         language: system
         pass_filenames: false
         types: [ python ]
