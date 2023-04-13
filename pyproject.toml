@@ -45,6 +45,15 @@ pytest = "^7.3.0"
 pytest-cov = "^4.0.0"
 pyright = "^1.1.302"
 ruff = "^0.0.261"
+flake8-bugbear = "^23.3.23"
+flake8-comprehensions = "^3.12.0"
+flake8-print = "^5.0.0"
+flake8-quotes = "^3.3.2"
+flake8-builtins = "^2.1.0"
+flake8-pytest-style = "^1.7.2"
+flake8-blind-except = "^0.2.1"
+flake8-no-pep420 = "^2.3.0"
+flake8-simplify = "^0.20.0"
 
 [tool.poetry.group.dev.dependencies]
 commitizen = "^2.42.1"
@@ -110,8 +119,26 @@ line-length = 120
 ignore = [
     "F403",  # star imports
     "F405",  #  probably undefined stuff from star imports
-    "E731"  # lambda expressions
+    "E731",  # lambda expressions
+    "C408"  # dict/list as calls
 ]
+select = [
+    "E",  # default
+    "F",  # default
+    "B",  # bugbear, blind-except
+    "C",  # comprehensions
+    "T",  # print
+    "Q",  # quotes
+    "A",  # builtins
+    "PT",  # pytest-style
+    "INP",  # pep420
+    "SIM",  # simplify
+]
+
+
+[tool.ruff.flake8-quotes]
+inline-quotes = "double"
+multiline-quotes = "double"
 
 [tool.pytest.ini_options]
 minversion = "7.2.2"
