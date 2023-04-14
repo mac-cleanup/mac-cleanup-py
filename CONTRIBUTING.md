@@ -7,11 +7,14 @@ Read repo's [Code of Conduct](./CODE_OF_CONDUCT.md) to keep community respectabl
 ## TL;DR
 
 > #### 1. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo#fork-an-example-repository) the repo
-> #### 2. [Checkout](https://www.atlassian.com/git/tutorials/using-branches/git-checkout) from 'develop' branch
-> #### 3. [Commit](https://www.atlassian.com/git/tutorials/saving-changes/git-commit) your changes
-> #### 4. [Push the changes](https://docs.github.com/en/get-started/using-git/pushing-commits-to-a-remote-repository#about-git-push) to your fork 
-> #### 4. [Open PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) to 'develop' branch
-> #### Congrats :tada::sparkles:. CYA in your PR's comments 😉
+> #### 2. [Checkout](https://www.atlassian.com/git/tutorials/using-branches/git-checkout) from `develop` branch
+> #### 3. Install dependencies: `pip install poetry && poetry install`
+> #### 3. Setup `pre-commit` hooks: `pre-commit install --hook-type pre-commit --hook-type pre-push`
+> #### 4. [Commit](https://www.atlassian.com/git/tutorials/saving-changes/git-commit) your changes with [Conventional Commits](https://www.conventionalcommits.org)
+> #### 5. Run tests: `poetry run tox`
+> #### 6. [Push the changes](https://docs.github.com/en/get-started/using-git/pushing-commits-to-a-remote-repository#about-git-push) to your fork 
+> #### 7. [Open PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) to 'develop' branch
+> #### Congrats :tada::sparkles:. CYA in your PRs 😉
 
 
 ## New contributor guide
@@ -42,10 +45,20 @@ If you find an issue to work on, just post a comment on the issue's page and you
 
 ### Make Changes
 
-1. Fork the repository.
-  - [Fork the repo](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo#fork-an-example-repository) so that you can make your changes without affecting the original project until you're ready to merge them.
-
-2. Create a working branch out of 'develop' and start with your changes!
+1. [Fork the repository](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo#fork-an-example-repository) so that you can make your changes without affecting the original project until you're ready to merge them.
+2. Create a working branch out of 'develop' and start with your changes
+3. Install dependencies
+    ```bash
+   pip install poetry && poetry install
+   ```
+4. Setup pre-commit hooks
+    ```bash
+   pre-commit install --hook-type pre-commit --hook-type pre-push
+    ```
+5. Run tests before pushing
+    ```bash
+   poetry run tox
+    ```
 
 ### Commit your update
 

@@ -2,7 +2,7 @@
 
 # TL;DR
 
-> ### Be nice to each other or you'll face the consequences
+> ### Be nice to each other, or you'll face the consequences
 
 ## Our Pledge
 

@@ -1,168 +1,268 @@
-from typing import List, Dict  # Generics are fun
+"""Config handler."""
+from inspect import getmembers, isfunction
 from pathlib import Path
-from .utils import function
+from typing import Callable, Final, Optional, TypedDict, final
 
-config_path = Path(__file__).parent.resolve().as_posix() + "/modules.toml"
+from mac_cleanup import default_modules
+from mac_cleanup.console import console
 
 
-def get_config(
-) -> dict:
+@final
+class ConfigFile(TypedDict):
+    """Config file structure."""
+
+    enabled: list[str]
+    custom_path: Optional[str]
+
+
+@final
+class Config:
     """
-    Gets the config or creates it if it doesn't exist
+    Class for config initialization and validation.
 
-    Returns:
-        Config as a dict
+    :param config_path_: Path to config location
+
     """
-    from toml import load, TomlDecodeError
 
-    # Creates config if it's not already created
-    Path(config_path).touch(exist_ok=True)
+    def __init__(self, config_path_: Path):
+        # Set config path
+        self.__path: Final = config_path_
 
-    # Loads config (in case something got wrong there is try -> except)
-    try:
-        config = load(config_path)
-    except TomlDecodeError:
-        config = dict()
-    return config
+        # Set modules in the class
+        self.__modules: dict[str, Callable[..., None]] = dict()
 
+        # Load default modules
+        self.__load_default()
 
-def set_config(
-        config: dict,
-) -> None:
-    """
-    Updates and writes config
+        # Load config
+        try:
+            self.__config_data: Final[ConfigFile] = self.__read()
+        except FileNotFoundError:
+            console.print("[danger]Modules not configured, opening configuration screen...[/danger]")
 
-    Args:
-        config: Config as a dict to be written
-    """
-    from toml import dump
+            # Set config to empty dict
+            # Why: self.configure will call dict.update
+            self.__config_data = ConfigFile(enabled=list(), custom_path=None)
 
-    with open(config_path, "w+") as f:
-        dump(config, f)
+            # Launch configuration
+            self.__configure(all_modules=list(self.__modules.keys()), enabled_modules=list())
 
+        # Get custom modules path
+        self.__custom_modules_path: Optional[str] = self.__config_data.get("custom_path")
 
-def config_checkbox(
-        all_modules: list,
-        enabled: list,
-) -> List[str]:
-    """
-    Opens the checkbox list in the terminal to enable modules
+        # Load custom modules
+        self.__load_custom()
 
-    Args:
-        all_modules: List w/ all modules
-        enabled: List w/ all enabled modules
-    Returns:
-        List w/ all modules user selected
-    """
-    from inquirer import Checkbox, prompt
-    from .console import print_panel, console
+    def __call__(self, *, configuration_prompted: bool):
+        """Checks config and launches additional configuration if needed."""
 
-    # Prints the legend
-    print_panel(
-        text="[success]Enable: [yellow][warning]<space>[/warning] | [warning]<--[/warning] | [warning]-->[/warning]"
-             "\t[success]Confirm: [warning]<enter>[/warning]",
-        title="[info]Controls"
-    )
+        # Configure and exit on prompt
+        if configuration_prompted:
+            # Configure modules
+            self.__configure(
+                all_modules=list(self.__modules.keys()), enabled_modules=self.__config_data.get("enabled", list[str]())
+            )
 
-    questions = Checkbox(
-        "modules",
-        message="Active modules",
-        choices=all_modules,
-        default=enabled,
-        carousel=True,
-    )
-    answers: Dict[str, List[str]] = prompt([questions], raise_keyboard_interrupt=True)
+            # Exit
+            self.full_exit(failed=False)
 
-    # Clear console after checkbox
-    console.clear()
-    if not answers:
-        raise ValueError("Got empty answers from Checkbox")
-    return answers["modules"]
+        # If config doesn't have modules configuration - launch configuration
+        if not self.__config_data.get("enabled"):
+            # Notify user
+            console.print("[danger]Modules not configured, opening configuration screen...[/danger]")
 
+            # Configure modules
+            self.__configure(all_modules=list(self.__modules.keys()), enabled_modules=list())
 
-def set_custom_path(
-) -> None:
-    """
-    Sets path for custom modules in config
-    """
-    from rich.prompt import Prompt
+        # Create list with faulty modules
+        remove_list: list[str] = list()
 
-    # Ask for user input
-    custom_path = Prompt.ask(
-        "Enter path to custom modules",
-        default="~/Documents/mac-cleanup/",
-        show_default=True,
-    )
+        # Invoke modules
+        for module_name in self.__config_data["enabled"]:
+            module = self.__modules.get(module_name)
 
-    # Creates directory if it doesn't exist
-    Path(custom_path).expanduser().mkdir(exist_ok=True)
+            # Add faulty module to remove list - if modules wasn't found
+            if not module:
+                remove_list.append(module_name)
+                continue
 
-    # Changes custom_path in config
-    config = get_config()
-    config.update({"custom_path": Path(custom_path).expanduser().as_posix()})
-    set_config(config)
+            # Call module
+            module()
 
+        # Pop faulty modules from module list
+        for faulty_module in remove_list:
+            self.__config_data["enabled"].remove(faulty_module)
 
-def load_config(
-        configuration_needed: bool = False,
-) -> None:
-    """
-    Loads & checks config and launches config_checkbox if needed
+        # Write updated config if faulty modules were found
+        if remove_list:
+            self.__write()
 
-    Args:
-        configuration_needed: Request configuration
-    """
-    from .modules import load_default, load_custom
+    def __read(self) -> ConfigFile:
+        """
+        Gets the config or creates it if it doesn't exist
+            :return: Config as a dict
+        """
 
-    config = get_config()
+        from toml import TomlDecodeError, load
 
-    # Joins default and custom modules together and sort 'em
-    all_modules: Dict[str, function] = dict(  # type: ignore
-        load_custom(config.get("custom_path")),
-        **load_default(),
-    )
-    all_modules_keys = list(all_modules.keys())
+        # Creates config if it's not already created
+        self.__path.parent.mkdir(exist_ok=True, parents=True)
+        self.__path.touch(exist_ok=True)
 
-    # If config is empty requestes configuration and selects all modules as enabled
-    if config.get("enabled", 0) == 0 or not isinstance(config["enabled"], list):
-        from .console import console
+        # Loads config
+        # If something got wrong there is try -> except
+        try:
+            config = ConfigFile(**load(self.__path))
+        except TomlDecodeError as err:
+            raise FileNotFoundError from err
+        return config
 
-        console.print("[danger]Modules not configured, opening configuration screen...[/danger]")
-        enabled = config_checkbox(
-            all_modules=all_modules_keys,
-            enabled=all_modules_keys,
-        )
-        configuration_needed = False
-    else:
-        enabled = config["enabled"]
+    def __write(self) -> None:
+        """Updates and writes config as toml."""
 
-    if configuration_needed:
-        from .console import console
+        from toml import dump
 
-        enabled = config_checkbox(
-            all_modules=all_modules_keys,
-            enabled=enabled,
-        )
-        config.update({"enabled": enabled})
-        set_config(config)
+        with open(self.__path, "w+") as f:
+            dump(self.__config_data, f)
+
+    @staticmethod
+    def full_exit(failed: bool) -> None:
+        """
+        Gracefully exits from cleaner.
+
+        :param failed: Status code of exit
+
+        """
+
         console.print("Config saved, exiting...")
-        exit(0)
-    else:
-        # Checks if enabled modules exists else removes 'em
-        for i in enabled:
-            if i not in all_modules:
-                enabled.remove(i)
+        exit(failed)
 
-    # Sets enabled in config
-    config.update({"enabled": enabled})
-    set_config(config)
+    def set_custom_path(self) -> None:
+        """Sets path for custom modules in config."""
 
-    # Loads all enabled modules
-    [
-        all_modules[module]()  # type: ignore
-        for module in enabled
-    ]
+        from rich.prompt import Prompt
 
+        # Ask for user input
+        custom_path = Prompt.ask("Enter path to custom modules", default="~/Documents/mac-cleanup/", show_default=True)
 
-if __name__ == "__main__":
-    load_config()
+        # Get temps path
+        tmp_custom_path = Path(custom_path).expanduser()
+
+        # Creates directory if it doesn't exist
+        tmp_custom_path.mkdir(exist_ok=True, parents=True)
+
+        # Changes custom_path in config
+        self.__config_data["custom_path"] = tmp_custom_path.as_posix()
+
+        # Update config
+        self.__write()
+
+        # Exit
+        self.full_exit(failed=False)
+
+    def __configure(self, *, all_modules: list[str], enabled_modules: list[str]) -> None:
+        """
+        Opens modules configuration screen.
+
+        :param all_modules: List w/ all modules
+        :param enabled_modules: List w/ all enabled modules
+        :return: List w/ all modules user enabled
+
+        """
+
+        import inquirer  # pyright: ignore [reportMissingTypeStubs]
+
+        from mac_cleanup.console import print_panel
+
+        # Prints the legend
+        print_panel(
+            text="[success]Enable: [yellow][warning]<space>[/warning] | [warning]<--[/warning] | [warning]-->[/warning]"
+            "\t[success]Confirm: [warning]<enter>[/warning]",
+            title="[info]Controls",
+        )
+
+        questions = inquirer.Checkbox(  # pyright: ignore [reportUnknownVariableType, reportUnknownMemberType]
+            "modules", message="Active modules", choices=all_modules, default=enabled_modules, carousel=True
+        )
+
+        # Get user answers
+        answers = inquirer.prompt(  # pyright: ignore [reportUnknownVariableType, reportUnknownMemberType]
+            questions=[questions], raise_keyboard_interrupt=True
+        )
+
+        # Clear console after checkbox
+        console.clear()
+
+        if not answers["modules"]:
+            console.print("Config cannot be empty. Enable some modules")
+
+            return self.__configure(all_modules=all_modules, enabled_modules=enabled_modules)
+
+        # Update config
+        self.__config_data["enabled"] = answers["modules"]
+
+        # Write new config
+        self.__write()
+
+    def __load_default(self) -> None:
+        """Loads default modules."""
+
+        self.__modules.update(dict(getmembers(object=default_modules, predicate=isfunction)))
+
+    def __load_custom(self) -> None:
+        """Loads custom modules and."""
+
+        # Empty dict if no custom path
+        if not self.__custom_modules_path:
+            return
+
+        from importlib.machinery import SourceFileLoader
+        from importlib.util import module_from_spec, spec_from_loader
+        from pathlib import Path
+
+        tmp_modules: dict[str, Callable[..., None]] = dict()
+
+        # Imports all modules from the given path
+        for module in Path(self.__custom_modules_path).expanduser().rglob("*.py"):
+            # Get filename
+            filename = module.name.split(".py")[0]
+
+            # Set module loader
+            loader = SourceFileLoader(fullname=filename, path=module.as_posix())
+
+            # Get module spec
+            spec = spec_from_loader(loader.name, loader)
+
+            # Check next file if spec is empty
+            if spec is None:
+                continue  # pragma: no cover # TODO: add test later
+
+            # Get all modules from file
+            modules = module_from_spec(spec)
+
+            # Execute module
+            loader.exec_module(modules)
+
+            # Add modules to the list
+            # Duplicates will be overwritten
+            tmp_modules.update(dict(getmembers(object=modules, predicate=isfunction)))
+
+        self.__modules.update(tmp_modules)
+
+    @property
+    def get_modules(self) -> dict[str, Callable[..., None]]:
+        """Getter for private attr modules."""
+
+        return self.__modules
+
+    @property
+    def get_config_data(self) -> ConfigFile:
+        """Getter for private attr config data."""
+
+        return self.__config_data
+
+    @property
+    def get_custom_path(self) -> Optional[str]:
+        """Getter for private attr custom modules path."""
+
+        return self.__custom_modules_path
