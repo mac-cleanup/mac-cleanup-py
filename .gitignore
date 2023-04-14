@@ -36,3 +36,9 @@ mac_cleanup/modules.toml
 
 # tox
 .tox/*
+
+# ruff
+.ruff_cache/
+
+# macOS stuff
+.DS_Store

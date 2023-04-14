@@ -1,256 +1,172 @@
+"""All tests for mac_cleanup_py.utils."""
+from pathlib import Path
+from typing import Optional
+
 import pytest
-from mac_cleanup.utils import *
+from beartype.roar import BeartypeCallHintParamViolation
 
 
 @pytest.mark.parametrize(
-    "exception, exit_on_exception, raises",
+    ("command", "ignore_errors", "output"),
     [
-        # specified exceptions are caught w/o exit
-        (
-                KeyboardInterrupt,
-                False,
-                KeyboardInterrupt,
-        ),
-        # SystemExit caught by default w/o exit
-        (
-                None,
-                True,
-                SystemExit,
-        ),
-        # specified exceptions as a tuple are caught w/o exit
-        (
-                (ValueError,),
-                True,
-                ValueError,
-        ),
-        # Unexpected exception caught w/o exit
-        (
-                None,
-                False,
-                ValueError,
-        ),
-    ]
+        # test empty output
+        ("echo", True, ""),
+        # test stdout
+        ("echo 'test'", True, "test"),
+        # test no errors
+        ("echo 'test' >&2", True, ""),
+        # test redirect stderr
+        ("echo 'test' >&2", False, "test"),
+        # test beartype
+        (123, True, ""),
+    ],
 )
-def test_catch_exception(
-        exception: Optional[Type[BaseException]],
-        exit_on_exception: bool,
-        raises: Type[BaseException],
-) -> None:
-    @catch_exception(
-        exception=exception,
-        exit_on_exception=exit_on_exception,
-    )
-    def raise_error() -> None:
-        raise raises
+def test_cmd(command: str | int, ignore_errors: bool, output: str):
+    """Test :class:`subprocess.Popen` command execution in :meth:`mac_cleanup.utils.cmd`"""
 
-    raise_error()
+    from mac_cleanup.utils import cmd
+
+    if isinstance(command, int):
+        with pytest.raises(BeartypeCallHintParamViolation):
+            cmd(command=command, ignore_errors=ignore_errors)  # pyright: ignore [reportGeneralTypeIssues] # noqa
+        return
+
+    assert cmd(command=command, ignore_errors=ignore_errors) == output
 
 
 @pytest.mark.parametrize(
-    "command, expected, ignore_errors",
+    ("str_path", "output"),
     [
-        # stdout works
-        (
-                "echo test",
-                "test",
-                True,
-        ),
-        # stderr doesn't work
-        (
-                "echo test >&2",
-                "",
-                True,
-        ),
-        # stderr works w/ ignore_errors agr
-        (
-                "echo test >&2",
-                "test",
-                False,
-        ),
-    ]
+        # test empty
+        ("", ""),
+        # test expand home
+        ("~/", None),
+        # test beartype
+        (123, None),
+    ],
 )
-def test_cmd(
-        command: str,
-        expected: str,
-        ignore_errors: bool,
-) -> None:
-    assert cmd(
-        command=command,
-        ignore_errors=ignore_errors
-    ) == expected
+def test_expanduser(str_path: str | int, output: Optional[str], get_current_os: str):
+    """Test wrapper of :meth:`pathlib.Path.expanduser` in :meth:`mac_cleanup.utils.expanduser`"""
 
+    from mac_cleanup.utils import expanduser
 
-def test_expand_user(
-        get_current_os: str,
-) -> None:
-    # "~" transforms to user's home location
-    assert expanduser("~/").startswith("/Users/" if get_current_os == "Darwin" else "/home/runner")
+    if isinstance(str_path, int):
+        with pytest.raises(BeartypeCallHintParamViolation):
+            expanduser(str_path=str_path)  # pyright: ignore [reportGeneralTypeIssues] # noqa
+        return
 
+    if output is None:
+        assert expanduser(str_path=str_path).startswith("/Users/" if get_current_os == "Darwin" else "/home/runner")
+        return
 
-def test_check_exists(
-        get_current_os: str,
-) -> None:
-    # Always True w/ glob
-    assert check_exists("*")
-    # Check Users folder exists - always True
-    assert check_exists("/Users/" if get_current_os == "Darwin" else "/home/runner")
-
-    from pathlib import Path
-
-    test_folder_path: str = "~/.mac_cleanup"
-    test_folder: Path = Path(test_folder_path).expanduser()
-    test_folder.mkdir(exist_ok=True)
-
-    test_file: Path = Path(test_folder_path + "/test_dry").expanduser()
-    test_file.touch(exist_ok=True)
-
-    results = (
-            check_exists("~/.mac_cleanup")
-            and check_exists("~/.mac_cleanup/test_dry")
-    )
-
-    from os import remove, rmdir
-
-    remove(test_file.as_posix())
-    rmdir(test_folder.as_posix())
-
-    assert results
+    assert expanduser(str_path=str_path) == "."
 
 
 @pytest.mark.parametrize(
-    "path, expected",
+    ("path", "output", "expand_path"),
     [
-        # Always False if empty w/ strip
-        (" ", False),
-        # Always True w/ glob
+        # test existing str path
+        ("/", True, True),
+        # test expand user
+        ("~/Documents", True, True),
+        ("~/Documents", False, False),
+        # test Glob
+        ("*", True, True),
+        # test non-existing str path
+        ("/aboba", False, True),
+        # test existing Path
+        (Path("/"), True, True),
+        # test expand user Path
+        (Path("~/Documents"), True, True),
+        (Path("~/Documents"), False, False),
+        # test Glob in Path
+        (Path("*"), True, True),
+        # test non-existing Path
+        (Path("/aboba"), False, True),
+        # test beartype
+        (123, False, True),
+    ],
+)
+def test_check_exists(path: Path | str | int, output: bool, expand_path: bool):
+    """Test wrapper of :meth:`pathlib.Path.exists` in :meth:`mac_cleanup.utils.check_exists`"""
+
+    from mac_cleanup.utils import check_exists
+
+    if isinstance(path, int):
+        with pytest.raises(BeartypeCallHintParamViolation):
+            check_exists(path=path, expand_user=expand_path)  # pyright: ignore [reportGeneralTypeIssues] # noqa
+        return
+
+    assert check_exists(path=path, expand_user=expand_path) is output
+
+
+@pytest.mark.parametrize(
+    ("path", "output"),
+    [
+        # test deletable str path
+        ("/", True),
+        # test empty str path
+        ("", False),
+        # test Glob in str path
         ("*", True),
-        # Check SIP
-        ("/System/test", False),
-        # Check user_list
-        ("~/Downloads/test", False),
-    ]
+        # test deletable Path
+        (Path("/"), True),
+        # test empty Path
+        (Path(""), False),
+        # test Glob in Path
+        (Path("*"), True),
+        # test SIP
+        ("/System", False),
+        (Path("/System"), False),
+        # test no expand user
+        ("~/Documents", True),
+        (Path("~/Documents").expanduser(), False),
+        # test custom rules
+        (Path("~/Documents"), True),
+        # test beartype
+        (123, False),
+    ],
 )
-def test_deletable(
-        path: str,
-        expected: bool,
-) -> None:
-    assert check_deletable(path) is expected
+def test_check_deletable(path: Path | str | int, output: bool):
+    """Test :meth:`mac_cleanup.utils.check_deletable` with SIP and custom restriction list."""
+
+    from mac_cleanup.utils import check_deletable
+
+    if isinstance(path, int):
+        with pytest.raises(BeartypeCallHintParamViolation):
+            check_deletable(path=path)  # pyright: ignore [reportGeneralTypeIssues] # noqa
+        return
+
+    assert check_deletable(path=path) is output
 
 
 @pytest.mark.parametrize(
-    "byte, human",
+    ("byte", "in_power", "output"),
     [
-        # Check == 0
-        (0, "0B"),
-        # Check bytes
-        (100, "100.0 B"),
-        # Check KB
-        (1024, "1.0 KB"),
-        # Check MB
-        (1024 ** 2 * 1.5, "1.5 MB"),
-        # Check GB
-        (1024 ** 3, "1.0 GB"),
-        # Check TB
-        (1024 ** 4, "1.0 TB"),
-    ]
+        # test empty
+        (0, 1, "0B"),
+        # test B
+        (0, 0, "1.0 B"),
+        # test KB
+        (1024, 1, "1.0 KB"),
+        # test MB
+        (1024, 2, "1.0 MB"),
+        # test GB
+        (1024, 3, "1.0 GB"),
+        # test TB
+        (1024, 4, "1.0 TB"),
+        # test beartype
+        ("", 0, ""),
+    ],
 )
-def test_bytes_to_human(
-        byte: float,
-        human: str,
-) -> None:
-    assert bytes_to_human(byte) == human
+def test_bytes_to_human(byte: int | str, in_power: int, output: str):
+    """Test bytes to human conversion in :meth:`mac_cleanup.utils.bytes_to_human`"""
 
+    from mac_cleanup.utils import bytes_to_human
 
-def test_collector_msg() -> None:
-    t = Collector(execute_list=list())
+    if isinstance(byte, str):
+        with pytest.raises(BeartypeCallHintParamViolation):
+            bytes_to_human(size_bytes=byte)  # pyright: ignore [reportGeneralTypeIssues] # noqa
+        return
 
-    assert t.execute_list == list()
-    t.msg("test")
-    assert t.execute_list[-1].msg == "test"
-
-
-def test_collector_sip(
-        get_collector: Collector,
-) -> None:
-    t = get_collector
-
-    t.collect("")
-    t.collect("/System/test")
-    t.collect("~/Downloads/test")
-    assert t.execute_list[-1].unit_list == list()
-
-
-@pytest.mark.parametrize(
-    "query, command, dry",
-    [
-        # Test command
-        ("test", True, False),
-        # Test dry
-        ("/Users/", False, True),
-        # Test path
-        ("/Users/", False, False)
-    ])
-def test_collector_types(
-        query: str,
-        command: bool,
-        dry: bool,
-        get_current_os: str,
-        get_collector: Collector,
-) -> None:
-    t = get_collector
-
-    if get_current_os != "Darwin":
-        query = query.replace("/Users/", "/home/runner/")
-
-    t.collect(query, command=command, dry=dry)
-    assert t.execute_list[-1].unit_list[-1].command == query
-    assert t.execute_list[-1].unit_list[-1].cmd is command
-    assert t.execute_list[-1].unit_list[-1].dry is dry
-
-
-# Test command & dry
-@pytest.mark.xfail(
-    raises=ValueError,
-)
-def test_collector_all_types(
-        get_collector: Collector,
-) -> None:
-    get_collector.collect("test", command=True, dry=True)
-
-
-def test_collector_count_dry(
-        get_collector: Collector,
-) -> None:
-    t = get_collector
-
-    t.collect(
-        "echo test",
-        command=True,
-    )
-    assert t.count_dry() == 0
-
-    from pathlib import Path
-    from random import random
-
-    test_folder_path: str = "~/.mac_cleanup"
-    test_folder: Path = Path(test_folder_path).expanduser()
-    test_folder.mkdir(exist_ok=True)
-
-    test_file: Path = Path(test_folder_path + "/test_dry").expanduser()
-    test_file.touch(exist_ok=True)
-
-    expected_bytes: int = 1024 ** 2 * 10 * int(random())
-
-    with test_file.open("w") as f:
-        f.write("1" * expected_bytes)
-
-    t.collect("~/.mac_cleanup", dry=True)
-
-    actual_bytes = t.count_dry()
-
-    from os import remove, rmdir
-
-    remove(test_file.as_posix())
-    rmdir(test_folder.as_posix())
-
-    assert actual_bytes == expected_bytes
+    assert bytes_to_human(size_bytes=byte**in_power) == output

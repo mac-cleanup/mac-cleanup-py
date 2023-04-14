@@ -16,4 +16,3 @@ updates:
     commit-message:
       prefix: "poetry"
     target-branch: "develop"
-    

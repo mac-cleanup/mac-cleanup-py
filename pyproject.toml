@@ -1,14 +1,24 @@
 [tool.poetry]
 name = "mac_cleanup"
-version = "2.2.5"
+version = "3.0.0"
 description = "Python cleanup script for macOS"
 license = "Apache-2.0"
-authors = [ "Drugsosos <44712637+Drugsosos@users.noreply.github.com>" ]
+authors = [ "Drugsosos" ]
 readme = "README.md"
 homepage = "https://github.com/mac-cleanup/mac-cleanup-py"
 repository = "https://github.com/mac-cleanup/mac-cleanup-py"
-keywords = [ "macos", "script", "cleanup", "cleaner" ]
-classifiers = [ "Environment :: Console", "Operating System :: MacOS", ]
+keywords = [
+    "macos",
+    "script",
+    "cleanup",
+    "cleaner"
+]
+classifiers = [
+    "Environment :: Console",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11"
+]
 
 include = [ "LICENSE" ]
 exclude = [ "mac_cleanup/__main__.py", "mac_cleanup/py.typed" ]
@@ -19,59 +29,118 @@ exclude = [ "mac_cleanup/__main__.py", "mac_cleanup/py.typed" ]
 
 
 [tool.poetry.dependencies]
-python = ">=3.7,<3.12"
-rich = ">=12.2,<14.0"
+python = ">=3.10,<3.12"
+rich = "^13.3.4"
+attrs = "^22.2.0"
+inquirer = "^3.1.3"
 toml = "^0.10.2"
-inquirer = "^2.10.0"
-attrs = "^22.1.0"
-
-[tool.poetry.dev-dependencies]
-pytest = "^7.2.1"
-tox = "^3.28.0"
-flake8 = "^5.0.4"
-Flake8-pyproject = "^1.2.2"
-mypy = "^1.0"
-pytest-cov = "^4.0.0"
-types-toml = "^0.10.8"
+beartype = "^0.13.1"
 
 [tool.poetry.scripts]
 mac-cleanup = "mac_cleanup:main"
 
-[options.package_data]
-mac_cleanup = "py.typed"
+[tool.poetry.group.test.dependencies]
+tox = "^4.4.11"
+pytest = "^7.3.0"
+pytest-cov = "^4.0.0"
+pyright = "^1.1.302"
+ruff = "^0.0.261"
+flake8-bugbear = "^23.3.23"
+flake8-comprehensions = "^3.12.0"
+flake8-print = "^5.0.0"
+flake8-quotes = "^3.3.2"
+flake8-builtins = "^2.1.0"
+flake8-pytest-style = "^1.7.2"
+flake8-blind-except = "^0.2.1"
+flake8-no-pep420 = "^2.3.0"
+flake8-simplify = "^0.20.0"
+
+[tool.poetry.group.dev.dependencies]
+commitizen = "^2.42.1"
+pre-commit = "^3.2.2"
+
+[tool.poetry.group.lint.dependencies]
+black = "^23.3.0"
+isort = "^5.12.0"
+docformatter = "1.5.1"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = [ "poetry-core>=1.0.0" ]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+skip-magic-trailing-comma = true
+target-version = [ "py310" ]
+
+[tool.isort]
+py_version=310
+profile = "black"
+line_length = 120
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = false
+
+[tool.docformatter]
+wrap-summaries = 100
+wrap-descriptions = 100
+tab-width = 4
+pre-summary-newline = true
+close-quotes-on-newline = true
+blank = true
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version_files = [ "pyproject.toml:version" ]
+tag_format = "v$version"
+
+[tool.coverage.run]
+omit = [
+    "mac_cleanup/__main__.py",
+    "mac_cleanup/default_modules.py"
+]
 
 [tool.coverage.report]
 show_missing = true
-skip_covered = true
 
-[tool.flake8]
-max-line-length = 120
-per-file-ignores = [
-    "default_modules.py, cli.py, test_utils.py:F403, F405",
+[tool.pyright]
+pythonVersion = "3.10"
+pythonPlatform = "Darwin"
+typeCheckingMode = "strict"
+reportPrivateUsage = false
+reportIncompatibleMethodOverride = false
+reportImportCycles = false
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+ignore = [
+    "F403",  # star imports
+    "F405",  #  probably undefined stuff from star imports
+    "E731",  # lambda expressions
+    "C408"  # dict/list as calls
 ]
-count = true
+select = [
+    "E",  # default
+    "F",  # default
+    "B",  # bugbear, blind-except
+    "C",  # comprehensions
+    "T",  # print
+    "Q",  # quotes
+    "A",  # builtins
+    "PT",  # pytest-style
+    "INP",  # pep420
+    "SIM",  # simplify
+]
 
-[tool.mypy]
-python_version = "3.10"
-platform = "darwin"
-warn_redundant_casts = true
-warn_return_any = true
-warn_unreachable = true
-warn_unused_configs = true
-ignore_missing_imports = true
-disallow_untyped_calls = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-disallow_untyped_decorators = true
-show_error_codes = true
-strict_equality = true
-exclude = "default_modules.py"
+
+[tool.ruff.flake8-quotes]
+inline-quotes = "double"
+multiline-quotes = "double"
 
 [tool.pytest.ini_options]
-minversion = "6.0"
+minversion = "7.2.2"
 addopts = "--cov=mac_cleanup"
 testpaths = [ "tests" ]
