@@ -46,7 +46,7 @@ class TestParser:
         parser.parse_args(namespace=get_namespace)
 
         # Check there is no attrs
-        assert not any([getattr(get_namespace, attr) for attr in self.get_all_args_from_namespace(get_namespace)])
+        assert not any(getattr(get_namespace, attr) for attr in self.get_all_args_from_namespace(get_namespace))
 
     @pytest.mark.parametrize(
         "is_short_name",
@@ -66,4 +66,4 @@ class TestParser:
         parser.parse_args(args=action_list, namespace=get_namespace)
 
         # Check all attrs are set
-        assert all([getattr(get_namespace, attr) for attr in self.get_all_args_from_namespace(get_namespace)])
+        assert all(getattr(get_namespace, attr) for attr in self.get_all_args_from_namespace(get_namespace))
