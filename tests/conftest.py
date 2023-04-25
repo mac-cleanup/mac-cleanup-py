@@ -2,13 +2,6 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
 
-@pytest.fixture(scope="session", autouse=False)
-def get_current_os() -> str:
-    import platform
-
-    return platform.system()
-
-
 @pytest.fixture()
 def _command_with_root(monkeypatch: MonkeyPatch) -> None:  # pyright: ignore [reportUnusedFunction]
     """Simulate user has root."""
