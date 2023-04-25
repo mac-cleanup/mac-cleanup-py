@@ -3,7 +3,7 @@ default_stages:
 
 repos:
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v2.42.1
+    rev: v3.0.1
     hooks:
       - id: commitizen
         name: Check Convenient Commits
@@ -22,14 +22,6 @@ repos:
       - id: isort
         name: Run isort
         types: [ python ]
-
-  - repo: https://github.com/PyCQA/docformatter
-    rev: v1.5.1
-    hooks:
-      - id: docformatter
-        name: Run docformatter
-        types: [ python ]
-        args: [ --config=./pyproject.toml]
 
   - repo: local
     hooks:
@@ -53,3 +45,10 @@ repos:
         pass_filenames: false
         types: [ python ]
         entry: poetry run ruff check .
+
+      - id: docformatter
+        name: Run docformatter
+        language: system
+        pass_filenames: false
+        types: [ python ]
+        entry: poetry run docformatter -cr . --config ./pyproject.toml
