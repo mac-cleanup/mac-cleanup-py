@@ -45,7 +45,7 @@ def test_cmd(command: str | int, ignore_errors: bool, output: str):
         (123, None),
     ],
 )
-def test_expanduser(str_path: str | int, output: Optional[str], get_current_os: str):
+def test_expanduser(str_path: str | int, output: Optional[str]):
     """Test wrapper of :meth:`pathlib.Path.expanduser` in :meth:`mac_cleanup.utils.expanduser`"""
 
     from mac_cleanup.utils import expanduser
@@ -56,7 +56,7 @@ def test_expanduser(str_path: str | int, output: Optional[str], get_current_os: 
         return
 
     if output is None:
-        assert expanduser(str_path=str_path).startswith("/Users/" if get_current_os == "Darwin" else "/home/runner")
+        assert expanduser(str_path=str_path).startswith("/Users/")
         return
 
     assert expanduser(str_path=str_path) == "."

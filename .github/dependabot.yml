@@ -16,3 +16,10 @@ updates:
     commit-message:
       prefix: "poetry"
     target-branch: "develop"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      time: "12:00"
+      day: "friday"
