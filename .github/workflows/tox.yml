@@ -7,14 +7,13 @@ on:
       - develop
 
   pull_request:
-    # The branches below must be a subset of the branches above
     branches:
       - main
       - develop
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       matrix:
         python-version: [ '3.10', '3.11' ]
