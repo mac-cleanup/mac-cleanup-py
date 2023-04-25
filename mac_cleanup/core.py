@@ -204,7 +204,7 @@ class _Collector:
         from mac_cleanup.progress import ProgressBar
 
         # Extract all modules
-        all_modules = list(chain(*[unit.modules for unit in self._execute_list]))
+        all_modules = list(chain.from_iterable([unit.modules for unit in self._execute_list]))
 
         # Filter modules based on Path
         path_modules: list[Path] = list(filter(partial(self.__filter_modules, filter_type=Path), all_modules))
