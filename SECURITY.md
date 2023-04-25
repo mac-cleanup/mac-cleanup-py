@@ -4,10 +4,10 @@
 
 Any version with :x: are no longer supported and may face issues in it.
 
-| Version | Supported          |
-|---------| ------------------ |
-| 3.0.0   | :white_check_mark: |
-| < 3.0   | :x:                |
+| Version   | Supported          |
+|-----------|--------------------|
+| \>= 3.0.0 | :white_check_mark: |
+| < 3.0.0   | :x:                |
 
 ## Reporting a Vulnerability
 
