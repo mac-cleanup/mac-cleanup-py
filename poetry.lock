@@ -282,18 +282,18 @@ files = [
 
 [[package]]
 name = "commitizen"
-version = "3.0.1"
+version = "3.1.1"
 description = "Python commitizen client tool"
 category = "dev"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "commitizen-3.0.1-py3-none-any.whl", hash = "sha256:08554057f962224940a6e50f5c69b9e28826c5bc8d844bb5822d8ff6e8fdd4e4"},
-    {file = "commitizen-3.0.1.tar.gz", hash = "sha256:ca917109412afcf21fd95831b01b444133764f337db1cbd9e2cf33ebaf2f8b2f"},
+    {file = "commitizen-3.1.1-py3-none-any.whl", hash = "sha256:7ea8265a56f16df1bbb78ca4af3f162689437548d14304d10815b4c6da4dcda4"},
+    {file = "commitizen-3.1.1.tar.gz", hash = "sha256:337d721555b66f803d60a0b0bafe0d3cf68a584b1f85ef0c43c45d279dc6737b"},
 ]
 
 [package.dependencies]
-argcomplete = ">=1.12.1,<2.2"
+argcomplete = ">=1.12.1,<3.1"
 charset-normalizer = ">=2.1.0,<4"
 colorama = ">=0.4.1,<0.5.0"
 decli = ">=0.5.2,<0.6.0"
