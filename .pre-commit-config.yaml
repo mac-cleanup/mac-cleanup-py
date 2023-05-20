@@ -3,7 +3,7 @@ default_stages:
 
 repos:
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v3.0.1
+    rev: v3.2.2
     hooks:
       - id: commitizen
         name: Check Convenient Commits
