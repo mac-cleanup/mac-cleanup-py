@@ -50,6 +50,7 @@ This project is a rewrite of the original [mac-cleanup-sh](https://github.com/ma
   - `microsoft_teams` - Remove **Microsoft Teams** logs and cache
   - `minecraft` - Remove **Minecraft** logs and cache
   - `npm` - Cleanup **npm** Cache
+  - `pnpm` - Cleanup **pnpm** Cache
   - `pod` - Cleanup **CocoaPods** Cache Files
   - `poetry` - Clears **Poetry** cache
   - `pyenv` - Cleanup **Pyenv-VirtualEnv** Cache

@@ -317,7 +317,7 @@ def npm():
             unit.add(Path("~/.npm/*").dry_run_only())
 
 
-def pnpn():
+def pnpm():
     from mac_cleanup.utils import cmd
 
     if cmd("type 'pnpm'"):
