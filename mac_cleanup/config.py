@@ -186,14 +186,14 @@ class Config:
         )
 
         # Get user answers
-        answers = inquirer.prompt(  # pyright: ignore [reportUnknownVariableType, reportUnknownMemberType]
+        answers = inquirer.prompt(  # pyright: ignore [reportUnknownMemberType]
             questions=[questions], raise_keyboard_interrupt=True
         )
 
         # Clear console after checkbox
         console.clear()
 
-        if not answers["modules"]:
+        if not answers or not answers["modules"]:
             console.print("Config cannot be empty. Enable some modules")
 
             return self.__configure(all_modules=all_modules, enabled_modules=enabled_modules)
