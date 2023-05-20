@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mac_cleanup"
-version = "3.0.1"
+version = "3.0.2"
 description = "Python cleanup script for macOS"
 license = "Apache-2.0"
 authors = [ "Drugsosos" ]
@@ -30,30 +30,30 @@ exclude = [ "mac_cleanup/__main__.py", "mac_cleanup/py.typed" ]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
-rich = "^13.3.4"
+rich = "^13.3.5"
 attrs = "^23.1.0"
 inquirer = "^3.1.3"
 toml = "^0.10.2"
-beartype = "^0.13.1"
+beartype = "^0.14.0"
 
 [tool.poetry.scripts]
 mac-cleanup = "mac_cleanup:main"
 
 [tool.poetry.group.test.dependencies]
-tox = "^4.5.0"
+tox = "^4.5.1"
 pytest = "^7.3.1"
 pytest-cov = "^4.0.0"
-pyright = "^1.1.304"
-ruff = "^0.0.263"
+pyright = "^1.1.309"
+ruff = "^0.0.269"
 
 [tool.poetry.group.dev.dependencies]
-commitizen = "^3.0.1"
-pre-commit = "^3.2.2"
+commitizen = "^3.2.2"
+pre-commit = "^3.3.2"
 
 [tool.poetry.group.lint.dependencies]
 black = "^23.3.0"
 isort = "^5.12.0"
-docformatter = "^1.6.3"
+docformatter = "^1.7.1"
 
 [build-system]
 requires = [ "poetry-core>=1.0.0" ]
@@ -80,7 +80,6 @@ wrap-descriptions = 100
 tab-width = 4
 pre-summary-newline = true
 close-quotes-on-newline = true
-blank = true
 
 [tool.commitizen]
 name = "cz_conventional_commits"

@@ -317,6 +317,16 @@ def npm():
             unit.add(Path("~/.npm/*").dry_run_only())
 
 
+def pnpn():
+    from mac_cleanup.utils import cmd
+
+    if cmd("type 'pnpm'"):
+        with clc as unit:
+            unit.message("Cleaning up pnpm Cache...")
+            unit.add(Command("pnpm store prune &>/dev/null"))
+            unit.add(Path("~/.pnpm-store/*").dry_run_only())
+
+
 def yarn():
     from mac_cleanup.utils import cmd
 

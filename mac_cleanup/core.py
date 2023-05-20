@@ -90,7 +90,6 @@ class _Collector:
         Add message to instance of :class:`Unit`
 
         :param message_: Message to be printed in progress bar
-
         """
 
         self.__temp_message = message_
@@ -100,8 +99,8 @@ class _Collector:
         """
         Add module to the list of modules to instance of :class:`Unit`
 
-        :param module_: Module based on :class:`BaseModule`
-
+        :param module_: Module based on
+        :class: `BaseModule`
         """
 
         self.__temp_modules_list.append(module_)
@@ -113,7 +112,6 @@ class _Collector:
 
         :param path_: Path to the directory
         :return: Size of specified directory
-
         """
 
         # Get path posix
@@ -194,10 +192,7 @@ class _Collector:
         return isinstance(module_, filter_type)
 
     def _count_dry(self) -> float:
-        """
-        Counts free space for dry run
-            :return: Approx amount of bytes to be removed
-        """
+        """Counts free space for dry run :return: Approx amount of bytes to be removed."""
 
         from concurrent.futures import ThreadPoolExecutor, as_completed
 

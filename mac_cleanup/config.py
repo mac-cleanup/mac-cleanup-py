@@ -21,7 +21,6 @@ class Config:
     Class for config initialization and validation.
 
     :param config_path_: Path to config location
-
     """
 
     def __init__(self, config_path_: Path):
@@ -98,10 +97,7 @@ class Config:
             self.__write()
 
     def __read(self) -> ConfigFile:
-        """
-        Gets the config or creates it if it doesn't exist
-            :return: Config as a dict
-        """
+        """Gets the config or creates it if it doesn't exist :return: Config as a dict."""
 
         from toml import TomlDecodeError, load
 
@@ -131,7 +127,6 @@ class Config:
         Gracefully exits from cleaner.
 
         :param failed: Status code of exit
-
         """
 
         console.print("Config saved, exiting...")
@@ -167,7 +162,6 @@ class Config:
         :param all_modules: List w/ all modules
         :param enabled_modules: List w/ all enabled modules
         :return: List w/ all modules user enabled
-
         """
 
         import inquirer  # pyright: ignore [reportMissingTypeStubs]
@@ -186,14 +180,14 @@ class Config:
         )
 
         # Get user answers
-        answers = inquirer.prompt(  # pyright: ignore [reportUnknownVariableType, reportUnknownMemberType]
+        answers = inquirer.prompt(  # pyright: ignore [reportUnknownMemberType]
             questions=[questions], raise_keyboard_interrupt=True
         )
 
         # Clear console after checkbox
         console.clear()
 
-        if not answers["modules"]:
+        if not answers or not answers["modules"]:
             console.print("Config cannot be empty. Enable some modules")
 
             return self.__configure(all_modules=all_modules, enabled_modules=enabled_modules)

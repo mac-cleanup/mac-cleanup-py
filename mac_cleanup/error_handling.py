@@ -97,7 +97,6 @@ def catch_exception(
     :param exception: Expected exception(s)
     :param exit_on_exception: If True, exit after unexpected exception was handled
     :return: Decorated function
-
     """
 
     err_handler_instance: ErrorHandler = ErrorHandler(exception=exception, exit_on_exception=exit_on_exception)

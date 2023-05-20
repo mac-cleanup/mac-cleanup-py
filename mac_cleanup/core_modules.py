@@ -23,8 +23,8 @@ class BaseModule(ABC):
         Execute command with user prompt.
 
         :param message_: Message to be shown on prompt
-        :return: :class:`BaseModule`
-
+        :return: Instance of self from
+        :class: `BaseModule`
         """
 
         # Can't be solved without typing.Self
@@ -38,10 +38,7 @@ class BaseModule(ABC):
 
     @abstractmethod
     def _execute(self) -> bool:
-        """
-        Base exec with check for prompt
-            :return: True on successful prompt
-        """
+        """Base exec with check for prompt :return: True on successful prompt."""
 
         # Call prompt if needed
         if self.__prompt:
@@ -82,7 +79,6 @@ class _BaseCommand(BaseModule):
 
         :param ignore_errors_: Ignore errors during execution
         :return: Command execution results based on specified parameters
-
         """
 
         # Skip if there is no command
@@ -104,10 +100,7 @@ class Command(_BaseCommand):
     __ignore_errors: bool = True
 
     def with_errors(self) -> "Command":
-        """
-        Return errors in exec output
-            :return: :class:`Command`
-        """
+        """Return errors in exec output :return: :class:`Command`"""
 
         self.__ignore_errors = False
 
@@ -138,19 +131,15 @@ class Path(_BaseCommand):
         return self.__path
 
     def dry_run_only(self) -> "Path":
-        """
-        Set module to only count size in dry runs
-            :return: :class:`Path`
-        """
+        """Set module to only count size in dry runs :return: :class:`Path`"""
 
         self.__dry_run_only = True
 
         return self
 
     def _execute(self) -> Optional[str]:
-        """
-        Delete specified path
-            :return: Command execution results based on specified parameters
+        """Delete specified path :return: Command execution results based on specified
+        parameters.
         """
 
         if self.__dry_run_only:

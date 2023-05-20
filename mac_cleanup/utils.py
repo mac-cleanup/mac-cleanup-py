@@ -12,7 +12,6 @@ def cmd(command: str, *, ignore_errors: bool = True) -> str:
     :param command: Bash command
     :param ignore_errors: If True, no stderr in return
     :return: stdout of executed command
-
     """
 
     from subprocess import DEVNULL, PIPE, Popen
@@ -36,7 +35,6 @@ def expanduser(str_path: str) -> str:
 
     :param str_path: Path to be expanded
     :return: Path with extended user path as a posix
-
     """
 
     from pathlib import Path
@@ -52,7 +50,6 @@ def check_exists(path: Path | str, *, expand_user: bool = True) -> bool:
     :param path: Path to be checked
     :param expand_user: True if path needs to be expanded
     :return: True if specified path exists
-
     """
 
     if not isinstance(path, Path):
@@ -75,7 +72,6 @@ def check_deletable(path: Path | str) -> bool:
 
     :param path: Path to be deleted
     :return: True if specified path is deletable
-
     """
 
     # Convert path to correct type
@@ -109,7 +105,6 @@ def bytes_to_human(size_bytes: int | float) -> str:
 
     :param size_bytes: Bytes
     :return: Human readable size
-
     """
 
     from math import floor, log, pow

@@ -16,7 +16,6 @@ def print_panel(text: str, title: Optional[str] = None) -> None:
     Args:
         text: Text to print in the panel
         title: Title of the panel
-
     """
     from rich.panel import Panel
     from rich.text import Text

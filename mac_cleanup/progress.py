@@ -51,7 +51,6 @@ class _ProgressBar:
         :param show_default: Show default in prompt. Defaults to True.
         :param show_choices: Show choices in prompt. Defaults to True.
         :return: True on successful prompt
-
         """
 
         # Stop refreshing progress bar
@@ -93,7 +92,6 @@ class _ProgressBar:
         :param total: Total number of steps. Default is len(sequence).
         :param description: Description of task show next to progress bar. Defaults to "Working".
         :return: An iterable of the values in the sequence
-
         """
 
         # Clear previous Live instance
