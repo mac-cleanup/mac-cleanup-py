@@ -80,7 +80,6 @@ wrap-descriptions = 100
 tab-width = 4
 pre-summary-newline = true
 close-quotes-on-newline = true
-blank = true
 
 [tool.commitizen]
 name = "cz_conventional_commits"

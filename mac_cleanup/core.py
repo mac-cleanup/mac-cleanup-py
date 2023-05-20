@@ -90,7 +90,6 @@ class _Collector:
         Add message to instance of :class:`Unit`
 
         :param message_: Message to be printed in progress bar
-
         """
 
         self.__temp_message = message_
@@ -102,7 +101,6 @@ class _Collector:
 
         :param module_: Module based on
         :class: `BaseModule`
-
         """
 
         self.__temp_modules_list.append(module_)
@@ -114,7 +112,6 @@ class _Collector:
 
         :param path_: Path to the directory
         :return: Size of specified directory
-
         """
 
         # Get path posix

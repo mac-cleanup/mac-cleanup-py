@@ -21,7 +21,6 @@ class Config:
     Class for config initialization and validation.
 
     :param config_path_: Path to config location
-
     """
 
     def __init__(self, config_path_: Path):
@@ -128,7 +127,6 @@ class Config:
         Gracefully exits from cleaner.
 
         :param failed: Status code of exit
-
         """
 
         console.print("Config saved, exiting...")
@@ -164,7 +162,6 @@ class Config:
         :param all_modules: List w/ all modules
         :param enabled_modules: List w/ all enabled modules
         :return: List w/ all modules user enabled
-
         """
 
         import inquirer  # pyright: ignore [reportMissingTypeStubs]

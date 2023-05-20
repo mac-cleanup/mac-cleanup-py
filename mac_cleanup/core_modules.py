@@ -23,9 +23,8 @@ class BaseModule(ABC):
         Execute command with user prompt.
 
         :param message_: Message to be shown on prompt
-        :return: 
+        :return: Instance of self from
         :class: `BaseModule`
-
         """
 
         # Can't be solved without typing.Self
@@ -80,7 +79,6 @@ class _BaseCommand(BaseModule):
 
         :param ignore_errors_: Ignore errors during execution
         :return: Command execution results based on specified parameters
-
         """
 
         # Skip if there is no command
