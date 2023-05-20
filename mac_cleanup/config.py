@@ -98,10 +98,7 @@ class Config:
             self.__write()
 
     def __read(self) -> ConfigFile:
-        """
-        Gets the config or creates it if it doesn't exist
-            :return: Config as a dict
-        """
+        """Gets the config or creates it if it doesn't exist :return: Config as a dict."""
 
         from toml import TomlDecodeError, load
 

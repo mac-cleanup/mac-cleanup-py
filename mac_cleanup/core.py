@@ -100,7 +100,8 @@ class _Collector:
         """
         Add module to the list of modules to instance of :class:`Unit`
 
-        :param module_: Module based on :class:`BaseModule`
+        :param module_: Module based on
+        :class: `BaseModule`
 
         """
 
@@ -194,10 +195,7 @@ class _Collector:
         return isinstance(module_, filter_type)
 
     def _count_dry(self) -> float:
-        """
-        Counts free space for dry run
-            :return: Approx amount of bytes to be removed
-        """
+        """Counts free space for dry run :return: Approx amount of bytes to be removed."""
 
         from concurrent.futures import ThreadPoolExecutor, as_completed
 
