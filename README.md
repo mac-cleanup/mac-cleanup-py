@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/mac_cleanup)](https://pypi.org/project/mac-cleanup/)
 [![Tests](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/tox.yml/badge.svg)](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/tox.yml)
 [![CodeQL](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/codeql.yml/badge.svg)](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/codeql.yml)
-[![JetBrains](https://img.shields.io/badge/Thanks-JetBrains-green.svg)](https://www.jetbrains.com/community/opensource/#support)
+[![JetBrains](https://img.shields.io/badge/Thanks-JetBrains-green.svg)](https://www.jetbrains.com)
 
 ## 🧹 Python cleanup script for macOS
 
@@ -131,4 +131,8 @@ This project is licensed under the [Apache-2.0 License](https://github.com/mac-c
 ## 👏 Acknowledgements
 This project is developed using tools provided by the *JetBrains OSS Development Program*.
 
-> Find out more about their program and how they support open source [here](https://www.jetbrains.com/community/opensource/#support).
+> Find out more about their program and how they support open source [here](https://jb.gg/OpenSourceSupport).
+
+<a href="https://www.jetbrains.com">
+  <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_square.svg" alt="JetBrains" width="80">
+</a>
