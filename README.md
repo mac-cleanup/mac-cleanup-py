@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/mac_cleanup)](https://pypi.org/project/mac-cleanup/)
 [![Tests](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/tox.yml/badge.svg)](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/tox.yml)
 [![CodeQL](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/codeql.yml/badge.svg)](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/codeql.yml)
-[![JetBrains](https://img.shields.io/badge/Thanks-JetBrains-green.svg)](https://www.jetbrains.com/oss/)
+[![JetBrains](https://img.shields.io/badge/Thanks-JetBrains-green.svg)](https://www.jetbrains.com/community/opensource/#support)
 
 ## 🧹 Python cleanup script for macOS
 
