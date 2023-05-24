@@ -3,6 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/mac_cleanup)](https://pypi.org/project/mac-cleanup/)
 [![Tests](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/tox.yml/badge.svg)](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/tox.yml)
 [![CodeQL](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/codeql.yml/badge.svg)](https://github.com/mac-cleanup/mac-cleanup-py/actions/workflows/codeql.yml)
+[![JetBrains](https://img.shields.io/badge/Thanks-JetBrains-green.svg)](https://www.jetbrains.com/oss/)
 
 ## 🧹 Python cleanup script for macOS
 
@@ -126,3 +127,8 @@ If you have any ideas, suggestions, or bug reports, feel free to submit an issue
 
 ## 📝 License
 This project is licensed under the [Apache-2.0 License](https://github.com/mac-cleanup/mac-cleanup-py/blob/main/LICENSE).
+
+## 👏 Acknowledgements
+This project is developed using tools provided by the *JetBrains OSS Development Program*.
+
+> Find out more about their program and how they support open source [here](https://www.jetbrains.com/community/opensource/#support).
