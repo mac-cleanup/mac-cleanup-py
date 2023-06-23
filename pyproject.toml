@@ -44,7 +44,7 @@ tox = "^4.5.1"
 pytest = "^7.3.1"
 pytest-cov = "^4.0.0"
 pyright = "^1.1.309"
-ruff = ">=0.0.269,<0.0.271"
+ruff = ">=0.0.269,<0.0.276"
 
 [tool.poetry.group.dev.dependencies]
 commitizen = "^3.2.2"
