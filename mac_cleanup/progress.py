@@ -67,6 +67,7 @@ class _ProgressBar:
             choices=choices,
             show_default=show_default,
             show_choices=show_choices,
+            default=True,
         )
 
         # Clear printed stuff
