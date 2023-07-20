@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mac_cleanup"
-version = "3.0.3"
+version = "3.0.4"
 description = "Python cleanup script for macOS"
 license = "Apache-2.0"
 authors = [ "Drugsosos" ]
