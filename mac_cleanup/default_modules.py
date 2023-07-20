@@ -417,3 +417,25 @@ def inactive_memory():
     with clc as unit:
         unit.message("Purging inactive memory")
         unit.add(Command("sudo purge"))
+
+
+def telegram():
+    from mac_cleanup.utils import cmd
+
+    with clc as unit:
+        unit.message("Clear old Telegram cache")
+
+        reopen_telegram = False
+
+        if cmd("ps aux | grep '[T]elegram'"):
+            reopen_telegram = True
+            unit.add(Command("killall -KILL Telegram"))
+
+        unit.add(
+            Path("~/Library/Group Containers/*.ru.keepcoder.Telegram/stable/account-*/postbox/db").with_prompt(
+                "Telegram cache will be deleted. Once reopened, cache will be rebuild smaller. Continue?"
+            )
+        )
+
+        if reopen_telegram:
+            unit.add(Command("open /Applications/Telegram.app"))
