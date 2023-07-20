@@ -1,7 +1,7 @@
+from mac_cleanup.parser import args  # isort: skip_file
 from mac_cleanup.core import ProxyCollector as Collector
 from mac_cleanup.core_modules import Command, Path
 from mac_cleanup.main import EntryPoint
-from mac_cleanup.parser import args
 
 try:
     from mac_cleanup.__version__ import __version__

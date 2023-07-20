@@ -5,6 +5,7 @@ from typing import Final, Optional, TypeVar, final
 
 from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
 
+from mac_cleanup import args
 from mac_cleanup.progress import ProgressBar
 from mac_cleanup.utils import check_deletable, check_exists, cmd
 
@@ -26,6 +27,9 @@ class BaseModule(ABC):
         :return: Instance of self from
         :class: `BaseModule`
         """
+
+        if args.force:
+            return self
 
         # Can't be solved without typing.Self
         self.__prompt = True  # pyright: ignore [reportGeneralTypeIssues]
