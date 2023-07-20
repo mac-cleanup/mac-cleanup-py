@@ -40,6 +40,7 @@ class _ProgressBar:
         choices: Optional[list[str]] = None,
         show_default: bool = True,
         show_choices: bool = True,
+        default: bool = True,
     ) -> bool:
         """
         Stops progress bar to show prompt to user.
@@ -50,6 +51,7 @@ class _ProgressBar:
         :param choices: A list of valid choices. Defaults to None.
         :param show_default: Show default in prompt. Defaults to True.
         :param show_choices: Show choices in prompt. Defaults to True.
+        :param default: Default value in prompt.
         :return: True on successful prompt
         """
 
@@ -67,6 +69,7 @@ class _ProgressBar:
             choices=choices,
             show_default=show_default,
             show_choices=show_choices,
+            default=default,
         )
 
         # Clear printed stuff
