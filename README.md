@@ -63,6 +63,7 @@ This project is a rewrite of the original [mac-cleanup-sh](https://github.com/ma
   - `xcode` - Cleanup **Xcode Derived Data** and **Archives**
   - `xcode_simulators` - Reset **iOS simulators**
   - `yarn` - Cleanup **yarn** Cache
+  - `telegram` - Clear old **Telegram** Cache
 
 </details>
 
