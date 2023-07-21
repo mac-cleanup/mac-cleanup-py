@@ -7,21 +7,37 @@ assignees: Drugsosos
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+Describe The Bug
+---
 
-**To Reproduce**
-Steps to reproduce the behavior:
+_A clear and concise description of what the bug is._
+
+Version
+---
+
+_Specify the version where the bug appeared_
+
+How To Reproduce
+---
+
+_Steps to reproduce the behavior_
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
-4. See error
+4. See something
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+Expected Behavior
+---
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+_A clear and concise description of what you expect to happen._
 
-**Additional context**
-Add any other context about the problem here.
+Screenshots
+---
+
+_If applicable, add screenshots to help explain your problem._
+
+Additional Context
+---
+
+_Add any other context about the problem here._

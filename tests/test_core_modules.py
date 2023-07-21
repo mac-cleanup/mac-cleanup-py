@@ -7,6 +7,7 @@ import pytest
 from _pytest.capture import CaptureFixture
 from _pytest.monkeypatch import MonkeyPatch
 
+from mac_cleanup import args
 from mac_cleanup.core_modules import Command, Path
 
 
@@ -45,15 +46,32 @@ class TestCommand:
 
     @pytest.mark.usefixtures("_command_with_root")
     @pytest.mark.parametrize(
-        ("prompt_succeeded", "prompt"), [(True, "prompt"), (True, None), (False, "prompt"), (False, None)]
+        ("prompt_succeeded", "prompt", "force_flag"),
+        [
+            (True, "prompt", False),
+            (True, "prompt", True),
+            (True, None, False),
+            (True, None, True),
+            (False, "prompt", False),
+            (False, "prompt", True),
+            (False, None, False),
+            (False, None, True),
+        ],
     )
     def test_base_module_execute(
-        self, prompt_succeeded: bool, prompt: Optional[str], capsys: CaptureFixture[str], monkeypatch: MonkeyPatch
+        self,
+        prompt_succeeded: bool,
+        prompt: Optional[str],
+        force_flag: bool,
+        capsys: CaptureFixture[str],
+        monkeypatch: MonkeyPatch,
     ):
         """Test prompt functionality in :class:`mac_cleanup.core_modules.BaseModule`"""
 
+        args.force = force_flag
+
         # Dummy user input in prompt
-        dummy_input: Callable[..., str] = lambda *_, **__: "y" if prompt_succeeded else "n"
+        dummy_input: Callable[..., str] = lambda *_, **__: "" if force_flag else "y" if prompt_succeeded else "n"
 
         # Simulate user input in prompt
         monkeypatch.setattr("rich.prompt.PromptBase.get_input", dummy_input)
@@ -65,11 +83,14 @@ class TestCommand:
         captured_execute = command._execute()
 
         # Check command execution based on prompt success
-        if prompt_succeeded:
+        if prompt_succeeded or force_flag:
             assert captured_execute is not None
             assert "test" in captured_execute
         else:
             assert captured_execute is None
+
+        if force_flag:
+            return
 
         # Get stdout
         captured_stdout = capsys.readouterr().out

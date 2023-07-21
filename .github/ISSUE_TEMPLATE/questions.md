@@ -1,11 +1,13 @@
 ---
 name: Questions
-about: Describe your question here
+about: Ask your questions here
 title: ''
 labels: question
 assignees: Drugsosos
 
 ---
 
-**Question**
-Describe details of your question here.
+Question
+---
+
+_Describe details of your question here._

@@ -1,8 +1,11 @@
-### Title of Pull Request
+Title of Pull Request
+---
 
-Fixes #[Issue Number]
+#### Example
+> Fixes #[Issue Number]
 
-#### Description
+Description
+---
 
 _Briefly describe the changes in this pull request._
 
@@ -10,7 +13,8 @@ _Briefly describe the changes in this pull request._
 - [Summary of minor changes]
 - [Any other relevant information]
 
-#### Type of Change
+Type of Change
+---
 
 Please delete options that are not relevant.
 
@@ -19,7 +23,8 @@ Please delete options that are not relevant.
 - [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
 - [ ] This change requires a documentation update
 
-#### How Has This Been Tested?
+How Has This Been Tested?
+---
 
 Please describe the tests that you ran to verify your changes.
 Provide instructions so we can reproduce. Please also list any relevant details for your test configuration.
@@ -27,7 +32,8 @@ Provide instructions so we can reproduce. Please also list any relevant details 
 - [ ] Test A
 - [ ] Test B
 
-#### Checklist:
+Checklist
+---
 
 - [ ] My code follows the style guidelines of this project
 - [ ] I have performed a self-review of my own code
@@ -39,10 +45,12 @@ Provide instructions so we can reproduce. Please also list any relevant details 
 - [ ] New and existing unit tests pass locally with my changes
 - [ ] Any dependent changes have been merged and published in downstream modules
 
-#### Screenshots (if applicable)
+Screenshots
+---
 
 _Attach screenshots or screen recordings of the changes, if any._
 
-#### Additional Context
+Additional Context
+---
 
 _Add any other context or information about the pull request here._

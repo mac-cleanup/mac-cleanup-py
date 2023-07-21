@@ -5,6 +5,7 @@ from typing import Final, Optional, TypeVar, final
 
 from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
 
+from mac_cleanup import args
 from mac_cleanup.progress import ProgressBar
 from mac_cleanup.utils import check_deletable, check_exists, cmd
 
@@ -26,6 +27,9 @@ class BaseModule(ABC):
         :return: Instance of self from
         :class: `BaseModule`
         """
+
+        if args.force:
+            return self
 
         # Can't be solved without typing.Self
         self.__prompt = True  # pyright: ignore [reportGeneralTypeIssues]
@@ -73,11 +77,11 @@ class _BaseCommand(BaseModule):
         return self.__command
 
     @abstractmethod
-    def _execute(self, **kwargs: bool) -> Optional[str]:
+    def _execute(self, ignore_errors: bool = True) -> Optional[str]:
         """
         Execute the command specified.
 
-        :param ignore_errors_: Ignore errors during execution
+        :param ignore_errors: Ignore errors during execution
         :return: Command execution results based on specified parameters
         """
 
@@ -90,7 +94,7 @@ class _BaseCommand(BaseModule):
             return
 
         # Execute command
-        return cmd(command=self.__command, ignore_errors=kwargs.get("ignore_errors", True))
+        return cmd(command=self.__command, ignore_errors=ignore_errors)
 
 
 @final
@@ -106,8 +110,15 @@ class Command(_BaseCommand):
 
         return self
 
-    def _execute(self) -> Optional[str]:
-        return super()._execute(ignore_errors=self.__ignore_errors)
+    def _execute(self, ignore_errors: Optional[bool] = None) -> Optional[str]:
+        """
+        Execute the command specified.
+
+        :param ignore_errors: Overrides flag `ignore_errors` in class
+        :return: Command execution results based on specified parameters
+        """
+
+        return super()._execute(ignore_errors=self.__ignore_errors if ignore_errors is None else ignore_errors)
 
 
 @final
@@ -137,7 +148,7 @@ class Path(_BaseCommand):
 
         return self
 
-    def _execute(self) -> Optional[str]:
+    def _execute(self, ignore_errors: bool = True) -> Optional[str]:
         """Delete specified path :return: Command execution results based on specified
         parameters.
         """
@@ -149,4 +160,4 @@ class Path(_BaseCommand):
         if not all([check_deletable(path=self.__path), check_exists(path=self.__path, expand_user=False)]):
             return
 
-        return super()._execute()  # Always ignore errors
+        return super()._execute(ignore_errors=ignore_errors)
