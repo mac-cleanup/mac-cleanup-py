@@ -105,19 +105,19 @@ Help menu:
 
 ```
 $ mac-cleanup -h
+usage: mac-cleanup [-h] [-n] [-u] [-c] [-p] [-f]
 
-usage: mac-cleanup [-h] [-n] [-u] [-c] [-p]
-
-    A Mac Cleanup Utility in Python
-    3.0.4
-    https://github.com/mac-cleanup/mac-cleanup-py    
+    Python cleanup script for macOS
+    Version: 3.0.4
+    https://github.com/mac-cleanup/mac-cleanup-py
 
 options:
   -h, --help         show this help message and exit
-  -n, --dry-run      Dry run without deleting stuff
-  -u, --update       Update HomeBrew on cleanup
-  -c, --configure    Configure default and custom modules
+  -n, --dry-run      Run without deleting stuff
+  -u, --update       Update Homebrew on cleanup
+  -c, --configure    Open module configuration screen
   -p, --custom-path  Specify path for custom modules
+  -f, --force        Accept all warnings
 
 ```
 
