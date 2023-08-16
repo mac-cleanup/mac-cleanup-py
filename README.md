@@ -8,15 +8,15 @@
 ## 🧹 Python cleanup script for macOS
 
 **mac-cleanup-py** is a powerful cleanup script for macOS.\
-This project is a rewrite of the original [mac-cleanup-sh](https://github.com/mac-cleanup/mac-cleanup-sh) rewritten in Python. 
+This project is a rewrite of the original [mac-cleanup-sh](https://github.com/mac-cleanup/mac-cleanup-sh) rewritten in Python.
 
 
 ## 🚀 Features
 
 **mac-cleanup-py** helps you:
 
-1. Empty Trash 
-2. Delete unnecessary logs & files 
+1. Empty Trash
+2. Delete unnecessary logs & files
 3. Clear cache
 
 ![mac-cleanup-demo](https://user-images.githubusercontent.com/44712637/231780851-d2197255-e24e-46ba-8355-42bcf588376d.gif)
@@ -106,11 +106,11 @@ Help menu:
 ```
 $ mac-cleanup -h
 
-usage: mac-cleanup [-h] [-n] [-u] [-c] [-p]
+usage: mac-cleanup [-h] [-n] [-u] [-c] [-p] [-f]
 
     A Mac Cleanup Utility in Python
     3.0.4
-    https://github.com/mac-cleanup/mac-cleanup-py    
+    https://github.com/mac-cleanup/mac-cleanup-py
 
 options:
   -h, --help         show this help message and exit
@@ -118,6 +118,8 @@ options:
   -u, --update       Update HomeBrew on cleanup
   -c, --configure    Configure default and custom modules
   -p, --custom-path  Specify path for custom modules
+  -f, --force        Accept all warnings
+
 
 ```
 
