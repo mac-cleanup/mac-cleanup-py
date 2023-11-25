@@ -342,7 +342,7 @@ def bun():
     if cmd("type 'bun'"):
         with clc as unit:
             unit.message("Cleaning up Bun Cache")
-            unit.add(Command(" bun pm cache rm"))
+            unit.add(Command("bun pm cache rm"))
             unit.add(Path("~/.bun/install/cache").dry_run_only())
 
 def pod():
