@@ -11,4 +11,4 @@ Any version with :x: are no longer supported and may face issues in it.
 
 ## Reporting a Vulnerability
 
-To report a security issue, please use [GitHub Issues](https://github.com/Drugsosos/mac-cleanup-py/issues/new/choose).
+To report a security issue, please use [GitHub Issues](https://github.com/mac-cleanup/mac-cleanup-py/issues/new/choose).
