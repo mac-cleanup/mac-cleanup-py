@@ -33,13 +33,13 @@ Here are some resources to help you get started with open source contributions:
 
 If you spot ant problems [search if an issue already exists](https://docs.github.com/en/github/searching-for-information-on-github/searching-on-github/searching-issues-and-pull-requests#search-by-the-title-body-or-comments). 
 
-If an issue doesn't exist, you can open a new issue using a relevant [issue form](https://github.com/Drugsosos/mac-cleanup-py/issues/new/choose). 
+If an issue doesn't exist, you can open a new issue using a relevant [issue form](https://github.com/mac-cleanup/mac-cleanup-py/issues/new/choose). 
 
 #### Solve an issue
 
 View the [existing issues](https://github.com/mac-cleanup/mac-cleanup-py/issues) to find something interesting to you. 
 
-In general, new issues will be assigned on [Drugsosos](https://github.com/Drugsosos).
+In general, new issues will be assigned on [Sasha](https://github.com/efa2d19).
 
 If you find an issue to work on, just post a comment on the issue's page and you are welcome to open a PR with a fix.
 

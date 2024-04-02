@@ -10,9 +10,9 @@ updates:
       time: "12:00"
       day: "friday"
     assignees:
-      - "drugsosos"
+      - "efa2d19"
     reviewers:
-      - "drugsosos"
+      - "efa2d19"
     commit-message:
       prefix: "poetry"
     target-branch: "develop"
