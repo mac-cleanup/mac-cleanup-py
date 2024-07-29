@@ -447,3 +447,10 @@ def telegram():
 
         if reopen_telegram:
             unit.add(Command("open /Applications/Telegram.app"))
+
+def conan():  
+    with clc as unit:
+        unit.message("Clearing conan cache")
+        unit.add(Command("conan remove \"*\" -c"))
+        unit.add(Path("~/.conan2/p/"))
+    
