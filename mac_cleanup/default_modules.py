@@ -168,6 +168,7 @@ def minecraft():
             unit.add(Path("~/Library/Application Support/minecraft/crash-reports"))
             unit.add(Path("~/Library/Application Support/minecraft/*.log"))
             unit.add(Path("~/Library/Application Support/minecraft/launcher_cef_log.txt"))
+            unit.add(Path("~/Library/Application Support/minecraft/command_history.txt"))
 
             if check_exists("~/Library/Application Support/minecraft/.mixin.out"):
                 unit.add(Path("~/Library/Application Support/minecraft/.mixin.out"))
@@ -454,3 +455,45 @@ def conan():
         unit.add(Command("""conan remove "*" -c"""))
         unit.add(Path("~/.conan2/p/"))
     
+
+def nuget_cache():
+    with clc as unit:
+        unit.message("Emptying the .nuget folder's content of the current user")
+        unit.add(
+            Path("~/.nuget/packages/").with_prompt(
+                "Deletion of nuget packages will eventually cause a long/big redownloaded!\n" "Continue?"
+            )
+        )
+
+
+def obsidian_caches():
+    with clc as unit:
+        unit.message("Deleting all cache folders of Obsidian.")
+        unit.add(Path("~/Library/Application Support/obsidian/Cache/"))
+        unit.add(Path("~/Library/Application Support/obsidian/Code Cache/"))
+        unit.add(Path("~/Library/Application Support/obsidian/DawnGraphiteCache/"))
+        unit.add(Path("~/Library/Application Support/obsidian/DawnWebGPUCache/"))
+        unit.add(Path("~/Library/Application Support/obsidian/DawnWebGPUCache/"))
+        unit.add(Path("~/Library/Application Support/obsidian/*.log"))
+
+
+def ea_caches():
+    with clc as unit:
+        unit.message("Deleting all cache folders of the EA App.")
+        unit.add(Path("~/Library/Application Support/Electronic Arts/EA app/IGOCache/"))
+        unit.add(Path("~/Library/Application Support/Electronic Arts/EA app/Logs/"))
+        unit.add(Path("~/Library/Application Support/Electronic Arts/EA app/OfflineCache/"))
+        unit.add(Path("~/Library/Application Support/Electronic Arts/EA app/CEF/BrowserCache/EADesktop/Cache/"))
+        unit.add(Path("~/Library/Application Support/Electronic Arts/EA app/CEF/BrowserCache/EADesktop/Code Cache/"))
+        unit.add(Path("~/Library/Application Support/Electronic Arts/EA app/CEF/BrowserCache/EADesktop/DawnCache/"))
+        unit.add(Path("~/Library/Application Support/Electronic Arts/EA app/CEF/BrowserCache/EADesktop/GPUCache/"))
+
+
+def chromium_caches():
+    with clc as unit:
+        unit.message("Deleting all cache folders of chromium.")
+        unit.add(Path("~/Library/Application Support/Chromium/GraphiteDawnCache/"))
+        unit.add(Path("~/Library/Application Support/Chromium/GrShaderCache/"))
+        unit.add(Path("~/Library/Application Support/Chromium/ShaderCache/"))
+        unit.add(Path("~/Library/Application Support/Chromium/Default/DawnCache/"))
+        unit.add(Path("~/Library/Application Support/Chromium/Default/GPUCache/"))
