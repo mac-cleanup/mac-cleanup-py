@@ -1,3 +1,4 @@
+from os import environ
 from os import statvfs
 from pathlib import Path
 
@@ -10,7 +11,11 @@ from mac_cleanup.utils import bytes_to_human
 
 
 class EntryPoint:
-    config_path = Path.home().joinpath(".mac_cleanup_py")
+    if (config_home := environ.get("XDG_CONFIG_HOME")) is not None:
+        config_path = Path(config_home).expanduser().joinpath("mac_cleanup_py").joinpath("config.toml")            
+    else:
+        config_path = Path.home().joinpath(".mac_cleanup_py")
+
     base_collector = _Collector()
 
     @staticmethod
