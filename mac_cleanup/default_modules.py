@@ -451,6 +451,6 @@ def telegram():
 def conan():  
     with clc as unit:
         unit.message("Clearing conan cache")
-        unit.add(Command("conan remove \"*\" -c"))
+        unit.add(Command("""conan remove "*" -c"""))
         unit.add(Path("~/.conan2/p/"))
     
