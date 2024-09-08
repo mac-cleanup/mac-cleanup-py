@@ -17,8 +17,8 @@ class EntryPoint:
     def count_free_space() -> float:
         """Get current free space."""
 
-        s_fs = statvfs("/")
-        return float(s_fs.f_bavail * s_fs.f_frsize)
+        stat = statvfs("/")
+        return float(stat.f_bavail * stat.f_frsize)
 
     def cleanup(self) -> None:
         """Launch cleanup and print results."""
