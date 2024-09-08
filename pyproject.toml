@@ -43,7 +43,7 @@ mac-cleanup = "mac_cleanup:main"
 
 [tool.poetry.group.test.dependencies]
 tox = "^4.18.1"
-pytest = "^7.4.0"
+pytest = "^8.3.2"
 pytest-cov = "^4.1.0"
 pyright = "^1.1.317"
 ruff = "^0.0.278"
@@ -132,6 +132,6 @@ inline-quotes = "double"
 multiline-quotes = "double"
 
 [tool.pytest.ini_options]
-minversion = "7.4.0"
+minversion = "8.3.2"
 addopts = "--cov=mac_cleanup"
 testpaths = [ "tests" ]
