@@ -17,7 +17,8 @@ classifiers = [
     "Environment :: Console",
     "Operating System :: MacOS",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11"
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12"
 ]
 
 include = [ "LICENSE" ]
@@ -29,7 +30,7 @@ exclude = [ "mac_cleanup/__main__.py", "mac_cleanup/py.typed" ]
 
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.12"
+python = ">=3.10,<3.13"
 rich = "^13.4.2"
 attrs = "^23.1.0"
 inquirer = "^3.1.3"
