@@ -18,7 +18,7 @@ class EntryPoint:
         """Get current free space."""
 
         s_fs = statvfs("/")
-        return float(s_fs.f_bavail * s_fs.f_frsize / s_fs.f_bsize)
+        return float(s_fs.f_bavail * s_fs.f_frsize)
 
     def cleanup(self) -> None:
         """Launch cleanup and print results."""
@@ -38,7 +38,7 @@ class EntryPoint:
 
         # Print results
         print_panel(
-            text=f"Removed - [success]{bytes_to_human((free_space_after - free_space_before) * 1024)}",
+            text=f"Removed - [success]{bytes_to_human(free_space_after - free_space_before)}",
             title="[info]Success",
         )
 
