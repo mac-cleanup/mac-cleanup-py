@@ -35,7 +35,7 @@ rich = "^13.8.0"
 attrs = "^24.2.0"
 inquirer = "^3.4.0"
 toml = "^0.10.2"
-beartype = "^0.14.1"
+beartype = "^0.18.5"
 xattr = "^1.1.0"
 
 [tool.poetry.scripts]
