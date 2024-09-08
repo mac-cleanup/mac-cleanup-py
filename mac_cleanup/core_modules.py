@@ -55,19 +55,8 @@ class BaseModule(ABC):
 class _BaseCommand(BaseModule):
     """Base Command with basic command methods."""
 
-    __has_root: bool = False
-
     @beartype
     def __init__(self, command_: Optional[str]):
-        # Ask for password input in terminal (sudo -E)
-        # Raises AssertionError if prompt fails
-        if not self.__has_root:
-            # Get root
-            assert cmd("sudo -E whoami") == "root"
-
-            # Set global root attr
-            _BaseCommand.__has_root = True
-
         self.__command: Final[Optional[str]] = command_
 
     @property

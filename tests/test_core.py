@@ -14,7 +14,6 @@ from mac_cleanup.core import Unit
 from mac_cleanup.core_modules import BaseModule, Command, Path
 
 
-@pytest.mark.usefixtures("_command_with_root", "_path_with_root")
 class TestUnit:
     def test_create_unit(self):
         """Check :class:`mac_cleanup.core.Unit` creation."""
@@ -63,7 +62,6 @@ class TestCollector:
 
         return _Collector()
 
-    @pytest.mark.usefixtures("_command_with_root", "_path_with_root")
     @pytest.mark.parametrize("message_text", ["Test message", None])
     def test_message_and_add(self, message_text: Optional[str], base_collector: _Collector):
         """Test messages (or default ones) and modules being added to
@@ -193,7 +191,6 @@ class TestCollector:
         error = FileNotFoundError
         base_collector._get_size(Pathlib("/"))
 
-    @pytest.mark.usefixtures("_path_with_root")
     @pytest.mark.parametrize("size_multiplier", [0, 1, 1024])
     def test_count_dry(self, size_multiplier: int, base_collector: _Collector, monkeypatch: MonkeyPatch):
         """Test :meth:`mac_cleanup.core._Collector._count_dry`"""
@@ -213,7 +210,6 @@ class TestCollector:
         # Check results
         assert base_collector._count_dry() == size
 
-    @pytest.mark.usefixtures("_path_with_root")
     def test_count_dry_error(self, base_collector: _Collector, monkeypatch: MonkeyPatch):
         """Test errors in :meth:`mac_cleanup.core._Collector._count_dry`"""
 
