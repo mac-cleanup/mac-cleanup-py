@@ -32,6 +32,7 @@ This project is a rewrite of the original [mac-cleanup-sh](https://github.com/ma
   - `android` - Clears **Android** caches
   - `brew` - Clears **Homebrew** cache
   - `bun` - Clears **Bun** cache
+  - `conan` - Clears **Conan** cache
   - `cacher` - Clears **Cacher** logs
   - `chrome` - Clears **Google Chrome** cache
   - `composer` - Clears **composer** cache
