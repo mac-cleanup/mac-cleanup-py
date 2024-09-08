@@ -42,7 +42,7 @@ xattr = "^1.1.0"
 mac-cleanup = "mac_cleanup:main"
 
 [tool.poetry.group.test.dependencies]
-tox = "^4.6.4"
+tox = "^4.18.1"
 pytest = "^7.4.0"
 pytest-cov = "^4.1.0"
 pyright = "^1.1.317"
