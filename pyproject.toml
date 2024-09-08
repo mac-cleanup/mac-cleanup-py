@@ -50,7 +50,7 @@ ruff = "^0.6.4"
 
 [tool.poetry.group.dev.dependencies]
 commitizen = "^3.29.0"
-pre-commit = "^3.3.3"
+pre-commit = "^3.8.0"
 
 [tool.poetry.group.lint.dependencies]
 black = "^23.7.0"
