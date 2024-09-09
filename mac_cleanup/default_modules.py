@@ -461,14 +461,14 @@ def nuget_cache():
         unit.message("Emptying the .nuget folder's content of the current user")
         unit.add(
             Path("~/.nuget/packages/").with_prompt(
-                "Deletion of nuget packages will eventually cause a long/big redownloaded!\n" "Continue?"
+                "Deleting nuget packages probably will cause a lot of files being redownloaded!\n" "Continue?"
             )
         )
 
 
 def obsidian_caches():
     with clc as unit:
-        unit.message("Deleting all cache folders of Obsidian.")
+        unit.message("Deleting all cache folders of Obsidian")
         unit.add(Path("~/Library/Application Support/obsidian/Cache/"))
         unit.add(Path("~/Library/Application Support/obsidian/Code Cache/"))
         unit.add(Path("~/Library/Application Support/obsidian/DawnGraphiteCache/"))
@@ -479,7 +479,7 @@ def obsidian_caches():
 
 def ea_caches():
     with clc as unit:
-        unit.message("Deleting all cache folders of the EA App.")
+        unit.message("Deleting all cache folders of the EA App")
         unit.add(Path("~/Library/Application Support/Electronic Arts/EA app/IGOCache/"))
         unit.add(Path("~/Library/Application Support/Electronic Arts/EA app/Logs/"))
         unit.add(Path("~/Library/Application Support/Electronic Arts/EA app/OfflineCache/"))
@@ -491,7 +491,7 @@ def ea_caches():
 
 def chromium_caches():
     with clc as unit:
-        unit.message("Deleting all cache folders of chromium.")
+        unit.message("Deleting all cache folders of Chromium")
         unit.add(Path("~/Library/Application Support/Chromium/GraphiteDawnCache/"))
         unit.add(Path("~/Library/Application Support/Chromium/GrShaderCache/"))
         unit.add(Path("~/Library/Application Support/Chromium/ShaderCache/"))
