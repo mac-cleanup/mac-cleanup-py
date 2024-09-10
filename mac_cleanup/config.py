@@ -1,4 +1,5 @@
 """Config handler."""
+
 from inspect import getmembers, isfunction
 from pathlib import Path
 from typing import Callable, Final, Optional, TypedDict, final
@@ -34,8 +35,10 @@ class Config:
         self.__load_default()
 
         # Load config
+        self.__config_data: Final[ConfigFile]
+
         try:
-            self.__config_data: Final[ConfigFile] = self.__read()
+            self.__config_data = self.__read()
         except FileNotFoundError:
             console.print("[danger]Modules not configured, opening configuration screen...[/danger]")
 
@@ -175,12 +178,12 @@ class Config:
             title="[info]Controls",
         )
 
-        questions = inquirer.Checkbox(  # pyright: ignore [reportUnknownVariableType, reportUnknownMemberType]
+        questions = inquirer.Checkbox(  # pyright: ignore [reportUnknownMemberType]
             "modules", message="Active modules", choices=all_modules, default=enabled_modules, carousel=True
         )
 
         # Get user answers
-        answers = inquirer.prompt(  # pyright: ignore [reportUnknownMemberType]
+        answers = inquirer.prompt(  # pyright: ignore [reportUnknownVariableType, reportUnknownMemberType]
             questions=[questions], raise_keyboard_interrupt=True
         )
 

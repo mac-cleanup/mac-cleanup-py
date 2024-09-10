@@ -1,4 +1,5 @@
 """Test global error handler."""
+
 from typing import Iterable, Type
 
 import pytest

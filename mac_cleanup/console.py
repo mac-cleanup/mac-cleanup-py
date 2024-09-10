@@ -1,4 +1,5 @@
 """Configuration of Rich console."""
+
 from typing import Optional
 
 from rich.console import Console

@@ -1,4 +1,5 @@
 """All tests for mac_cleanup_py.parser."""
+
 from argparse import Action
 
 import pytest
@@ -6,7 +7,7 @@ import pytest
 from mac_cleanup.parser import Args, parser
 
 
-@pytest.fixture()
+@pytest.fixture
 def get_namespace() -> Args:
     """Get empty args."""
 

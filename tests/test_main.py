@@ -1,4 +1,5 @@
 """Test main script in mac_cleanup_py.main."""
+
 from pathlib import Path as Pathlib
 from typing import Any, Callable
 
@@ -59,9 +60,9 @@ class TestEntryPoint:
             if not hasattr(dummy_count_free_space, "called"):
                 dummy_count_free_space.called = True  # pyright: ignore [reportFunctionMemberAccess]
 
-                return 1024**2 * size_multiplier / 2
+                return 1024**3 * size_multiplier / 2
             else:
-                return 1024**2 * size_multiplier
+                return 1024**3 * size_multiplier
 
         # Dummy module execution (empty one)
         dummy_module_execute: Callable[[BaseModule], None] = lambda md_self: None
@@ -150,7 +151,7 @@ class TestEntryPoint:
         if not cleanup_prompted:
             assert "Exiting..." in captured_stdout
 
-    def test_test_dry_run_prompt_error(self, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
+    def test_dry_run_prompt_error(self, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
         """Test errors in dry_run in :class:`mac_cleanup.main.EntryPoint`"""
 
         # Dummy count_dry returning 1 GB

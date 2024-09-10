@@ -1,4 +1,5 @@
 """Custom module template example."""
+
 from mac_cleanup import *
 
 # Do not import any functions at the top level

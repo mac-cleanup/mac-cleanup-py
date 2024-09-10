@@ -97,7 +97,7 @@ def check_deletable(path: Path | str) -> bool:
     if any(path_posix.startswith(protected_path) for protected_path in list(map(expanduser, sip_list + user_list))):
         return False
 
-    return "com.apple.rootless" not in xattr(path_posix).keys()
+    return "com.apple.rootless" not in xattr(path_posix)
 
 
 @beartype

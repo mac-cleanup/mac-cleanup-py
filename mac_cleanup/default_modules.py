@@ -337,6 +337,7 @@ def yarn():
             unit.add(Command("yarn cache clean --force"))
             unit.add(Path("~/Library/Caches/yarn").dry_run_only())
 
+
 def bun():
     from mac_cleanup.utils import cmd
 
@@ -345,6 +346,7 @@ def bun():
             unit.message("Cleaning up Bun Cache")
             unit.add(Command("bun pm cache rm"))
             unit.add(Path("~/.bun/install/cache").dry_run_only())
+
 
 def pod():
     from mac_cleanup.utils import cmd
@@ -449,12 +451,13 @@ def telegram():
         if reopen_telegram:
             unit.add(Command("open /Applications/Telegram.app"))
 
-def conan():  
+
+def conan():
     with clc as unit:
         unit.message("Clearing conan cache")
         unit.add(Command("""conan remove "*" -c"""))
         unit.add(Path("~/.conan2/p/"))
-    
+
 
 def nuget_cache():
     with clc as unit:

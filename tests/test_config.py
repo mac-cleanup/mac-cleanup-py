@@ -1,4 +1,5 @@
 """All tests for mac_cleanup_py.config."""
+
 import tempfile
 from pathlib import Path
 from typing import IO, Callable, Optional

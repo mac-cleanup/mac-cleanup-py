@@ -1,4 +1,5 @@
 """Core for collecting all unit modules."""
+
 from functools import partial
 from itertools import chain
 from pathlib import Path as Path_

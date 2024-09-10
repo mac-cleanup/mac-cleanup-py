@@ -1,4 +1,5 @@
 """All tests for mac_cleanup_py.utils."""
+
 from pathlib import Path
 from typing import Optional
 
@@ -28,7 +29,7 @@ def test_cmd(command: str | int, ignore_errors: bool, output: str):
 
     if isinstance(command, int):
         with pytest.raises(BeartypeCallHintParamViolation):
-            cmd(command=command, ignore_errors=ignore_errors)  # pyright: ignore [reportGeneralTypeIssues] # noqa
+            cmd(command=command, ignore_errors=ignore_errors)  # pyright: ignore [reportArgumentType] # noqa
         return
 
     assert cmd(command=command, ignore_errors=ignore_errors) == output
@@ -52,7 +53,7 @@ def test_expanduser(str_path: str | int, output: Optional[str]):
 
     if isinstance(str_path, int):
         with pytest.raises(BeartypeCallHintParamViolation):
-            expanduser(str_path=str_path)  # pyright: ignore [reportGeneralTypeIssues] # noqa
+            expanduser(str_path=str_path)  # pyright: ignore [reportArgumentType] # noqa
         return
 
     if output is None:
@@ -94,7 +95,7 @@ def test_check_exists(path: Path | str | int, output: bool, expand_path: bool):
 
     if isinstance(path, int):
         with pytest.raises(BeartypeCallHintParamViolation):
-            check_exists(path=path, expand_user=expand_path)  # pyright: ignore [reportGeneralTypeIssues] # noqa
+            check_exists(path=path, expand_user=expand_path)  # pyright: ignore [reportArgumentType] # noqa
         return
 
     assert check_exists(path=path, expand_user=expand_path) is output
@@ -134,7 +135,7 @@ def test_check_deletable(path: Path | str | int, output: bool):
 
     if isinstance(path, int):
         with pytest.raises(BeartypeCallHintParamViolation):
-            check_deletable(path=path)  # pyright: ignore [reportGeneralTypeIssues] # noqa
+            check_deletable(path=path)  # pyright: ignore [reportArgumentType] # noqa
         return
 
     assert check_deletable(path=path) is output
@@ -166,7 +167,7 @@ def test_bytes_to_human(byte: int | str, in_power: int, output: str):
 
     if isinstance(byte, str):
         with pytest.raises(BeartypeCallHintParamViolation):
-            bytes_to_human(size_bytes=byte)  # pyright: ignore [reportGeneralTypeIssues] # noqa
+            bytes_to_human(size_bytes=byte)  # pyright: ignore [reportArgumentType] # noqa
         return
 
     assert bytes_to_human(size_bytes=byte**in_power) == output

@@ -1,4 +1,5 @@
 """All tests for mac_cleanup_py.core."""
+
 import os
 import tempfile
 from pathlib import Path as Pathlib
@@ -33,10 +34,10 @@ class TestUnit:
 
         # Check errors
         with pytest.raises(TypeError):
-            Unit(message=message, modules=[123])  # pyright: ignore [reportGeneralTypeIssues] # noqa
+            Unit(message=message, modules=[123])  # pyright: ignore [reportArgumentType] # noqa
 
         with pytest.raises(TypeError):
-            Unit(message=message, modules=123)  # pyright: ignore [reportGeneralTypeIssues] # noqa
+            Unit(message=message, modules=123)  # pyright: ignore [reportArgumentType] # noqa
 
 
 class TestCollector:
@@ -56,7 +57,7 @@ class TestCollector:
             raise raised_error
 
     @staticmethod
-    @pytest.fixture()
+    @pytest.fixture
     def base_collector() -> _Collector:
         """Get main collector instance - :class:`mac_cleanup.core._Collector`"""
 
@@ -121,9 +122,10 @@ class TestCollector:
         # Get size in bytes
         size = 1024 * size_multiplier
 
-        with tempfile.TemporaryDirectory() as dir_name, tempfile.NamedTemporaryFile(
-            mode="w+b", dir=dir_name, prefix="test_get_size", suffix=".test"
-        ) as f:
+        with (
+            tempfile.TemporaryDirectory() as dir_name,
+            tempfile.NamedTemporaryFile(mode="w+b", dir=dir_name, prefix="test_get_size", suffix=".test") as f,
+        ):
             # Write random bytes with specified size
             f.write(os.urandom(size))
 

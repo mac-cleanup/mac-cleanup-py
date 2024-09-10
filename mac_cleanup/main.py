@@ -1,5 +1,4 @@
-from os import environ
-from os import statvfs
+from os import environ, statvfs
 from pathlib import Path
 
 from mac_cleanup.config import Config
@@ -12,7 +11,7 @@ from mac_cleanup.utils import bytes_to_human
 
 class EntryPoint:
     if (config_home := environ.get("XDG_CONFIG_HOME")) is not None:
-        config_path = Path(config_home).expanduser().joinpath("mac_cleanup_py").joinpath("config.toml")            
+        config_path = Path(config_home).expanduser().joinpath("mac_cleanup_py").joinpath("config.toml")
     else:
         config_path = Path.home().joinpath(".mac_cleanup_py")
 
@@ -43,8 +42,7 @@ class EntryPoint:
 
         # Print results
         print_panel(
-            text=f"Removed - [success]{bytes_to_human(free_space_after - free_space_before)}",
-            title="[info]Success",
+            text=f"Removed - [success]{bytes_to_human(free_space_after - free_space_before)}", title="[info]Success"
         )
 
     @catch_exception

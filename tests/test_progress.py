@@ -1,4 +1,5 @@
 """All tests for mac_cleanup_py.progress."""
+
 from typing import Callable
 
 import pytest

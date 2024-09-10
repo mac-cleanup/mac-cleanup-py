@@ -1,4 +1,5 @@
 """Modified rich progress bar."""
+
 from typing import Iterable, Optional, Sequence
 
 from rich.progress import (

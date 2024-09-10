@@ -1,4 +1,5 @@
 """All core modules."""
+
 from abc import ABC, abstractmethod
 from pathlib import Path as Path_
 from typing import Final, Optional, TypeVar, final
@@ -32,11 +33,11 @@ class BaseModule(ABC):
             return self
 
         # Can't be solved without typing.Self
-        self.__prompt = True  # pyright: ignore [reportGeneralTypeIssues]
+        self.__prompt = True  # pyright: ignore [reportAttributeAccessIssue]
 
         if message_:
             # Can't be solved without typing.Self
-            self.__prompt_message = message_  # pyright: ignore [reportGeneralTypeIssues]
+            self.__prompt_message = message_  # pyright: ignore [reportAttributeAccessIssue]
 
         return self
 

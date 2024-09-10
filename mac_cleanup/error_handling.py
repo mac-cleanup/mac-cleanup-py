@@ -1,4 +1,5 @@
 """Wrapper for handling all errors in entry point."""
+
 from functools import wraps
 from typing import Any, Callable, Iterable, Optional, Type, TypeVar, overload
 
@@ -76,15 +77,15 @@ class ErrorHandler:
 
 
 @overload
-def catch_exception(func: T, exception: Optional[_exception] = ..., exit_on_exception: bool = ...) -> T:
-    ...  # pragma: no cover (coverage marks line as untested)
+def catch_exception(
+    func: T, exception: Optional[_exception] = ..., exit_on_exception: bool = ...
+) -> T: ...  # pragma: no cover (coverage marks line as untested)
 
 
 @overload
 def catch_exception(
     func: None = ..., exception: Optional[_exception] = ..., exit_on_exception: bool = ...
-) -> ErrorHandler:
-    ...  # pragma: no cover (coverage marks line as untested)
+) -> ErrorHandler: ...  # pragma: no cover (coverage marks line as untested)
 
 
 def catch_exception(
