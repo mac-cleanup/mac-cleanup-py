@@ -10,12 +10,16 @@ from mac_cleanup.utils import bytes_to_human
 
 
 class EntryPoint:
-    if (config_home := environ.get("XDG_CONFIG_HOME")) is not None:
-        config_path = Path(config_home).expanduser().joinpath("mac_cleanup_py").joinpath("config.toml")
-    else:
-        config_path = Path.home().joinpath(".mac_cleanup_py")
+    config_path: Path
+    base_collector: _Collector
 
-    base_collector = _Collector()
+    def __init__(self):
+        if (config_home := environ.get("XDG_CONFIG_HOME")) is not None:
+            self.config_path = Path(config_home).expanduser().joinpath("mac_cleanup_py").joinpath("config.toml")
+        else:
+            self.config_path = Path.home().joinpath(".mac_cleanup_py")
+
+        self.base_collector = _Collector()
 
     @staticmethod
     def count_free_space() -> float:

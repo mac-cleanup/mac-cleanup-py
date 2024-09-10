@@ -75,6 +75,10 @@ class TestEntryPoint:
         monkeypatch.setattr("mac_cleanup.config.Config.__init__", dummy_config_init)
         monkeypatch.setattr("mac_cleanup.config.Config.__call__", dummy_config_call)
 
+        # Create EntryPoint and mock it
+        mock_entry_point = EntryPoint()
+        monkeypatch.setattr(EntryPoint, "__new__", lambda: mock_entry_point)
+
         # Simulate count_free_space results
         monkeypatch.setattr(EntryPoint, "count_free_space", dummy_count_free_space)
 
@@ -86,7 +90,7 @@ class TestEntryPoint:
         ]
 
         # Simulate execution list in BaseCollector
-        monkeypatch.setattr(EntryPoint.base_collector, "_execute_list", dummy_execute_list)
+        monkeypatch.setattr(mock_entry_point.base_collector, "_execute_list", dummy_execute_list)
 
         # Call entrypoint
         main()
@@ -128,8 +132,12 @@ class TestEntryPoint:
         monkeypatch.setattr("mac_cleanup.config.Config.__init__", dummy_config_init)
         monkeypatch.setattr("mac_cleanup.config.Config.__call__", dummy_config_call)
 
+        # Create EntryPoint and mock it
+        mock_entry_point = EntryPoint()
+        monkeypatch.setattr(EntryPoint, "__new__", lambda: mock_entry_point)
+
         # Simulate count_dry with predefined result
-        monkeypatch.setattr(EntryPoint.base_collector, "_count_dry", dummy_count_dry)
+        monkeypatch.setattr(mock_entry_point.base_collector, "_count_dry", dummy_count_dry)
 
         # Simulate empty cleanup
         monkeypatch.setattr(EntryPoint, "cleanup", dummy_cleanup)
@@ -177,8 +185,12 @@ class TestEntryPoint:
         monkeypatch.setattr("mac_cleanup.config.Config.__init__", dummy_config_init)
         monkeypatch.setattr("mac_cleanup.config.Config.__call__", dummy_config_call)
 
+        # Create EntryPoint and mock it
+        mock_entry_point = EntryPoint()
+        monkeypatch.setattr(EntryPoint, "__new__", lambda: mock_entry_point)
+
         # Simulate count_dry with predefined result
-        monkeypatch.setattr(EntryPoint.base_collector, "_count_dry", dummy_count_dry)
+        monkeypatch.setattr(mock_entry_point.base_collector, "_count_dry", dummy_count_dry)
 
         # Simulate dry run was prompted
         monkeypatch.setattr("mac_cleanup.parser.Args.dry_run", True)
@@ -196,3 +208,18 @@ class TestEntryPoint:
         # Check error message and exit message
         assert "Do not enter symbols that can't be decoded to UTF-8" in captured_stdout
         assert "Exiting..." in captured_stdout
+
+    @pytest.mark.parametrize("xdg_env_set", [True, False])
+    def test_config_home(self, xdg_env_set: bool, monkeypatch: MonkeyPatch):
+        """Test xdg and default config in :class:`mac_cleanup.main.EntryPoint`"""
+
+        expected_path: str
+
+        if xdg_env_set:
+            monkeypatch.setenv("XDG_CONFIG_HOME", "config_home")
+            expected_path = "config_home/mac_cleanup_py/config.toml"
+        else:
+            monkeypatch.setattr("pathlib.Path.home", lambda: Pathlib("home"))
+            expected_path = "home/.mac_cleanup_py"
+
+        assert str(EntryPoint().config_path) == expected_path
