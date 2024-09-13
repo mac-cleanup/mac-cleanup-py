@@ -31,25 +31,25 @@ exclude = [ "mac_cleanup/__main__.py", "mac_cleanup/py.typed" ]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
-rich = "^13.8.0"
+rich = "^13.9.2"
 attrs = "^24.2.0"
 inquirer = "^3.4.0"
 toml = "^0.10.2"
-beartype = "^0.18.5"
+beartype = ">=0.19.0,<0.20.0"
 xattr = "^1.1.0"
 
 [tool.poetry.scripts]
 mac-cleanup = "mac_cleanup:main"
 
 [tool.poetry.group.test.dependencies]
-tox = "^4.18.1"
-pytest = "^8.3.2"
+tox = "^4.20.0"
+pytest = "^8.3.3"
 pytest-cov = "^5.0.0"
-pyright = "^1.1.379"
-ruff = "^0.6.4"
+pyright = "^1.1.383"
+ruff = "^0.6.8"
 
 [tool.poetry.group.dev.dependencies]
-commitizen = "^3.29.0"
+commitizen = "^3.29.1"
 pre-commit = "^3.8.0"
 
 [tool.poetry.group.lint.dependencies]
@@ -132,6 +132,6 @@ inline-quotes = "double"
 multiline-quotes = "double"
 
 [tool.pytest.ini_options]
-minversion = "8.3.2"
+minversion = "8.3.3"
 addopts = "--cov=mac_cleanup"
 testpaths = [ "tests" ]
