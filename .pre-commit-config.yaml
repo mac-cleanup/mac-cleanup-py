@@ -3,21 +3,21 @@ default_stages:
 
 repos:
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v3.2.2
+    rev: v3.29.1
     hooks:
       - id: commitizen
         name: Check Convenient Commits
         stages: [ commit-msg ]
 
   - repo: https://github.com/psf/black
-    rev: 23.3.0
+    rev: 24.8.0
     hooks:
       - id: black
         name: Run black
         types: [ python ]
 
   - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+    rev: 5.13.2
     hooks:
       - id: isort
         name: Run isort
