@@ -10,7 +10,7 @@ repos:
         stages: [ commit-msg ]
 
   - repo: https://github.com/psf/black
-    rev: 24.8.0
+    rev: 24.10.0
     hooks:
       - id: black
         name: Run black
