@@ -500,3 +500,17 @@ def chromium_caches():
         unit.add(Path("~/Library/Application Support/Chromium/ShaderCache/"))
         unit.add(Path("~/Library/Application Support/Chromium/Default/DawnCache/"))
         unit.add(Path("~/Library/Application Support/Chromium/Default/GPUCache/"))
+
+
+def arc():
+    with clc as unit:
+        unit.message("Deleting all cache, cookies, history, site data of Arc Browser")
+        unit.add(Path("~/Library/Caches/Arc"))
+        unit.add(Path("~/Library/Caches/CloudKit/company.thebrowser.Browser"))
+        unit.add(Path("~/Library/Caches/company.thebrowser.Browser"))
+        unit.add(Path("~/Library/Application Support/Arc/User Data/Default/History"))
+        unit.add(Path("~/Library/Application Support/Arc/User Data/Default/History-journal"))
+        unit.add(Path("~/Library/Application Support/Arc/User Data/Default/Cookies"))
+        unit.add(Path("~/Library/Application Support/Arc/User Data/Default/Cookies-journal"))
+        unit.add(Path("~/Library/Application Support/Arc/User Data/Default/Web Data"))
+        unit.add(Path("~/Library/Application Support/Arc/User Data/Default/Web Data-journal"))
