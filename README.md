@@ -29,6 +29,7 @@ This project is a rewrite of the original [mac-cleanup-sh](https://github.com/ma
 
 - `adobe` - Clears **Adobe** cache files
 - `android` - Clears **Android** caches
+- `arc` - Clears **Arc Browser** caches
 - `brew` - Clears **Homebrew** cache
 - `bun` - Clears **Bun** cache
 - `cacher` - Clears **Cacher** logs
