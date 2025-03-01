@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env zsh
 
 # Check no version
 if [[ -z "$1" ]]; then echo "No version supplied"; exit 1; fi
