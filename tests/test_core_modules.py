@@ -121,7 +121,7 @@ class TestPath:
 
         # Get tmp file
         if is_file:
-            tmp_file_object = tempfile.NamedTemporaryFile(mode="w+", delete=False)
+            tmp_file_object = tempfile.NamedTemporaryFile(mode="w+", delete=False)  # noqa: SIM115
         else:
             tmp_file_object = tempfile.TemporaryDirectory()
 
@@ -167,7 +167,7 @@ class TestPath:
 
         # Get tmp file
         if is_file:
-            tmp_file_object = tempfile.NamedTemporaryFile(mode="w+", delete=False)
+            tmp_file_object = tempfile.NamedTemporaryFile(mode="w+", delete=False)  # noqa: SIM115
         else:
             tmp_file_object = tempfile.TemporaryDirectory()
 
@@ -198,7 +198,7 @@ class TestPath:
 
         # Get tmp file
         if is_file:
-            tmp_file_object = tempfile.NamedTemporaryFile(mode="w+", delete=False)
+            tmp_file_object = tempfile.NamedTemporaryFile(mode="w+", delete=False)  # noqa: SIM115
         else:
             tmp_file_object = tempfile.TemporaryDirectory()
 

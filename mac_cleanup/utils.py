@@ -109,7 +109,7 @@ def bytes_to_human(size_bytes: int | float) -> str:
     :return: Human readable size
     """
 
-    from math import floor, log, pow
+    from math import floor, log
 
     if size_bytes <= 0:
         return "0B"
