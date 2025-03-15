@@ -10,6 +10,7 @@ import attr
 from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
 
 from mac_cleanup.core_modules import BaseModule, Path
+from mac_cleanup.utils import bytes_to_human
 
 T = TypeVar("T")
 
@@ -39,13 +40,15 @@ class _Collector:
     __temp_message: str
     __temp_modules_list: list[BaseModule]
 
-    def __init__(self):
+    def __init__(self, verbose: bool = False):
         # Borg implementation
         self.__dict__ = self._shared_instance
 
         # Add execute_list if none found in shared_instance
         if not hasattr(self, "_execute_list"):
             self._execute_list: Final[list[Unit]] = list()
+
+        self._verbose = verbose
 
     @property
     def get_temp_message(self) -> Optional[str]:
@@ -107,7 +110,7 @@ class _Collector:
         self.__temp_modules_list.append(module_)
 
     @staticmethod
-    def _get_size(path_: Path_) -> float:
+    def _get_size(path_: Path_, verbose: bool = False) -> float:
         """
         Counts size of directory.
 
@@ -184,6 +187,8 @@ class _Collector:
                 # Except SIP, symlinks, and not non-existent path
                 except (PermissionError, FileNotFoundError):
                     continue
+        if verbose and temp_size:
+            print(bytes_to_human(temp_size), path_)
         return temp_size
 
     @staticmethod
@@ -216,13 +221,14 @@ class _Collector:
 
         try:
             # Add tasks to executor
-            tasks = [executor.submit(self._get_size, path) for path in path_list]
+            tasks = [executor.submit(self._get_size, path, self._verbose) for path in path_list]
 
             # Wait for task completion and add ProgressBar
             for future in ProgressBar.wrap_iter(
                 as_completed(tasks), description="Collecting dry run", total=len(path_list)
             ):
-                estimate_size += future.result(timeout=10)
+                size = future.result(timeout=10)
+                estimate_size += size
         except KeyboardInterrupt:
             # Shutdown executor without waiting for tasks
             executor.shutdown(wait=False)

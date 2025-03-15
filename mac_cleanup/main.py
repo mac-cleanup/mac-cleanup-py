@@ -19,7 +19,7 @@ class EntryPoint:
         else:
             self.config_path = Path.home().joinpath(".mac_cleanup_py")
 
-        self.base_collector = _Collector()
+        self.base_collector = _Collector(args.verbose)
 
     @staticmethod
     def count_free_space() -> float:
