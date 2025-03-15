@@ -122,6 +122,7 @@ options:
   -c, --configure    Open module configuration screen
   -p, --custom-path  Specify path for custom modules
   -f, --force        Accept all warnings
+  -v, --verbose      Print folders to be deleted
 
 ```
 
