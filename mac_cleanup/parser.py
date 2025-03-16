@@ -16,6 +16,7 @@ class Args:
     configure: bool = attr.ib(default=False)
     custom_path: bool = attr.ib(default=False)
     force: bool = attr.ib(default=False)
+    verbose: bool = attr.ib(default=False)
 
 
 parser = ArgumentParser(
@@ -37,6 +38,8 @@ parser.add_argument("-p", "--custom-path", help="Specify path for custom modules
 
 parser.add_argument("-f", "--force", help="Accept all warnings", action="store_true")
 
+parser.add_argument("-v", "--verbose", help="Print folders to be deleted", action="store_true")
+
 args = Args()
 parser.parse_args(namespace=args)
 
@@ -44,3 +47,4 @@ parser.parse_args(namespace=args)
 # args.configure = True  # debug
 # args.custom_path = True  # debug
 # args.force = True  # debug
+# args.verbose = True  # debug
