@@ -227,3 +227,47 @@ class TestCollector:
 
         # Check prematurely exit return 0
         assert base_collector._count_dry() == 0
+
+    @pytest.mark.parametrize("size_multiplier", [0, 1, 1024])
+    def test_extract_paths(self, size_multiplier: int, base_collector: _Collector, monkeypatch: MonkeyPatch):
+        """Test :meth:`mac_cleanup.core._Collector.extract_paths`"""
+
+        # Get size in bytes
+        size = 1024 * size_multiplier
+
+        # Dummy get_size
+        dummy_get_size: Callable[[_Collector, Pathlib], float] = lambda clc_self, path: size
+
+        # Simulate get_size with specified size
+        monkeypatch.setattr("mac_cleanup.core._Collector._get_size", dummy_get_size)
+
+        # Simulate stuff in execute_list
+        monkeypatch.setattr(base_collector, "_execute_list", [Unit(message="test", modules=[Path("~/test")])])
+
+        # Call extract_paths
+        paths = list(base_collector.extract_paths())
+
+        # Check results
+        assert len(paths) == 1
+        assert paths[0][0] == Path("~/test").get_path
+        assert paths[0][1] == size
+
+    def test_extract_paths_error(self, base_collector: _Collector, monkeypatch: MonkeyPatch):
+        """Test errors in :meth:`mac_cleanup.core._Collector.extract_paths`"""
+
+        # Dummy get size raising KeyboardInterrupt
+        def dummy_get_size(clc_self: _Collector, path: Pathlib) -> float:  # noqa  # noqa
+            raise KeyboardInterrupt
+
+        # Simulate get_size with error
+        monkeypatch.setattr("mac_cleanup.core._Collector._get_size", dummy_get_size)
+
+        # Simulate stuff in execute_list
+        monkeypatch.setattr(base_collector, "_execute_list", [Unit(message="test", modules=[Path("~/test")])])
+
+        # Check prematurely exit return 0
+        # Call extract_paths
+        paths = list(base_collector.extract_paths())
+
+        # Check results
+        assert len(paths) == 0

@@ -105,11 +105,12 @@ class TestEntryPoint:
         assert f"Removed - {size_multiplier / 2} GB" in captured_stdout
 
     @pytest.mark.parametrize("cleanup_prompted", [True, False])
-    def test_dry_run_prompt(self, cleanup_prompted: bool, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
-        """Test dry_run with optional cleanup in :class:`mac_cleanup.main.EntryPoint`"""
+    def test_dry_run_prompt(self, cleanup_prompted: bool, capsys: CaptureFixture[str],
+                            monkeypatch: MonkeyPatch):
+        """Test dry_run with verbose and optional cleanup in :class:`mac_cleanup.main.EntryPoint`"""
 
-        # Dummy count_dry returning 1 GB
-        dummy_count_dry: Callable[..., float] = lambda: float(1024**3)
+        # Dummy extract_paths returning [Pathlib("test") and 1 GB]
+        dummy_extract_paths: Callable[..., list[tuple[Pathlib, float]]] = lambda: [(Pathlib("test"), float(1024**3))]
 
         # Dummy Config with empty init
         def dummy_config_init(cfg_self: Config, config_path_: Pathlib) -> None:  # noqa  # noqa
@@ -136,14 +137,17 @@ class TestEntryPoint:
         mock_entry_point = EntryPoint()
         monkeypatch.setattr(EntryPoint, "__new__", lambda: mock_entry_point)
 
-        # Simulate count_dry with predefined result
-        monkeypatch.setattr(mock_entry_point.base_collector, "_count_dry", dummy_count_dry)
+        # Simulate extract_paths with predefined result
+        monkeypatch.setattr(mock_entry_point.base_collector, "extract_paths", dummy_extract_paths)
 
         # Simulate empty cleanup
         monkeypatch.setattr(EntryPoint, "cleanup", dummy_cleanup)
 
         # Simulate dry run was prompted
         monkeypatch.setattr("mac_cleanup.parser.Args.dry_run", True)
+
+        # Simulate verbose was set
+        monkeypatch.setattr("mac_cleanup.parser.Args.verbose", True)
 
         # Call entrypoint
         main()
@@ -155,6 +159,9 @@ class TestEntryPoint:
         assert "Dry run results" in captured_stdout
         assert "Approx 1.0 GB will be cleaned" in captured_stdout
 
+        # Check verbose message
+        assert "1.0 GB test" in captured_stdout
+
         # Check exit message
         if not cleanup_prompted:
             assert "Exiting..." in captured_stdout
@@ -162,8 +169,8 @@ class TestEntryPoint:
     def test_dry_run_prompt_error(self, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
         """Test errors in dry_run in :class:`mac_cleanup.main.EntryPoint`"""
 
-        # Dummy count_dry returning 1 GB
-        dummy_count_dry: Callable[..., float] = lambda: float(1024**3)
+        # Dummy extract_paths returning [Pathlib("test") and 1 GB]
+        dummy_extract_paths: Callable[..., list[tuple[Pathlib, float]]] = lambda: [(Pathlib("test"), float(1024**3))]
 
         # Dummy Config with no init and empty call
         # Dummy Config with empty init
@@ -189,8 +196,8 @@ class TestEntryPoint:
         mock_entry_point = EntryPoint()
         monkeypatch.setattr(EntryPoint, "__new__", lambda: mock_entry_point)
 
-        # Simulate count_dry with predefined result
-        monkeypatch.setattr(mock_entry_point.base_collector, "_count_dry", dummy_count_dry)
+        # Simulate extract_paths with predefined result
+        monkeypatch.setattr(mock_entry_point.base_collector, "extract_paths", dummy_extract_paths)
 
         # Simulate dry run was prompted
         monkeypatch.setattr("mac_cleanup.parser.Args.dry_run", True)

@@ -192,8 +192,8 @@ class _Collector:
 
         return isinstance(module_, filter_type)
 
-    def _count_dry(self) -> float:
-        """Counts free space for dry run :return: Approx amount of bytes to be removed."""
+    def extract_paths(self) -> (Path_, float):
+        """Extracts all paths from the collector :return: List of paths with size."""
 
         from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -208,9 +208,6 @@ class _Collector:
         # Extracts paths from path_modules list
         path_list: list[Path_] = [path.get_path for path in path_modules]
 
-        # Set counter for estimated size
-        estimate_size: float = 0
-
         # Get thread executor
         executor = ThreadPoolExecutor()
 
@@ -218,18 +215,34 @@ class _Collector:
             # Add tasks to executor
             tasks = [executor.submit(self._get_size, path) for path in path_list]
 
+            # Store paths and their corresponding futures
+            path_future_map = dict(zip(path_list, tasks))
+
             # Wait for task completion and add ProgressBar
             for future in ProgressBar.wrap_iter(
                 as_completed(tasks), description="Collecting dry run", total=len(path_list)
             ):
-                estimate_size += future.result(timeout=10)
+                path = [p for p, f in path_future_map.items() if f == future][0]
+                size = future.result(timeout=10)
+                yield path, size
         except KeyboardInterrupt:
             # Shutdown executor without waiting for tasks
             executor.shutdown(wait=False)
         else:
             # Cleanup executor
             executor.shutdown(wait=True)
-        return estimate_size
+
+    def _count_dry(self) -> float:
+        """
+        Counts free space for dry run
+        Kept for compatibility with the previous version
+        TODO: Remove in the future
+
+        :return: Approx amount of bytes to be removed.
+
+        """
+
+        return sum([size for _, size in self.extract_paths()])
 
 
 class ProxyCollector:
