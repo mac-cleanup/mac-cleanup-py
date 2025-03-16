@@ -236,7 +236,7 @@ class _Collector:
         """
         Counts free space for dry run
         Kept for compatibility with the previous version
-        TODO: Remove in the future
+        TODO: Remove _count_dry as it isn't used anymore
 
         :return: Approx amount of bytes to be removed.
 
