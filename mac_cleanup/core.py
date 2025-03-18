@@ -193,7 +193,7 @@ class _Collector:
         return isinstance(module_, filter_type)
 
     def extract_paths(self) -> (Path_, float):
-        """Extracts all paths from the collector :return: List of paths with size."""
+        """Extracts all paths from the collector :return: Yields paths with size."""
 
         from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -216,13 +216,13 @@ class _Collector:
             tasks = [executor.submit(self._get_size, path) for path in path_list]
 
             # Store paths and their corresponding futures
-            path_future_map = dict(zip(path_list, tasks))
+            path_future_zip = list(zip(path_list, tasks))
 
             # Wait for task completion and add ProgressBar
             for future in ProgressBar.wrap_iter(
                 as_completed(tasks), description="Collecting dry run", total=len(path_list)
             ):
-                path = [p for p, f in path_future_map.items() if f == future][0]
+                path = next(p for p, f in path_future_zip if f == future)
                 size = future.result(timeout=10)
                 yield path, size
         except KeyboardInterrupt:

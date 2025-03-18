@@ -75,7 +75,7 @@ class EntryPoint:
 
             for path, size in self.base_collector.extract_paths():
                 if args.verbose and size:
-                    console.print(bytes_to_human(size), path)
+                    console.print(bytes_to_human(size), path, no_wrap=True)
                 estimate_size += size
 
             freed_space = bytes_to_human(estimate_size)  # noqa
