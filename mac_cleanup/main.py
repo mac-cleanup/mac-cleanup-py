@@ -73,7 +73,7 @@ class EntryPoint:
 
             estimate_size: float = 0
 
-            for path, size in self.base_collector.extract_paths():
+            for path, size in self.base_collector._extract_paths():
                 if args.verbose and size:
                     console.print(bytes_to_human(size), path, no_wrap=True)
                 estimate_size += size

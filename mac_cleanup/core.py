@@ -192,7 +192,7 @@ class _Collector:
 
         return isinstance(module_, filter_type)
 
-    def extract_paths(self) -> (Path_, float):
+    def _extract_paths(self) -> (Path_, float):
         """Extracts all paths from the collector :return: Yields paths with size."""
 
         from concurrent.futures import ThreadPoolExecutor, as_completed

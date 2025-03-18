@@ -82,6 +82,9 @@ class TestEntryPoint:
         # Simulate count_free_space results
         monkeypatch.setattr(EntryPoint, "count_free_space", dummy_count_free_space)
 
+        # Simulate verbose was set
+        monkeypatch.setattr("mac_cleanup.parser.Args.verbose", verbose)
+
         # Dummy execution list
         dummy_execute_list: list[Unit] = [
             Unit(message="test_1", modules=[Path("test"), Command("test")]),
@@ -109,7 +112,7 @@ class TestEntryPoint:
                             monkeypatch: MonkeyPatch):
         """Test dry_run with verbose and optional cleanup in :class:`mac_cleanup.main.EntryPoint`"""
 
-        # Dummy extract_paths returning [Pathlib("test") and 1 GB]
+        # Dummy _extract_paths returning [Pathlib("test") and 1 GB]
         dummy_extract_paths: Callable[..., list[tuple[Pathlib, float]]] = lambda: [(Pathlib("test"), float(1024**3))]
 
         # Dummy Config with empty init
@@ -137,8 +140,8 @@ class TestEntryPoint:
         mock_entry_point = EntryPoint()
         monkeypatch.setattr(EntryPoint, "__new__", lambda: mock_entry_point)
 
-        # Simulate extract_paths with predefined result
-        monkeypatch.setattr(mock_entry_point.base_collector, "extract_paths", dummy_extract_paths)
+        # Simulate _extract_paths with predefined result
+        monkeypatch.setattr(mock_entry_point.base_collector, "_extract_paths", dummy_extract_paths)
 
         # Simulate empty cleanup
         monkeypatch.setattr(EntryPoint, "cleanup", dummy_cleanup)
@@ -169,7 +172,7 @@ class TestEntryPoint:
     def test_dry_run_prompt_error(self, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
         """Test errors in dry_run in :class:`mac_cleanup.main.EntryPoint`"""
 
-        # Dummy extract_paths returning [Pathlib("test") and 1 GB]
+        # Dummy _extract_paths returning [Pathlib("test") and 1 GB]
         dummy_extract_paths: Callable[..., list[tuple[Pathlib, float]]] = lambda: [(Pathlib("test"), float(1024**3))]
 
         # Dummy Config with no init and empty call
@@ -196,8 +199,8 @@ class TestEntryPoint:
         mock_entry_point = EntryPoint()
         monkeypatch.setattr(EntryPoint, "__new__", lambda: mock_entry_point)
 
-        # Simulate extract_paths with predefined result
-        monkeypatch.setattr(mock_entry_point.base_collector, "extract_paths", dummy_extract_paths)
+        # Simulate _extract_paths with predefined result
+        monkeypatch.setattr(mock_entry_point.base_collector, "_extract_paths", dummy_extract_paths)
 
         # Simulate dry run was prompted
         monkeypatch.setattr("mac_cleanup.parser.Args.dry_run", True)
