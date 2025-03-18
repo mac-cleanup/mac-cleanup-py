@@ -44,7 +44,9 @@ class TestEntryPoint:
             main()
 
     @pytest.mark.parametrize("size_multiplier", [3.0, 2.0])
-    def test_cleanup(self, size_multiplier: float, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
+    @pytest.mark.parametrize("verbose", [True, False])
+    def test_cleanup(self, size_multiplier: float, verbose: bool, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch
+                     ):
         """Test cleanup in :class:`mac_cleanup.main.EntryPoint`"""
 
         # Dummy Config with empty init
@@ -108,8 +110,7 @@ class TestEntryPoint:
         assert f"Removed - {size_multiplier / 2} GB" in captured_stdout
 
     @pytest.mark.parametrize("cleanup_prompted", [True, False])
-    def test_dry_run_prompt(self, cleanup_prompted: bool, capsys: CaptureFixture[str],
-                            monkeypatch: MonkeyPatch):
+    def test_dry_run_prompt(self, cleanup_prompted: bool, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch):
         """Test dry_run with verbose and optional cleanup in :class:`mac_cleanup.main.EntryPoint`"""
 
         # Dummy _extract_paths returning [Pathlib("test") and 1 GB]
