@@ -232,18 +232,6 @@ class _Collector:
             # Cleanup executor
             executor.shutdown(wait=True)
 
-    def _count_dry(self) -> float:
-        """
-        Counts free space for dry run
-        Kept for compatibility with the previous version
-        TODO: Remove _count_dry as it isn't used anymore
-
-        :return: Approx amount of bytes to be removed.
-
-        """
-
-        return sum([size for _, size in self.extract_paths()])
-
 
 class ProxyCollector:
     """Proxy for accessing :class:`Collector` in a context manager."""
