@@ -4,7 +4,7 @@ from functools import partial
 from itertools import chain
 from pathlib import Path as Path_
 from types import TracebackType
-from typing import Any, Final, Optional, Type, TypeGuard, TypeVar, final, Generator
+from typing import Any, Final, Generator, Optional, Type, TypeGuard, TypeVar, final
 
 import attr
 from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
@@ -216,7 +216,7 @@ class _Collector:
             tasks = [executor.submit(self._get_size, path) for path in path_list]
 
             # Store paths and their corresponding futures
-            path_future_zip = list(zip(path_list, tasks))
+            path_future_zip = list(zip(path_list, tasks, strict=True))
 
             # Wait for task completion and add ProgressBar
             for future in ProgressBar.wrap_iter(

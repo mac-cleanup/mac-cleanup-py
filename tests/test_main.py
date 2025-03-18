@@ -106,8 +106,9 @@ class TestEntryPoint:
 
     @pytest.mark.parametrize("cleanup_prompted", [True, False])
     @pytest.mark.parametrize("verbose", [True, False])
-    def test_dry_run_prompt(self, cleanup_prompted: bool, verbose: bool, capsys: CaptureFixture[str],
-                            monkeypatch: MonkeyPatch):
+    def test_dry_run_prompt(
+        self, cleanup_prompted: bool, verbose: bool, capsys: CaptureFixture[str], monkeypatch: MonkeyPatch
+    ):
         """Test dry_run with verbose and optional cleanup in :class:`mac_cleanup.main.EntryPoint`"""
 
         # Dummy _extract_paths returning [Pathlib("test") and 1 GB]
