@@ -71,7 +71,14 @@ class EntryPoint:
         if args.dry_run:
             from rich.prompt import Confirm
 
-            freed_space = bytes_to_human(self.base_collector._count_dry())  # noqa
+            estimate_size: float = 0
+
+            for path, size in self.base_collector._extract_paths():
+                if args.verbose and size:
+                    console.print(bytes_to_human(size), path, no_wrap=True)
+                estimate_size += size
+
+            freed_space = bytes_to_human(estimate_size)  # noqa
 
             print_panel(text=f"Approx [success]{freed_space}[/success] will be cleaned", title="[info]Dry run results")
 

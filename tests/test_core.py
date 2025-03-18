@@ -194,8 +194,8 @@ class TestCollector:
         base_collector._get_size(Pathlib("/"))
 
     @pytest.mark.parametrize("size_multiplier", [0, 1, 1024])
-    def test_count_dry(self, size_multiplier: int, base_collector: _Collector, monkeypatch: MonkeyPatch):
-        """Test :meth:`mac_cleanup.core._Collector._count_dry`"""
+    def test_extract_paths(self, size_multiplier: int, base_collector: _Collector, monkeypatch: MonkeyPatch):
+        """Test :meth:`mac_cleanup.core._Collector._extract_paths`"""
 
         # Get size in bytes
         size = 1024 * size_multiplier
@@ -209,11 +209,16 @@ class TestCollector:
         # Simulate stuff in execute_list
         monkeypatch.setattr(base_collector, "_execute_list", [Unit(message="test", modules=[Path("~/test")])])
 
-        # Check results
-        assert base_collector._count_dry() == size
+        # Call _extract_paths
+        paths = list(base_collector._extract_paths())
 
-    def test_count_dry_error(self, base_collector: _Collector, monkeypatch: MonkeyPatch):
-        """Test errors in :meth:`mac_cleanup.core._Collector._count_dry`"""
+        # Check results
+        assert len(paths) == 1
+        assert paths[0][0] == Path("~/test").get_path
+        assert paths[0][1] == size
+
+    def test_extract_paths_error(self, base_collector: _Collector, monkeypatch: MonkeyPatch):
+        """Test errors in :meth:`mac_cleanup.core._Collector._extract_paths`"""
 
         # Dummy get size raising KeyboardInterrupt
         def dummy_get_size(clc_self: _Collector, path: Pathlib) -> float:  # noqa  # noqa
@@ -226,4 +231,8 @@ class TestCollector:
         monkeypatch.setattr(base_collector, "_execute_list", [Unit(message="test", modules=[Path("~/test")])])
 
         # Check prematurely exit return 0
-        assert base_collector._count_dry() == 0
+        # Call _extract_paths
+        paths = list(base_collector._extract_paths())
+
+        # Check results
+        assert len(paths) == 0
