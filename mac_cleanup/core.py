@@ -4,7 +4,7 @@ from functools import partial
 from itertools import chain
 from pathlib import Path as Path_
 from types import TracebackType
-from typing import Any, Final, Optional, Type, TypeGuard, TypeVar, final
+from typing import Any, Final, Optional, Type, TypeGuard, TypeVar, final, Generator
 
 import attr
 from beartype import beartype  # pyright: ignore [reportUnknownVariableType]
@@ -192,7 +192,7 @@ class _Collector:
 
         return isinstance(module_, filter_type)
 
-    def _extract_paths(self) -> (Path_, float):
+    def _extract_paths(self) -> Generator[tuple[Path_, float]]:
         """Extracts all paths from the collector :return: Yields paths with size."""
 
         from concurrent.futures import ThreadPoolExecutor, as_completed
