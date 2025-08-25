@@ -59,7 +59,7 @@ def check_exists(path: Path | str, *, expand_user: bool = True) -> bool:
     if expand_user:
         path = path.expanduser()
 
-    # If glob return True (it'll delete nothing at the end, hard to hande otherwise)
+    # If glob return True (it'll delete nothing at the end, hard to handle otherwise)
     if "*" in path.as_posix():
         return True
 
@@ -89,7 +89,7 @@ def check_deletable(path: Path | str) -> bool:
     if (path_posix := path_.as_posix()) == ".":
         return False
 
-    # If glob return True (it'll delete nothing at the end, hard to hande otherwise)
+    # If glob return True (it'll delete nothing at the end, hard to handle otherwise)
     if "*" in path_posix:
         return True
 
