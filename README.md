@@ -78,7 +78,6 @@ This project is a rewrite of the original [mac-cleanup-sh](https://github.com/ma
 ### Using Homebrew
 
 ```bash
-brew tap mac-cleanup/mac-cleanup-py
 brew install mac-cleanup-py
 ```
 
@@ -94,7 +93,6 @@ pip3 install mac-cleanup
 
 ```bash
 brew uninstall mac-cleanup-py
-brew untap mac-cleanup/mac-cleanup-py
 ```
 
 ### Using pip
