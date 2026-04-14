@@ -44,7 +44,7 @@ mac-cleanup = "mac_cleanup:main"
 
 [tool.poetry.group.test.dependencies]
 tox = "~4.24.2"
-pytest = "^8.4.2"
+pytest = ">=8.4.2,<10.0.0"
 pytest-cov = "~7.0.0"
 pyright = "^1.1.397"
 ruff = "^0.11.0"
