@@ -33,35 +33,35 @@ exclude = [ "mac_cleanup/__main__.py", "mac_cleanup/py.typed" ]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.16"
-rich = "^13.9.4"
-attrs = "~25.3.0"
-inquirer = "^3.4.0"
+rich = "^15.0.0"
+attrs = "~26.1.0"
+inquirer = "^3.4.1"
 toml = "~0.10.2"
 beartype = "~0.23.1"
-xattr = "~1.1.4"
+xattr = "~1.3.0"
 
 [tool.poetry.scripts]
 mac-cleanup = "mac_cleanup:main"
 
 [tool.poetry.group.test.dependencies]
-tox = "~4.24.2"
-pytest = "^8.4.2"
-pytest-cov = "~7.0.0"
-pyright = "^1.1.397"
-ruff = "^0.11.0"
+tox = "~4.67.1"
+pytest = "^9.1.1"
+pytest-cov = "~7.1.0"
+pyright = "^1.1.414"
+ruff = "^0.17.2"
 
 [tool.poetry.group.dev.dependencies]
-commitizen = "~4.4.1"
+commitizen = "~4.19.3"
 jinja2 = "^3.1.6"
-pre-commit = "~4.2.0"
+pre-commit = "~4.7.0"
 
 [tool.poetry.group.lint.dependencies]
-black = "^25.1.0"
-isort = "^6.0.1"
-docformatter = "^1.7.5"
+black = "^26.10.1"
+isort = "^9.0.2"
+docformatter = "^1.7.8"
 
 [build-system]
-requires = [ "poetry-core>=2.1.0,<3.0.0" ]
+requires = [ "poetry-core>=2.5.0,<3.0.0" ]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
@@ -135,6 +135,6 @@ inline-quotes = "double"
 multiline-quotes = "double"
 
 [tool.pytest.ini_options]
-minversion = "8.3.5"
+minversion = "9.1.1"
 addopts = "--cov=mac_cleanup"
 testpaths = [ "tests" ]
