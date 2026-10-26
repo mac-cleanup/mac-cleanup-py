@@ -20,7 +20,7 @@ class Unit:
     """Unit containing message and the modules list."""
 
     message: str = attr.ib()
-    modules: list[BaseModule] = attr.ib(
+    modules: list[BaseModule] = attr.ib(  # pyright: ignore [reportUnknownVariableType]
         factory=list,
         validator=attr.validators.deep_iterable(
             member_validator=attr.validators.instance_of(BaseModule),
@@ -156,8 +156,10 @@ class _Collector:
             # Except SIP, symlinks, and not non-existent path
             try:
                 return path_.stat(follow_symlinks=False).st_size
+            # fmt: off
             except (PermissionError, FileNotFoundError):
                 return 0
+            # fmt: on
 
         # Add recursive glob
         glob_constructor.append("**/*")
@@ -182,8 +184,10 @@ class _Collector:
                 try:
                     temp_size += file.stat(follow_symlinks=False).st_size
                 # Except SIP, symlinks, and not non-existent path
+                # fmt: off
                 except (PermissionError, FileNotFoundError):
                     continue
+                # fmt: on
         return temp_size
 
     @staticmethod
