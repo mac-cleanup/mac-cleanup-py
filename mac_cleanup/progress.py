@@ -75,7 +75,8 @@ class _ProgressBar:
 
         # Clear printed stuff
         self.current_progress.console.clear()
-        self.current_progress.console.clear_live()
+        if len(self.current_progress.console._live_stack) > 0:
+            self.current_progress.console.clear_live()
 
         # Resume refreshing progress bar
         self.current_progress.start()
@@ -99,7 +100,8 @@ class _ProgressBar:
         """
 
         # Clear previous Live instance
-        self.current_progress.console.clear_live()
+        if len(self.current_progress.console._live_stack) > 0:
+            self.current_progress.console.clear_live()
 
         # Get new progress instance with default stuff
         self.__init__()
