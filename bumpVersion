@@ -7,7 +7,7 @@ if [[ -z "$1" ]]; then echo "No version supplied"; exit 1; fi
 if ! echo "$1" | grep -Eq '^[0-9]+\.[0-9]\.[0-9]+$'; then echo "Incorrect version"; exit 1; fi
 
 # Get current version
-currentVersion="$(grep -oE '(?:^version = \")(\d|\.)+(?:\")' pyproject.toml | sed -r 's/^version = "(([0-9]|\.)+)"/\1/g')"
+currentVersion="$(sed -nE 's/^version = "([0-9.]+)"/\1/p' pyproject.toml)"
 
 # Replace in pyproject
 sed -ri "" "s/^version = \"$currentVersion\"/version = \"$1\"/g" ./pyproject.toml
