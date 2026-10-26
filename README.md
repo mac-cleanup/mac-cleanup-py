@@ -110,7 +110,7 @@ $ mac-cleanup -h
 usage: mac-cleanup [-h] [-n] [-u] [-c] [-p] [-f]
 
     Python cleanup script for macOS
-    Version: 3.3.0
+    Version: 3.4.0
     https://github.com/mac-cleanup/mac-cleanup-py
 
 options:
